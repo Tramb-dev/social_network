@@ -1,0 +1,8 @@
+<div class="links">
+  <ul>
+    <li *ngFor="let badge of badges">
+      <div class="link">{{ badge.label }}</div>
+      <div *ngIf="badge.visible" class="badge">{{ badge.number }}</div>
+    </li>
+  </ul>
+</div>

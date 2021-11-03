@@ -1,0 +1,60 @@
+@import "../../../../scss/variables";
+.links {
+  ul {
+    list-style: none;
+    padding-right: 10px;
+
+    li {
+      position: relative;
+
+      .badge {
+        background-color: #000;
+        border: 3px $blue solid;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 0.8em;
+        line-height: 1.1em;
+        min-width: 1.1em;
+        position: absolute;
+        left: 0;
+        transform: translateX(-2.1em);
+        text-align: center;
+        top: 0;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $sm) {
+  .links {
+    ul {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin: 0;
+      padding: 0;
+
+      li {
+        margin-right: 15px;
+        padding: 5px;
+        position: relative;
+
+        .badge {
+          background-color: #000;
+          border: 3px $blue solid;
+          border-radius: 50%;
+          color: #fff;
+          font-size: 0.9em;
+          left: unset;
+          line-height: 1.2em;
+          min-width: 1.2em;
+          position: absolute;
+          right: 0;
+          transform: translate(1.2em, -0.3em);
+          text-align: center;
+          top: 0;
+        }
+      }
+    }
+  }
+}
