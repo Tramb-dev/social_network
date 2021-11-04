@@ -1,0 +1,45 @@
+@import "../../../../scss/variables";
+
+footer {
+  background-color: $bgcDark;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 500 500' preserveAspectRatio='xMinYMin meet'%3E%3Cpath d='M0 100 C150 200 350 0 500 100 L500 00 L0 0 Z'");
+  position: absolute;
+  bottom: 0;
+  padding: 48px 0 0;
+  width: 100vw;
+  z-index: 1;
+}
+
+.shape-divider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+
+  svg {
+    position: relative;
+    display: block;
+    width: calc(134% + 1.3px);
+    height: 48px;
+
+    .shape-fill {
+      fill: #ccc;
+    }
+  }
+}
+
+.container {
+  padding: 0 10px;
+}
+
+h2,
+li {
+  color: $white;
+}
+
+ul {
+  list-style: none;
+  padding-bottom: 5px;
+}
