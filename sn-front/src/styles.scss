@@ -31,7 +31,8 @@
 html,
 body {
   height: 100%;
-  background-color: $bgcMain;
+  background: radial-gradient(transparent, #ccccccdd),
+    url("assets/images/webb.png") repeat;
   overflow: auto;
 }
 
