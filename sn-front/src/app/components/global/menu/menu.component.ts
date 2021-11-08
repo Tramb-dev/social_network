@@ -8,25 +8,25 @@ import { Component } from "@angular/core";
 export class MenuComponent {
   badges = [
     {
-      field: "messages",
+      anchor: "member/messages",
       label: "Messages",
       number: 4,
       visible: true,
     },
     {
-      field: "friends",
+      anchor: "member/friends",
       label: "Amis",
       number: 5,
       visible: true,
     },
     {
-      field: "circle",
+      anchor: "member/circles",
       label: "Cercles",
       number: 3,
       visible: true,
     },
     {
-      field: "profil",
+      anchor: "member",
       label: "Mon profil",
       number: 0,
       visible: false,
