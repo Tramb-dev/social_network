@@ -1,11 +1,12 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
+import { MemberComponent } from "./member.component";
 import { ProfileComponent } from "./profile/profile.component";
 
 const routes: Routes = [
   {
-    path: "member",
-    component: ProfileComponent,
+    path: "",
+    component: MemberComponent,
     children: [
       {
         path: ":id",
@@ -16,7 +17,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
 export class MemberRoutingModule {}

@@ -1,13 +1,10 @@
-import { Component, OnInit } from "@angular/core";
-import { MatFormFieldControl } from "@angular/material/form-field";
+import { Component } from "@angular/core";
 
 @Component({
   selector: "app-reply",
   templateUrl: "./reply.component.html",
   styleUrls: ["./reply.component.scss"],
 })
-export class ReplyComponent implements OnInit {
-  constructor(private matFormField: MatFormFieldControl) {}
-
-  ngOnInit(): void {}
+export class ReplyComponent {
+  constructor() {}
 }
