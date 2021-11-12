@@ -2,8 +2,6 @@ import { Component, OnDestroy } from "@angular/core";
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { Subject } from "rxjs";
 
-import { AuthService } from "src/app/services/auth.service";
-
 @Component({
   selector: "app-header",
   templateUrl: "./header.component.html",
@@ -14,10 +12,7 @@ export class HeaderComponent implements OnDestroy {
   isSmallScreen = false;
   destroyed = new Subject<void>();
 
-  constructor(
-    private breakpointObserver: BreakpointObserver,
-    public auth: AuthService
-  ) {
+  constructor(private breakpointObserver: BreakpointObserver) {
     breakpointObserver
       .observe([
         Breakpoints.XSmall,

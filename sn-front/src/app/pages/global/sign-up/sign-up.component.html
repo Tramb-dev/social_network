@@ -1,1 +1,50 @@
-<p>S'enregistrer</p>
+<header>
+    <div class="logo">
+      <img src="assets/images/logo.jpg" alt="Logo Social Network" />
+    </div>
+    <div class="title">
+        <h1>Créez un compte</h1>
+        <h2>et rejoignez vos amis !</h2>
+    </div>
+</header>
+<form class="form" [formGroup]="registerForm" (ngSubmit)="onFormSubmit()">
+    <div class="form-fields">
+        <mat-form-field appearance="fill">
+            <mat-label>Prénom</mat-label>
+            <input matInput [type]="'text'" required formControlName="firstName" pattern="[a-zA-Z ]*">
+            <mat-error *ngIf="validateField('firstName')">{{ registerErrors.firstName }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Nom</mat-label>
+            <input matInput [type]="'text'" required formControlName="lastName" pattern="[a-zA-Z ]*">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Courriel</mat-label>
+            <input matInput [type]="'email'" placeholder="exemple@exemple.com" required formControlName="email">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Entrez votre mot de passe</mat-label>
+            <input matInput required [type]="hidePwd ? 'password' : 'text'" formControlName="password">
+            <button mat-icon-button matSuffix (click)="hidePwd = !hidePwd" [attr.aria-label]="'Masquer le mot de passe'" [attr.aria-pressed]="hidePwd">
+                <mat-icon>{{ hidePwd ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-hint>Min 8 caractères</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Date de naissance</mat-label>
+            <input matInput [matDatepicker]="datepicker" formControlName="dateOfBirth" required [max]="maxDate">
+            <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker startView="multi-year">
+                <mat-datepicker-actions>
+                    <button mat-button matDatepickerCancel>Cancel</button>
+                    <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+                  </mat-datepicker-actions>
+            </mat-datepicker>
+        </mat-form-field>
+    </div>
+    <div class="buttons">
+        <button mat-raised-button color="primary" [disabled]="registerForm.invalid">Créer un compte</button>
+        <div class="or-separator">ou</div>
+        <a mat-stroked-button routerLink="/sign-in">Se connecter</a>
+    </div>
+</form>

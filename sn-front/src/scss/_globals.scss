@@ -1,0 +1,21 @@
+.snackBar-error {
+  background-color: #c03131;
+  color: #000;
+
+  button {
+    color: #000;
+  }
+}
+
+.snackBar-top,
+.snackBar-error {
+  position: relative;
+  top: 10vh;
+}
+
+@media screen and (min-width: $sm) {
+  .snackBar-top,
+  .snackBar-error {
+    top: 5vh;
+  }
+}

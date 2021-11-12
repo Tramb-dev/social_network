@@ -1,14 +1,13 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { Error404Component } from "./pages/global/error404/error404.component";
-import { SignInComponent } from "./pages/global/sign-in/sign-in.component";
-import { SignUpComponent } from "./pages/global/sign-up/sign-up.component";
+import { AdminGuard } from "./guards/admin.guard";
+import { MemberGuard } from "./guards/member.guard";
 
 const routes: Routes = [
   {
     path: "",
     pathMatch: "full",
-    redirectTo: "/sign-in",
+    redirectTo: "/sign-up",
   },
   {
     path: "",
@@ -17,11 +16,14 @@ const routes: Routes = [
   },
   {
     path: "member",
+    canActivateChild: [MemberGuard],
+    canLoad: [MemberGuard],
     loadChildren: () =>
       import("./pages/member/member.module").then((m) => m.MemberModule),
   },
   {
     path: "admin",
+    canLoad: [AdminGuard],
     loadChildren: () =>
       import("./pages/admin/admin.module").then((m) => m.AdminModule),
   },

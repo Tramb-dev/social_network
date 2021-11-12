@@ -1,0 +1,115 @@
+@import "../../../../scss/variables";
+
+header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  padding: 15px 10px 0;
+  margin-bottom: 20px;
+
+  .logo {
+    margin: 5px 10px 0;
+
+    & img {
+      height: 50px;
+      width: 50px;
+    }
+  }
+
+  .title {
+    h1,
+    h2 {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.form {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  margin: 10vh auto 0;
+}
+
+.form-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 10px;
+  width: 100%;
+
+  .forgot-pwd {
+    margin-bottom: 15px;
+    text-align: end;
+
+    a {
+      color: $fontColor;
+      filter: opacity(80%);
+      font-size: 0.8em;
+      text-decoration: none;
+
+      &:visited {
+        color: $fontColor;
+      }
+    }
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  button,
+  a {
+    margin: 10px 0;
+    width: 100%;
+  }
+}
+
+.or-separator {
+  color: #aaa;
+
+  &::before,
+  &::after {
+    content: "";
+    border-top: solid 2px lightgray;
+    display: inline-block;
+    transform: translateY(-0.2rem);
+    width: 30vw;
+  }
+
+  &::before {
+    margin-right: 1rem;
+  }
+
+  &::after {
+    margin-left: 1rem;
+  }
+}
+
+@media screen and (min-width: $sm) {
+  .form-fields {
+    row-gap: 20px;
+    max-width: 600px;
+  }
+
+  .buttons button,
+  .buttons a {
+    max-width: 230px;
+  }
+
+  .or-separator {
+    &::before,
+    &::after {
+      max-width: 90px;
+    }
+  }
+}

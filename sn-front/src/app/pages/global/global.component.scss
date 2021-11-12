@@ -1,0 +1,12 @@
+@import "../../../scss/variables";
+
+.gradient {
+  background: radial-gradient(ellipse, $white 50%, transparent 80%);
+  bottom: 20vh;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
