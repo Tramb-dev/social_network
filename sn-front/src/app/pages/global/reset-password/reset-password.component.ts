@@ -1,8 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Router } from "@angular/router";
+
+import { CustomValidators } from "src/app/providers/custom-validators";
 
 import { FormsValidationService } from "src/app/services/forms-validation.service";
-import { CustomValidators } from "src/app/providers/custom-validators";
+import { RegisterService } from "src/app/services/register.service";
 
 @Component({
   selector: "app-reset-password",
@@ -24,16 +28,45 @@ export class ResetPasswordComponent implements OnInit {
     CustomValidators.mustMatch("password", "confirm")
   );
 
-  constructor(private validation: FormsValidationService) {}
+  constructor(
+    private validation: FormsValidationService,
+    private register: RegisterService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {}
 
   onFormSubmit(): void {
-    const pass1: string = this.resetForm.get("password")?.value;
-    const pass2: string = this.resetForm.get("confirm")?.value;
-    if (this.resetForm.invalid || !this.validation.mustMatch(pass1, pass2)) {
+    const password: string = this.resetForm.get("password")?.value;
+    if (this.resetForm.invalid) {
       return;
     }
+
+    this.register
+      .resetPassword(password)
+      .then((isPasswordChanged: boolean) => {
+        if (isPasswordChanged) {
+          this.snackBar.open("Le mot de passe a bien été changé", "Fermer", {
+            duration: 3000,
+            panelClass: "snackBar-top",
+            verticalPosition: "top",
+            horizontalPosition: "center",
+          });
+          this.router.navigate(["/sign-in"]);
+        } else {
+          this.snackBar.open("Une erreur s'est produite", "Fermer", {
+            duration: 5000,
+            verticalPosition: "top",
+            horizontalPosition: "center",
+            panelClass: "snackBar-error",
+          });
+        }
+      })
+      .catch((err) => {
+        this.snackBar.open("Une erreur s'est produite", "Fermer");
+        console.error("user sign in", err);
+      });
   }
 
   validateField(field: string): boolean {

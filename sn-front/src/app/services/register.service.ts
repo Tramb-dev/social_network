@@ -22,4 +22,8 @@ export class RegisterService {
   async sendResetEmail(emailAddress: string): Promise<boolean> {
     return true;
   }
+
+  async resetPassword(newPassword: string): Promise<boolean> {
+    return true;
+  }
 }
