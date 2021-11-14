@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { SharedModule } from "src/app/shared/shared.module";
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from "@angular/material/core";
 
 import { GlobalRoutingModule } from "./global-routing.module";
 import { MatDatepickerModule } from "@angular/material/datepicker";
@@ -10,8 +11,8 @@ import { SignInComponent } from "./sign-in/sign-in.component";
 import { SignUpComponent } from "./sign-up/sign-up.component";
 import { Error404Component } from "./error404/error404.component";
 import { ResetPasswordComponent } from "./reset-password/reset-password.component";
+import { ForgotPasswordComponent } from "./forgot-password/forgot-password.component";
 import { GlobalComponent } from "./global.component";
-import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from "@angular/material/core";
 
 const DATE_FORMATS = {
   parse: {
@@ -33,6 +34,7 @@ const DATE_FORMATS = {
     Error404Component,
     ResetPasswordComponent,
     GlobalComponent,
+    ForgotPasswordComponent,
   ],
   imports: [
     SharedModule,

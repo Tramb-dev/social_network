@@ -6,7 +6,7 @@ import { RightsLevels } from "../interfaces/auth";
   providedIn: "root",
 })
 export class AuthService {
-  private isLoggedIn: boolean = true;
+  private isLoggedIn: boolean = false;
   private rightsLevel: RightsLevels = RightsLevels.MEMBER;
   private redirectUrl: string = "/";
 

@@ -17,10 +17,12 @@
         <mat-form-field appearance="fill">
             <mat-label>Nom</mat-label>
             <input matInput [type]="'text'" required formControlName="lastName" pattern="[a-zA-Z ]*">
+            <mat-error *ngIf="validateField('lastName')">{{ registerErrors.lastName }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Courriel</mat-label>
             <input matInput [type]="'email'" placeholder="exemple@exemple.com" required formControlName="email">
+            <mat-error *ngIf="validateField('email')">{{ registerErrors.email }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Entrez votre mot de passe</mat-label>
@@ -29,6 +31,7 @@
                 <mat-icon>{{ hidePwd ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             <mat-hint>Min 8 caractères</mat-hint>
+            <mat-error *ngIf="validateField('password')">{{ registerErrors.password }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Date de naissance</mat-label>
@@ -40,6 +43,7 @@
                     <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
                   </mat-datepicker-actions>
             </mat-datepicker>
+            <mat-error *ngIf="validateField('dateOfBirth')">{{ registerErrors.dateOfBirth }}</mat-error>
         </mat-form-field>
     </div>
     <div class="buttons">

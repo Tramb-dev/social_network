@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 import { AuthService } from "src/app/services/auth.service";
+import { FormsValidationService } from "src/app/services/forms-validation.service";
 
 @Component({
   selector: "app-sign-in",
@@ -25,7 +26,8 @@ export class SignInComponent implements OnInit, OnDestroy {
   constructor(
     private auth: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private validation: FormsValidationService
   ) {}
 
   ngOnInit(): void {
@@ -73,51 +75,25 @@ export class SignInComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Check if the email is correct and change the error message if needed
-   * @returns true if there is an error, false otherwise
-   */
-  validateEmail(): boolean {
-    if (
-      this.loginForm.get("email")?.invalid &&
-      (this.loginForm.get("email")?.dirty ||
-        this.loginForm.get("email")?.touched)
-    ) {
-      if (this.loginForm.get("email")?.errors?.required) {
-        this.emailError = "Champ obligatoire";
+  validateField(field: string): boolean {
+    const error = this.validation.validateField(this.loginForm, field);
+    if (field === "email") {
+      if (error) {
+        this.emailError = error;
         return true;
-      } else if (this.loginForm.get("email")?.errors?.email) {
-        this.emailError = `Le format de l'adresse est incorrect`;
+      } else {
+        this.emailError = "";
+        return false;
+      }
+    } else if (field === "password") {
+      if (error) {
+        this.passwordError = error;
         return true;
+      } else {
+        this.passwordError = "";
+        return false;
       }
     }
-    this.emailError = "";
-    return false;
-  }
-
-  /**
-   * Check if the password is correct and change the error message if needed
-   * @returns true if there is an error, false otherwise
-   */
-  validatePassword(): boolean {
-    if (
-      this.loginForm.get("password")?.invalid &&
-      (this.loginForm.get("password")?.dirty ||
-        this.loginForm.get("password")?.touched)
-    ) {
-      if (this.loginForm.get("password")?.errors?.required) {
-        this.passwordError = "Champ obligatoire";
-        return true;
-      } else if (
-        this.loginForm.get("password")?.errors?.minlength.actualLength <
-        this.loginForm.get("password")?.errors?.minlength.requiredLength
-      ) {
-        this.passwordError =
-          "Le mot de passe doit contenir plus de 8 caractères";
-        return true;
-      }
-    }
-    this.passwordError = "";
     return false;
   }
 }

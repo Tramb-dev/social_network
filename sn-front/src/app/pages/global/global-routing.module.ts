@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { Error404Component } from "./error404/error404.component";
+import { ForgotPasswordComponent } from "./forgot-password/forgot-password.component";
 import { GlobalComponent } from "./global.component";
 import { ResetPasswordComponent } from "./reset-password/reset-password.component";
 import { SignInComponent } from "./sign-in/sign-in.component";
@@ -18,6 +19,10 @@ const routes: Routes = [
       {
         path: "sign-up",
         component: SignUpComponent,
+      },
+      {
+        path: "forgot-password",
+        component: ForgotPasswordComponent,
       },
       {
         path: "reset-password",

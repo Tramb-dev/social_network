@@ -18,4 +18,8 @@ export class RegisterService {
     const user: User = {};
     return user;
   }
+
+  async sendResetEmail(emailAddress: string): Promise<boolean> {
+    return true;
+  }
 }

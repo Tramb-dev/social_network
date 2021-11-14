@@ -9,9 +9,9 @@
 <form class="form" [formGroup]="loginForm" (ngSubmit)="onFormSubmit()">
     <div class="form-fields">
         <mat-form-field appearance="fill">
-            <mat-label>Courriel</mat-label>
+            <mat-label>Adresse électronique</mat-label>
             <input matInput [type]="'email'" placeholder="exemple@exemple.com" required formControlName="email">
-            <mat-error *ngIf="validateEmail()">{{ emailError }}</mat-error>
+            <mat-error *ngIf="validateField('email')">{{ emailError }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Entrez votre mot de passe</mat-label>
@@ -19,10 +19,10 @@
             <button mat-icon-button matSuffix (click)="hidePwd = !hidePwd" [attr.aria-label]="'Masquer le mot de passe'" [attr.aria-pressed]="hidePwd">
                 <mat-icon>{{ hidePwd ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
-            <mat-error *ngIf="validatePassword()">{{ passwordError }}</mat-error>
+            <mat-error *ngIf="validateField('password')">{{ passwordError }}</mat-error>
         </mat-form-field>
         <div class="forgot-pwd">
-            <a routerLink="/reset-password">Mot de passe oublié ?</a>
+            <a routerLink="/forgot-password">Mot de passe oublié ?</a>
         </div>
     </div>
     <div class="buttons">

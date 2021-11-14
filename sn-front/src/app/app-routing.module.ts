@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { AdminGuard } from "./guards/admin.guard";
+import { GlobalsGuard } from "./guards/globals.guard";
 import { MemberGuard } from "./guards/member.guard";
 
 const routes: Routes = [
@@ -11,6 +12,7 @@ const routes: Routes = [
   },
   {
     path: "",
+    canActivate: [GlobalsGuard],
     loadChildren: () =>
       import("./pages/global/global.module").then((m) => m.GlobalModule),
   },
