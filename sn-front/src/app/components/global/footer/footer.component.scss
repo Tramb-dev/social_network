@@ -43,4 +43,13 @@ li {
 ul {
   list-style: none;
   padding-bottom: 5px;
+
+  a {
+    text-decoration: none;
+  }
+
+  a,
+  a:visited {
+    color: $white;
+  }
 }
