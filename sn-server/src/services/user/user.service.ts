@@ -1,0 +1,76 @@
+import { NextFunction, Request, Response } from "express";
+import { DB } from "../db/user.db";
+
+export class UserService {
+  helloWorld(req: Request, res: Response) {
+    return res.send("hello user!");
+  }
+
+  signIn(req: Request, res: Response, next: NextFunction) {
+    const data = req.body;
+    if (data.email && data.password) {
+      DB.signIn(data.email, data.password).then((user) => {
+        if (user) {
+          return res.json(user);
+        } else {
+          res.status(404);
+          return next("Incorrect credentials");
+        }
+      });
+    } else {
+      return res.sendStatus(400);
+    }
+  }
+
+  signUp(req: Request, res: Response, next: NextFunction) {
+    const data = req.body;
+    if (
+      data.firstName &&
+      data.lastName &&
+      data.email &&
+      data.password &&
+      data.dateOfBirth
+    ) {
+      return DB.register(
+        data.firstName,
+        data.lastName,
+        data.email,
+        data.password,
+        data.dateOfBirth
+      )
+        .then((user) => {
+          console.log(user);
+          if (user) {
+            return res.json(user);
+          } else {
+            return res.sendStatus(409);
+          }
+        })
+        .catch((err) => {
+          return next(err);
+        });
+    }
+    return res.sendStatus(400);
+  }
+
+  forgotPassword(req: Request, res: Response) {
+    if (req.query.email) {
+      return res.send("ok");
+    }
+    return res.sendStatus(400);
+  }
+
+  resetPasswordExists(req: Request, res: Response) {
+    if (req.query.rid) {
+      return res.send("ok");
+    }
+    return res.sendStatus(400);
+  }
+
+  resetPassword(req: Request, res: Response) {
+    if (req.query.rid && req.query.password) {
+      return res.send("ok");
+    }
+    return res.sendStatus(400);
+  }
+}

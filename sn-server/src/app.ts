@@ -1,14 +1,21 @@
-import express, { Request, Response, Application } from "express";
+import express, { Application } from "express";
 import http from "http";
+import { PORT } from "./config";
+import route from "./routes/index";
 
 const app: Application = express();
 const server = http.createServer(app);
 
-const PORT = process.env.PORT || 3005;
+// Server settings
+/* app.set('env', config.env);
+app.set('port', config.port);
+app.set('hostname', config.hostname);
+app.set('viewDir', config.viewDir); */
 
-app.get("/", (req: Request, res: Response): void => {
-  res.send("Hello world!");
-});
+app.use(express.json());
+
+// Set up routes
+app.use(route);
 
 app.listen(PORT, (): void => {
   console.log(`Server listening on port ${PORT}`);
