@@ -46,7 +46,7 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Promise<boolean> {
+  ): Promise<boolean | UrlTree> {
     return this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
       if (isLoggedIn) {
         return this.auth.getRightsLevel().then((rightsLevel: RightsLevels) => {
@@ -56,7 +56,7 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
           return false;
         });
       }
-      return false;
+      return this.router.navigate(["/sign-in"]);
     });
   }
 

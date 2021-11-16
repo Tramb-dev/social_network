@@ -1,10 +1,14 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-import { MatSnackBar } from "@angular/material/snack-bar";
 
 import { AuthService } from "src/app/services/auth.service";
 import { FormsValidationService } from "src/app/services/forms-validation.service";
+import { UserService } from "src/app/services/user.service";
+
+import { User } from "src/app/interfaces/user";
+import { SnackBarService } from "src/app/services/snack-bar.service";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-sign-in",
@@ -22,25 +26,29 @@ export class SignInComponent implements OnInit, OnDestroy {
   });
   emailError = "";
   passwordError = "";
+  signInSubscription: Subscription | undefined;
 
   constructor(
     private auth: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar,
-    private validation: FormsValidationService
+    private validation: FormsValidationService,
+    private snackBar: SnackBarService,
+    private userSrv: UserService
   ) {}
 
   ngOnInit(): void {
     this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
       if (isLoggedIn) {
-        // TODO: décommenter pour prod
-        //this.router.navigate(["/member"]);
+        this.router.navigate(["/member"]);
       }
     });
   }
 
   ngOnDestroy() {
     this.snackBar.dismiss();
+    if (this.signInSubscription) {
+      this.signInSubscription.unsubscribe();
+    }
   }
 
   onFormSubmit(): void {
@@ -49,30 +57,43 @@ export class SignInComponent implements OnInit, OnDestroy {
     }
     const userEmail = this.loginForm.get("email")?.value;
     const userPwd = this.loginForm.get("password")?.value;
-    this.auth
+    this.signInSubscription = this.auth
       .signInUser(userEmail, userPwd)
-      .then((isAuthenticated: boolean) => {
-        if (isAuthenticated) {
-          this.loginForm.reset();
-          this.snackBar.open(
-            "Connexion réussie, heureux de vous revoir",
-            "Fermer",
-            { duration: 1500, panelClass: "snackBar-top" }
-          );
-          this.router.navigate(["/member"]);
-        } else {
-          this.snackBar.open("Veuillez vérifier vos identifiants", "X", {
-            duration: 5000,
-            verticalPosition: "top",
-            horizontalPosition: "center",
-            panelClass: "snackBar-error",
-          });
+      .subscribe(
+        (user: User | null) => {
+          if (user && user.isConnected) {
+            this.userSrv.updateUser(user);
+            this.loginForm.reset();
+            this.snackBar.presentSnackBar(
+              "Connexion réussie, heureux de vous revoir",
+              "snackBar-top",
+              1500
+            );
+            this.router.navigate(["/member/", user.uid]);
+          } else {
+            this.snackBar.presentSnackBar(
+              "Veuillez vérifier vos identifiants",
+              "snackBar-error",
+              5000
+            );
+          }
+        },
+        (err) => {
+          if (409 === err.status) {
+            this.snackBar.presentSnackBar(
+              "Veuillez vérifier vos identifiants",
+              "snackBar-error",
+              5000
+            );
+          } else {
+            this.snackBar.presentSnackBar(
+              "Une erreur s'est produite : " + err.statusText,
+              "snackBar-error"
+            );
+            console.error(err);
+          }
         }
-      })
-      .catch((err) => {
-        this.snackBar.open("Une erreur s'est produite", "Fermer");
-        console.error("user sign in", err);
-      });
+      );
   }
 
   validateField(field: string): boolean {

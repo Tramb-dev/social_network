@@ -13,4 +13,10 @@ router.get("/", (req, res) => {
   res.send("Hello world!");
 });
 
+router.get("*", (req, res, next) => {
+  const err = new Error("Page doesn't exists");
+  res.status(404);
+  next(err);
+});
+
 export default router;

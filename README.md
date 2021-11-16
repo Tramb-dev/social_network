@@ -31,7 +31,7 @@ This project need a MongoDB database. See an exemple in config.json at the root 
 
 Create a configuration file named `./sn-server/src/config.ts` with this content:
 
-<code>exports.db = { mongoUri: "mongodb+srv://<login>:<password>@<mongDBuri>/social-network", };</code>
+<code>exports.db = { mongoUri: "mongodb+srv://< login >:< password >@< mongDBuri >/social-network" };</code>
 
 Don't forget to replace `login`, `password` and `mongoDBuri` with your credentials.
 
@@ -39,7 +39,7 @@ Change if needed the server port in `sn-server/src/app.ts` and in `sn-front/src/
 
 ### Execute server
 
-Enter in server directory with `cd ns-server/dist`. Run `node app.js`. Naviguate to `http://localhost:8095` or the port you provided in this file.
+Enter in server directory with `cd sn-server/dist`. Run `node app.js`. Naviguate to `http://localhost:8095` or the port you provided in this file.
 
 ### Development
 
@@ -47,12 +47,12 @@ You can serve these applications for development purpose.
 
 In `sn-front` directory, type `ng serve`, it will build and serve the application to a local server and watch any change for a live reload.
 
-In `sn-server` directory, type `npm dev`, it will build, serve the application and watch any change for a live reload.
+In `sn-server` directory, type `npm run dev`, it will build, serve the application and watch any change for a live reload.
 
 ### Infos
 
 This project was generated with Angular CLI version 12.2.6.
 
-The servers runs under node.js version 16.9.1, express version 4.17.1 and mongodb version 4.1.3.
+The servers runs under node.js version 16.10.0, express version 4.17.1 and mongodb version 4.1.3.
 
 All the project is writed in typescript.

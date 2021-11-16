@@ -1,22 +1,23 @@
 import { NextFunction, Request, Response } from "express";
-import { DB } from "../db/user.db";
+import { db } from "../db/user.db";
 
-export class UserService {
-  helloWorld(req: Request, res: Response) {
-    return res.send("hello user!");
-  }
-
+class UserService {
   signIn(req: Request, res: Response, next: NextFunction) {
-    const data = req.body;
+    const data = req.query;
     if (data.email && data.password) {
-      DB.signIn(data.email, data.password).then((user) => {
-        if (user) {
-          return res.json(user);
-        } else {
-          res.status(404);
-          return next("Incorrect credentials");
-        }
-      });
+      db.signIn(data.email, data.password)
+        .then((user) => {
+          if (user) {
+            return res.json(user);
+          } else {
+            res.status(404);
+            res.statusMessage = "Incorrect credentials";
+            return next(new Error("Incorrect credentials"));
+          }
+        })
+        .catch((err) => {
+          return next(new Error(err));
+        });
     } else {
       return res.sendStatus(400);
     }
@@ -31,23 +32,24 @@ export class UserService {
       data.password &&
       data.dateOfBirth
     ) {
-      return DB.register(
-        data.firstName,
-        data.lastName,
-        data.email,
-        data.password,
-        data.dateOfBirth
-      )
+      return db
+        .register(
+          data.firstName,
+          data.lastName,
+          data.email,
+          data.password,
+          data.dateOfBirth
+        )
         .then((user) => {
-          console.log(user);
           if (user) {
             return res.json(user);
           } else {
-            return res.sendStatus(409);
+            res.status(409);
+            return next(new Error("Email already exists"));
           }
         })
         .catch((err) => {
-          return next(err);
+          return next(new Error(err));
         });
     }
     return res.sendStatus(400);
@@ -74,3 +76,5 @@ export class UserService {
     return res.sendStatus(400);
   }
 }
+
+export const userService = new UserService();

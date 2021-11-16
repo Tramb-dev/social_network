@@ -1,12 +1,14 @@
 import { Component, OnInit } from "@angular/core";
 import { Validators, FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { Subscription } from "rxjs";
 
 import { RegisterService } from "src/app/services/register.service";
 import { FormsValidationService } from "src/app/services/forms-validation.service";
+import { AuthService } from "src/app/services/auth.service";
 
 import { User } from "src/app/interfaces/user";
+import { SnackBarService } from "src/app/services/snack-bar.service";
 
 type Field = "firstName" | "lastName" | "email" | "password" | "dateOfBirth";
 
@@ -33,16 +35,24 @@ export class SignUpComponent implements OnInit {
     password: "",
     dateOfBirth: "",
   };
+  signUpSubscription: Subscription | undefined;
 
   constructor(
     private fb: FormBuilder,
     private register: RegisterService,
-    private snackBar: MatSnackBar,
     private router: Router,
-    private validation: FormsValidationService
+    private validation: FormsValidationService,
+    private auth: AuthService,
+    private snackBar: SnackBarService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
+      if (isLoggedIn) {
+        this.router.navigate(["/member"]);
+      }
+    });
+  }
 
   onFormSubmit(): void {
     if (this.registerForm.invalid) {
@@ -53,20 +63,40 @@ export class SignUpComponent implements OnInit {
     const email = this.registerForm.get("email")?.value;
     const password = this.registerForm.get("password")?.value;
     const dateOfBirth = this.registerForm.get("dateOfBirth")?.value._d;
-    this.register
-      .createUser(firstName, lastName, email, password, dateOfBirth)
-      .then((user: User) => {
-        this.registerForm.reset();
-        this.snackBar.open("Bienvenue chez vous", "Fermer", {
-          duration: 3000,
-          panelClass: "snackBar-top",
-        });
-        this.router.navigate(["/member"]);
-      })
-      .catch((err) => {
-        this.snackBar.open("Une erreur s'est produite", "Fermer");
-        console.error("userCreation", err);
-      });
+    this.signUpSubscription = this.register
+      .createUser({ firstName, lastName, email, password, dateOfBirth })
+      .subscribe(
+        (user: User | null) => {
+          if (user && user.isConnected) {
+            this.registerForm.reset();
+            this.snackBar.presentSnackBar(
+              "Bienvenue chez vous",
+              "snackBar-top",
+              3000
+            );
+            this.router.navigate(["/member", user.uid]);
+          } else {
+            this.snackBar.presentSnackBar(
+              "Adresse courriel déjà présente. Veuillez changer d'adresse ou récupérer votre mot de passe depuis la page de connexion.",
+              "snackBar-error"
+            );
+          }
+        },
+        (err) => {
+          if (404 === err.status) {
+            this.snackBar.presentSnackBar(
+              "Adresse courriel déjà présente. Veuillez changer d'adresse ou récupérer votre mot de passe depuis la page de connexion.",
+              "snackBar-error"
+            );
+          } else {
+            this.snackBar.presentSnackBar(
+              "Une erreur s'est produite : " + err.statusText,
+              "snackBar-error"
+            );
+            console.error(err);
+          }
+        }
+      );
   }
 
   validateField(field: Field): boolean {
