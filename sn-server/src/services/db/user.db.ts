@@ -54,9 +54,9 @@ class DB {
     password: string,
     dateOfBirth: string
   ): Promise<User | null> {
-    await client.connect();
-    const collection = client.db(_DB_NAME).collection(_COLLECTION);
     try {
+      await client.connect();
+      const collection = client.db(_DB_NAME).collection(_COLLECTION);
       const isUserInDB = await collection.findOne({ email: email });
       if (!isUserInDB) {
         const cryptedPassword = crypt.cryptPassword(password);
@@ -88,6 +88,34 @@ class DB {
     } catch (err) {
       throw new Error("Mongo error: " + err);
     }
+  }
+
+  async insertForgotLink(emailAddress: string): Promise<string | false> {
+    try {
+      await client.connect();
+      const collection = client.db(_DB_NAME).collection(_COLLECTION);
+      const isUserInDB = await collection.findOne({ email: emailAddress });
+      if (isUserInDB) {
+        if (isUserInDB.resetLink) {
+          return isUserInDB.resetLink;
+        }
+        const linkId = uuidv4();
+        const result = await collection.updateOne(
+          {
+            uid: isUserInDB.uid,
+          },
+          {
+            $set: { resetLink: linkId },
+          }
+        );
+        if (result) {
+          return linkId;
+        }
+      }
+    } catch (err) {
+      throw new Error("Mongo error: " + err);
+    }
+    return false;
   }
 }
 

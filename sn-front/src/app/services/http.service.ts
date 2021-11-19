@@ -27,6 +27,12 @@ export class HttpService {
 
   constructor(private httpClient: HttpClient) {}
 
+  /**
+   * Send the data for the login
+   * @param email
+   * @param password
+   * @returns An observable with the http response containing the user's data
+   */
   sendSignInRequest(
     email: string,
     password: string
@@ -42,6 +48,11 @@ export class HttpService {
       .pipe(retry(3), catchError(this.handleError));
   }
 
+  /**
+   * Send the data when the user registers
+   * @param user The data from the form
+   * @returns An observable with the http response containing the user's data
+   */
   sendSignUpRequest(user: UserCreation): Observable<HttpResponse<User>> {
     const options = {
       observe: "response" as const,
@@ -51,6 +62,19 @@ export class HttpService {
       .pipe(retry(3), catchError(this.handleError));
   }
 
+  sendForgotPasswordRequest(email: string): Observable<string> {
+    return this.httpClient
+      .get(this._userUrl + `forgot-password?email=${email}`, {
+        responseType: "text",
+      })
+      .pipe(retry(3), catchError(this.handleError));
+  }
+
+  /**
+   * Handles error from http response
+   * @param error
+   * @returns An observable completed with the error
+   */
   private handleError(error: HttpErrorResponse) {
     if (0 === error.status) {
       console.error(`An error occured: ${error.error}`);

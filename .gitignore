@@ -117,4 +117,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 /.vscode
-/sn-server/src/config.ts
+sn-server/src/config.ts
+/sn-server/src/code_secret_client_675797190983-vjp1oq4r3ou6t9ianc7uvmc0196rn4ln.apps.googleusercontent.com.json

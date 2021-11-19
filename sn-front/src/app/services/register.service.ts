@@ -25,8 +25,15 @@ export class RegisterService {
     );
   }
 
-  async sendResetEmail(emailAddress: string): Promise<boolean> {
-    return true;
+  sendResetEmail(emailAddress: string): Observable<boolean> {
+    return this.httpService.sendForgotPasswordRequest(emailAddress).pipe(
+      map((data) => {
+        if (data) {
+          return true;
+        }
+        return false;
+      })
+    );
   }
 
   async resetPassword(newPassword: string): Promise<boolean> {

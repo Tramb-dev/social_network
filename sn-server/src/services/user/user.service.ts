@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { db } from "../db/user.db";
+import { main } from "../emails/index";
 
 class UserService {
   signIn(req: Request, res: Response, next: NextFunction) {
@@ -55,11 +56,21 @@ class UserService {
     return res.sendStatus(400);
   }
 
-  forgotPassword(req: Request, res: Response) {
-    if (req.query.email) {
-      return res.send("ok");
+  forgotPassword(req: Request, res: Response, next: NextFunction) {
+    const emailAddress = req.query.email;
+    if (emailAddress && typeof emailAddress === "string") {
+      db.insertForgotLink(emailAddress)
+        .then((result) => {
+          if (result) {
+            // Envoi d'un mail
+            main().catch(console.error);
+          }
+          return res.sendStatus(200);
+        })
+        .catch((err) => next(new Error(err)));
+    } else {
+      return res.sendStatus(400);
     }
-    return res.sendStatus(400);
   }
 
   resetPasswordExists(req: Request, res: Response) {

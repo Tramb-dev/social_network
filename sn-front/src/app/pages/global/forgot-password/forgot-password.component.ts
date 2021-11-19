@@ -1,54 +1,54 @@
-import { Component } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
-import { MatSnackBar } from "@angular/material/snack-bar";
 
 import { RegisterService } from "src/app/services/register.service";
+import { SnackBarService } from "src/app/services/snack-bar.service";
 
 @Component({
   selector: "app-forgot-password",
   templateUrl: "./forgot-password.component.html",
   styleUrls: ["./forgot-password.component.scss"],
 })
-export class ForgotPasswordComponent {
+export class ForgotPasswordComponent implements OnDestroy {
   emailError = "";
   email = new FormControl("", [Validators.required, Validators.email]);
 
   constructor(
-    private snackBar: MatSnackBar,
+    private snackBar: SnackBarService,
     private register: RegisterService
   ) {}
+
+  ngOnDestroy(): void {
+    this.snackBar.dismiss();
+  }
 
   onFormSubmit(): void {
     if (this.email.invalid) {
       return;
     }
 
-    this.register
-      .sendResetEmail(this.email.value)
-      .then((isEmailSend: boolean) => {
+    this.register.sendResetEmail(this.email.value).subscribe(
+      (isEmailSend: boolean) => {
         if (isEmailSend) {
-          this.snackBar.open(
+          this.snackBar.presentSnackBar(
             "Nous venons de vous envoyer un courriel de réinitialisation. Veuillez vérifier votre boîte de réception.",
-            "Fermer",
-            {
-              panelClass: "snackBar-top",
-              verticalPosition: "top",
-              horizontalPosition: "center",
-            }
+            "snackBar-top"
           );
         } else {
-          this.snackBar.open("Une erreur s'est produite", "Fermer", {
-            duration: 5000,
-            verticalPosition: "top",
-            horizontalPosition: "center",
-            panelClass: "snackBar-error",
-          });
+          this.snackBar.presentSnackBar(
+            "Une erreur s'est produite",
+            "snackBar-error",
+            5000
+          );
         }
-      })
-      .catch((err) => {
-        this.snackBar.open("Une erreur s'est produite", "Fermer");
-        console.error("user sign in", err);
-      });
+      },
+      (err) => {
+        this.snackBar.presentSnackBar(
+          "Une erreur s'est produite",
+          "snackBar-error"
+        );
+      }
+    );
   }
 
   /**
