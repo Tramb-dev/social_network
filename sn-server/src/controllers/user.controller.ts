@@ -6,7 +6,7 @@ const router = Router();
 router.get("/sign-in", userService.signIn);
 router.post("/sign-up", userService.signUp);
 router.get("/forgot-password", userService.forgotPassword);
-router.post("/reset-password-req", userService.resetPasswordExists);
+router.get("/reset-password-req", userService.resetPasswordExists);
 router.post("/reset-password", userService.resetPassword);
 
 export default router;

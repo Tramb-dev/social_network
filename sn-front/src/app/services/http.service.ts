@@ -70,6 +70,15 @@ export class HttpService {
       .pipe(retry(3), catchError(this.handleError));
   }
 
+  resetLinkVerif(rid: string): Promise<string> {
+    return this.httpClient
+      .get(this._userUrl + `reset-password-req?rid=${rid}`, {
+        responseType: "text",
+      })
+      .pipe(retry(3), catchError(this.handleError))
+      .toPromise();
+  }
+
   /**
    * Handles error from http response
    * @param error

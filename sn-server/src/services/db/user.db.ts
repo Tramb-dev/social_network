@@ -1,7 +1,8 @@
 import { MongoClient } from "mongodb";
 import { v4 as uuidv4 } from "uuid";
-import { mongoUri } from "../../config";
 import { crypt } from "../crypt";
+
+import { mongoUri } from "../../config";
 
 import { User, RightsLevels } from "../../interfaces/user.interface";
 
@@ -9,7 +10,7 @@ const client = new MongoClient(mongoUri);
 const _DB_NAME = "social_network";
 const _COLLECTION = "users";
 
-class DB {
+class UserDB {
   async signIn(login: unknown, password: unknown): Promise<User | null> {
     await client.connect();
     const collection = client.db(_DB_NAME).collection(_COLLECTION);
@@ -31,14 +32,7 @@ class DB {
             .then(() => {
               client.close();
             });
-          return {
-            uid: result.uid,
-            email: result.email,
-            firstName: result.firstName,
-            lastName: result.lastName,
-            isConnected: result.isConnected,
-            rightsLevel: result.rightsLevel,
-          };
+          return result as User;
         }
         return null;
       });
@@ -74,14 +68,7 @@ class DB {
         };
         const result = await collection.insertOne(user);
         if (result) {
-          return {
-            uid: user.uid,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            isConnected: user.isConnected,
-            rightsLevel: user.rightsLevel,
-          };
+          return user;
         }
       }
       return null;
@@ -90,14 +77,16 @@ class DB {
     }
   }
 
-  async insertForgotLink(emailAddress: string): Promise<string | false> {
+  async insertForgotLink(emailAddress: string): Promise<User | false> {
     try {
       await client.connect();
       const collection = client.db(_DB_NAME).collection(_COLLECTION);
-      const isUserInDB = await collection.findOne({ email: emailAddress });
+      const isUserInDB = (await collection.findOne({
+        email: emailAddress,
+      })) as User | null;
       if (isUserInDB) {
         if (isUserInDB.resetLink) {
-          return isUserInDB.resetLink;
+          return isUserInDB;
         }
         const linkId = uuidv4();
         const result = await collection.updateOne(
@@ -109,8 +98,24 @@ class DB {
           }
         );
         if (result) {
-          return linkId;
+          return isUserInDB;
         }
+      }
+    } catch (err) {
+      throw new Error("Mongo error: " + err);
+    }
+    return false;
+  }
+
+  async checkResetPasswordLink(rid: string): Promise<boolean> {
+    try {
+      await client.connect();
+      const collection = client.db(_DB_NAME).collection(_COLLECTION);
+      const ridInDB = await collection.findOne({
+        resetLink: rid,
+      });
+      if (ridInDB) {
+        return true;
       }
     } catch (err) {
       throw new Error("Mongo error: " + err);
@@ -119,4 +124,4 @@ class DB {
   }
 }
 
-export const db = new DB();
+export const userDB = new UserDB();

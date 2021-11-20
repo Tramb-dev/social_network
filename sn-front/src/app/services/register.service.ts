@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
+import { Router, UrlTree } from "@angular/router";
 
 import { HttpService } from "./http.service";
 import { AuthService } from "./auth.service";
@@ -11,7 +12,11 @@ import { User, UserCreation } from "../interfaces/user";
   providedIn: "root",
 })
 export class RegisterService {
-  constructor(private httpService: HttpService, private auth: AuthService) {}
+  constructor(
+    private httpService: HttpService,
+    private auth: AuthService,
+    private router: Router
+  ) {}
 
   createUser(user: UserCreation): Observable<User | null> {
     return this.httpService.sendSignUpRequest(user).pipe(
@@ -28,12 +33,21 @@ export class RegisterService {
   sendResetEmail(emailAddress: string): Observable<boolean> {
     return this.httpService.sendForgotPasswordRequest(emailAddress).pipe(
       map((data) => {
-        if (data) {
+        if (data && data === "OK") {
           return true;
         }
         return false;
       })
     );
+  }
+
+  checkResetLink(rid: string): Promise<true | UrlTree> {
+    return this.httpService.resetLinkVerif(rid).then((data) => {
+      if (data && data === "OK") {
+        return true;
+      }
+      return this.router.parseUrl("/sign-in");
+    });
   }
 
   async resetPassword(newPassword: string): Promise<boolean> {

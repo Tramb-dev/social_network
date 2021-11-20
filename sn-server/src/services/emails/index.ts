@@ -1,23 +1,51 @@
 import nodemailer from "nodemailer";
-import { emailConf } from "../../config";
+import { google } from "googleapis";
+import { resetLinkMail } from "./sendResetLinkMail";
+import { googleCredentials } from "../../config";
+import { User } from "../../interfaces/user.interface";
 
-export async function main() {
-  // create reusable transporter object using the default SMTP transport
-  let transporter = nodemailer.createTransport(emailConf);
+class Mailer {
+  async main() {
+    // create reusable transporter object using the default SMTP transport
 
-  // send mail with defined transport object
-  let info = await transporter.sendMail({
-    from: '"Fred Foo 👻" <foo@example.com>', // sender address
-    to: "bertrand.ravier@gmail.com", // list of receivers
-    subject: "Hello ✔", // Subject line
-    text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>", // html body
-  });
+    const OAuth2 = google.auth.OAuth2;
+    const oauth2Client = new OAuth2(
+      "675797190983-vjp1oq4r3ou6t9ianc7uvmc0196rn4ln.apps.googleusercontent.com",
+      "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",
+      "https://developers.google.com/oauthplayground"
+    );
+    oauth2Client.setCredentials({
+      refresh_token: googleCredentials.refresh_token,
+    });
+    const accessToken = oauth2Client.getAccessToken();
+    const emailConf: any = {
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: googleCredentials.user,
+        clientId: googleCredentials.clientId,
+        clientSecret: googleCredentials.clientSecret,
+        refreshToken: googleCredentials.refresh_token,
+        accessToken: accessToken,
+        accessUrl: "https://oauth2.googleapis.com/token",
+      },
+    };
+    return nodemailer.createTransport(emailConf);
+  }
 
-  console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+  async sendResetLink(emailAddress: string, user: User) {
+    this.main()
+      .then(async (transporter) => {
+        // send mail with defined transport object
+        let info = await transporter.sendMail(
+          resetLinkMail(emailAddress, user)
+        );
 
-  // Preview only available when sending through an Ethereal account
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+        console.log("Message sent: %s", info.messageId);
+        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+      })
+      .catch(console.error);
+  }
 }
+
+export const mailer = new Mailer();

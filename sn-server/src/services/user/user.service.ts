@@ -1,15 +1,28 @@
 import { NextFunction, Request, Response } from "express";
-import { db } from "../db/user.db";
-import { main } from "../emails/index";
+import { db } from "../db/index.db";
+import { mailer } from "../emails/index";
+import { User } from "../../interfaces/user.interface";
 
 class UserService {
+  sendUser(user: User) {
+    return {
+      uid: user.uid,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      isConnected: user.isConnected,
+      rightsLevel: user.rightsLevel,
+    };
+  }
+
   signIn(req: Request, res: Response, next: NextFunction) {
     const data = req.query;
     if (data.email && data.password) {
-      db.signIn(data.email, data.password)
+      db.user
+        .signIn(data.email, data.password)
         .then((user) => {
           if (user) {
-            return res.json(user);
+            return res.json(this.sendUser(user));
           } else {
             res.status(404);
             res.statusMessage = "Incorrect credentials";
@@ -33,7 +46,7 @@ class UserService {
       data.password &&
       data.dateOfBirth
     ) {
-      return db
+      return db.user
         .register(
           data.firstName,
           data.lastName,
@@ -43,7 +56,7 @@ class UserService {
         )
         .then((user) => {
           if (user) {
-            return res.json(user);
+            return res.json(this.sendUser(user));
           } else {
             res.status(409);
             return next(new Error("Email already exists"));
@@ -59,11 +72,11 @@ class UserService {
   forgotPassword(req: Request, res: Response, next: NextFunction) {
     const emailAddress = req.query.email;
     if (emailAddress && typeof emailAddress === "string") {
-      db.insertForgotLink(emailAddress)
+      db.user
+        .insertForgotLink(emailAddress)
         .then((result) => {
           if (result) {
-            // Envoi d'un mail
-            main().catch(console.error);
+            mailer.sendResetLink(emailAddress, result);
           }
           return res.sendStatus(200);
         })
@@ -73,11 +86,20 @@ class UserService {
     }
   }
 
-  resetPasswordExists(req: Request, res: Response) {
-    if (req.query.rid) {
-      return res.send("ok");
+  resetPasswordExists(req: Request, res: Response, next: NextFunction) {
+    const rid = req.query.rid;
+    if (rid && typeof rid === "string") {
+      db.user
+        .checkResetPasswordLink(rid)
+        .then((ridExists) => {
+          if (ridExists) {
+            return res.sendStatus(200);
+          }
+        })
+        .catch((err) => next(new Error(err)));
+    } else {
+      return res.sendStatus(400);
     }
-    return res.sendStatus(400);
   }
 
   resetPassword(req: Request, res: Response) {

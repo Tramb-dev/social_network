@@ -9,6 +9,7 @@ export interface User {
   rightsLevel: RightsLevels;
   creationDate?: Date;
   lastUpdated?: Date;
+  resetLink?: string;
 }
 
 export enum RightsLevels {
