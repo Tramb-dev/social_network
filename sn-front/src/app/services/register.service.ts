@@ -50,7 +50,18 @@ export class RegisterService {
     });
   }
 
-  async resetPassword(newPassword: string): Promise<boolean> {
-    return true;
+  resetPassword(
+    newPassword: string,
+    rid: string
+  ): Observable<false | Promise<boolean>> {
+    return this.httpService.sendNewPassword(newPassword, rid).pipe(
+      map((data) => {
+        if (data) {
+          console.log(data);
+          return this.router.navigate(["/", "sign-in"]);
+        }
+        return false;
+      })
+    );
   }
 }

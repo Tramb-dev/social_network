@@ -79,6 +79,25 @@ export class HttpService {
       .toPromise();
   }
 
+  sendNewPassword(
+    password: string,
+    rid: string
+  ): Observable<HttpResponse<Object>> {
+    const options = {
+      observe: "response" as const,
+    };
+    return this.httpClient
+      .post(
+        this._userUrl + "reset-password",
+        {
+          password,
+          rid,
+        },
+        options
+      )
+      .pipe(retry(3), catchError(this.handleError));
+  }
+
   /**
    * Handles error from http response
    * @param error

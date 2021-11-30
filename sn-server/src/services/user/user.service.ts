@@ -16,10 +16,11 @@ class UserService {
   }
 
   signIn(req: Request, res: Response, next: NextFunction) {
-    const data = req.query;
-    if (data.email && data.password) {
+    const email = req.query.email;
+    const password = req.query.password;
+    if (typeof email === "string" && typeof password === "string") {
       db.user
-        .signIn(data.email, data.password)
+        .signIn(email, password)
         .then((user) => {
           if (user) {
             return res.json(this.sendUser(user));
@@ -30,6 +31,7 @@ class UserService {
           }
         })
         .catch((err) => {
+          res.status(400);
           return next(new Error(err));
         });
     } else {
@@ -56,6 +58,7 @@ class UserService {
         )
         .then((user) => {
           if (user) {
+            res.status(201);
             return res.json(this.sendUser(user));
           } else {
             res.status(409);
@@ -63,6 +66,7 @@ class UserService {
           }
         })
         .catch((err) => {
+          res.status(400);
           return next(new Error(err));
         });
     }
@@ -71,7 +75,7 @@ class UserService {
 
   forgotPassword(req: Request, res: Response, next: NextFunction) {
     const emailAddress = req.query.email;
-    if (emailAddress && typeof emailAddress === "string") {
+    if (typeof emailAddress === "string") {
       db.user
         .insertForgotLink(emailAddress)
         .then((result) => {
@@ -80,7 +84,10 @@ class UserService {
           }
           return res.sendStatus(200);
         })
-        .catch((err) => next(new Error(err)));
+        .catch((err) => {
+          res.status(400);
+          next(new Error(err));
+        });
     } else {
       return res.sendStatus(400);
     }
@@ -88,7 +95,7 @@ class UserService {
 
   resetPasswordExists(req: Request, res: Response, next: NextFunction) {
     const rid = req.query.rid;
-    if (rid && typeof rid === "string") {
+    if (typeof rid === "string") {
       db.user
         .checkResetPasswordLink(rid)
         .then((ridExists) => {
@@ -96,17 +103,35 @@ class UserService {
             return res.sendStatus(200);
           }
         })
-        .catch((err) => next(new Error(err)));
+        .catch((err) => {
+          res.status(400);
+          next(new Error(err));
+        });
     } else {
       return res.sendStatus(400);
     }
   }
 
-  resetPassword(req: Request, res: Response) {
-    if (req.query.rid && req.query.password) {
-      return res.send("ok");
+  resetPassword(req: Request, res: Response, next: NextFunction) {
+    const rid = req.body.rid;
+    const password = req.body.password;
+    if (typeof rid === "string" && typeof password === "string") {
+      db.user
+        .changePassword(password, rid)
+        .then((isPasswordChanged) => {
+          if (isPasswordChanged) {
+            return res.sendStatus(204);
+          }
+          res.status(400);
+          return next(new Error("Error in provided information"));
+        })
+        .catch((err) => {
+          res.status(400);
+          next(new Error(err));
+        });
+    } else {
+      return res.sendStatus(400);
     }
-    return res.sendStatus(400);
   }
 }
 

@@ -1,7 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+import { Subscription } from "rxjs";
 
 import { CustomValidators } from "src/app/providers/custom-validators";
 
@@ -13,7 +14,7 @@ import { RegisterService } from "src/app/services/register.service";
   templateUrl: "./reset-password.component.html",
   styleUrls: ["./reset-password.component.scss"],
 })
-export class ResetPasswordComponent implements OnInit {
+export class ResetPasswordComponent implements OnInit, OnDestroy {
   passwordError = "";
   confirmError = "";
   notSameError = "";
@@ -27,15 +28,29 @@ export class ResetPasswordComponent implements OnInit {
     },
     CustomValidators.mustMatch("password", "confirm")
   );
+  rid: string = "";
+  resetSubscription!: Subscription;
 
   constructor(
     private validation: FormsValidationService,
     private register: RegisterService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private childRoute: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const rid = this.childRoute.snapshot.paramMap.get("rid");
+    if (!rid) {
+      this.router.navigate(["/sign-in"]);
+    } else {
+      this.rid = rid;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.resetSubscription.unsubscribe();
+  }
 
   onFormSubmit(): void {
     const password: string = this.resetForm.get("password")?.value;
@@ -43,30 +58,31 @@ export class ResetPasswordComponent implements OnInit {
       return;
     }
 
-    this.register
-      .resetPassword(password)
-      .then((isPasswordChanged: boolean) => {
-        if (isPasswordChanged) {
-          this.snackBar.open("Le mot de passe a bien été changé", "Fermer", {
-            duration: 3000,
-            panelClass: "snackBar-top",
-            verticalPosition: "top",
-            horizontalPosition: "center",
-          });
-          this.router.navigate(["/sign-in"]);
-        } else {
-          this.snackBar.open("Une erreur s'est produite", "Fermer", {
-            duration: 5000,
-            verticalPosition: "top",
-            horizontalPosition: "center",
-            panelClass: "snackBar-error",
-          });
+    this.resetSubscription = this.register
+      .resetPassword(password, this.rid)
+      .subscribe(
+        (isPasswordChanged) => {
+          if (isPasswordChanged) {
+            this.snackBar.open("Le mot de passe a bien été changé", "Fermer", {
+              duration: 3000,
+              panelClass: "snackBar-top",
+              verticalPosition: "top",
+              horizontalPosition: "center",
+            });
+          } else {
+            this.snackBar.open("Une erreur s'est produite", "Fermer", {
+              duration: 5000,
+              verticalPosition: "top",
+              horizontalPosition: "center",
+              panelClass: "snackBar-error",
+            });
+          }
+        },
+        (err) => {
+          this.snackBar.open("Une erreur s'est produite", "Fermer");
+          console.error("user sign in", err);
         }
-      })
-      .catch((err) => {
-        this.snackBar.open("Une erreur s'est produite", "Fermer");
-        console.error("user sign in", err);
-      });
+      );
   }
 
   validateField(field: string): boolean {

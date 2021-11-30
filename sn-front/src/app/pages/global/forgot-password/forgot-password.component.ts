@@ -1,5 +1,6 @@
 import { Component, OnDestroy } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
+import { Subscription } from "rxjs";
 
 import { RegisterService } from "src/app/services/register.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
@@ -12,6 +13,7 @@ import { SnackBarService } from "src/app/services/snack-bar.service";
 export class ForgotPasswordComponent implements OnDestroy {
   emailError = "";
   email = new FormControl("", [Validators.required, Validators.email]);
+  resetSubscription!: Subscription;
 
   constructor(
     private snackBar: SnackBarService,
@@ -20,6 +22,7 @@ export class ForgotPasswordComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.snackBar.dismiss();
+    this.resetSubscription.unsubscribe();
   }
 
   onFormSubmit(): void {
@@ -27,28 +30,30 @@ export class ForgotPasswordComponent implements OnDestroy {
       return;
     }
 
-    this.register.sendResetEmail(this.email.value).subscribe(
-      (isEmailSend: boolean) => {
-        if (isEmailSend) {
-          this.snackBar.presentSnackBar(
-            "Nous venons de vous envoyer un courriel de réinitialisation. Veuillez vérifier votre boîte de réception.",
-            "snackBar-top"
-          );
-        } else {
+    this.resetSubscription = this.register
+      .sendResetEmail(this.email.value)
+      .subscribe(
+        (isEmailSend: boolean) => {
+          if (isEmailSend) {
+            this.snackBar.presentSnackBar(
+              "Nous venons de vous envoyer un courriel de réinitialisation. Veuillez vérifier votre boîte de réception.",
+              "snackBar-top"
+            );
+          } else {
+            this.snackBar.presentSnackBar(
+              "Une erreur s'est produite",
+              "snackBar-error",
+              5000
+            );
+          }
+        },
+        (err) => {
           this.snackBar.presentSnackBar(
             "Une erreur s'est produite",
-            "snackBar-error",
-            5000
+            "snackBar-error"
           );
         }
-      },
-      (err) => {
-        this.snackBar.presentSnackBar(
-          "Une erreur s'est produite",
-          "snackBar-error"
-        );
-      }
-    );
+      );
   }
 
   /**

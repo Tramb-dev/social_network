@@ -7,17 +7,19 @@ import { mongoUri } from "../../config";
 import { User, RightsLevels } from "../../interfaces/user.interface";
 
 const client = new MongoClient(mongoUri);
-const _DB_NAME = "social_network";
-const _COLLECTION = "users";
 
 class UserDB {
-  async signIn(login: unknown, password: unknown): Promise<User | null> {
+  private readonly _expirationTime = 48 * 3600 * 1000;
+  private readonly _DB_NAME = "social_network";
+  private readonly _COLLECTION = "users";
+
+  async signIn(login: string, password: string): Promise<User | null> {
     await client.connect();
-    const collection = client.db(_DB_NAME).collection(_COLLECTION);
+    const collection = client.db(this._DB_NAME).collection(this._COLLECTION);
     const result = await collection.findOne({
       email: login,
     });
-    if (result && typeof password === "string") {
+    if (result) {
       return crypt.comparePasswords(password, result.password).then((match) => {
         if (match) {
           collection
@@ -50,7 +52,7 @@ class UserDB {
   ): Promise<User | null> {
     try {
       await client.connect();
-      const collection = client.db(_DB_NAME).collection(_COLLECTION);
+      const collection = client.db(this._DB_NAME).collection(this._COLLECTION);
       const isUserInDB = await collection.findOne({ email: email });
       if (!isUserInDB) {
         const cryptedPassword = crypt.cryptPassword(password);
@@ -80,7 +82,7 @@ class UserDB {
   async insertForgotLink(emailAddress: string): Promise<User | false> {
     try {
       await client.connect();
-      const collection = client.db(_DB_NAME).collection(_COLLECTION);
+      const collection = client.db(this._DB_NAME).collection(this._COLLECTION);
       const isUserInDB = (await collection.findOne({
         email: emailAddress,
       })) as User | null;
@@ -94,7 +96,10 @@ class UserDB {
             uid: isUserInDB.uid,
           },
           {
-            $set: { resetLink: linkId },
+            $set: {
+              resetLink: linkId,
+              resetTime: Date.now(),
+            },
           }
         );
         if (result) {
@@ -110,7 +115,7 @@ class UserDB {
   async checkResetPasswordLink(rid: string): Promise<boolean> {
     try {
       await client.connect();
-      const collection = client.db(_DB_NAME).collection(_COLLECTION);
+      const collection = client.db(this._DB_NAME).collection(this._COLLECTION);
       const ridInDB = await collection.findOne({
         resetLink: rid,
       });
@@ -121,6 +126,41 @@ class UserDB {
       throw new Error("Mongo error: " + err);
     }
     return false;
+  }
+
+  async changePassword(newPassword: string, rid: string): Promise<boolean> {
+    try {
+      await client.connect();
+      const collection = client.db(this._DB_NAME).collection(this._COLLECTION);
+      const find = await collection.findOne({ resetLink: rid });
+      if (find && find.resetTime) {
+        if (find.resetTime + this._expirationTime > Date.now()) {
+          const cryptedPassword = crypt.cryptPassword(newPassword);
+          const result = await collection.updateOne(
+            {
+              resetLink: rid,
+            },
+            {
+              $set: {
+                password: cryptedPassword,
+              },
+              $unset: {
+                resetLink: 1,
+                resetTime: 1,
+              },
+            }
+          );
+          if (result.modifiedCount) {
+            return true;
+          }
+        } else {
+          throw new Error("Reset link is expired");
+        }
+      }
+      return false;
+    } catch (err) {
+      throw new Error("Mongo error: " + err);
+    }
   }
 }
 
