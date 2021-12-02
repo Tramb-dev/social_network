@@ -1,13 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { db } from "../db/index.db";
 import { mailer } from "../emails/index";
+import { Crypt } from "../crypt";
 import { User } from "../../interfaces/user.interface";
 
-class UserService {
-  sendUser(user: User) {
+class UserService extends Crypt {
+  private sendUser(user: User) {
     return {
       uid: user.uid,
       email: user.email,
+      token: user.token,
       firstName: user.firstName,
       lastName: user.lastName,
       isConnected: user.isConnected,
@@ -20,9 +22,10 @@ class UserService {
     const password = req.query.password;
     if (typeof email === "string" && typeof password === "string") {
       db.user
-        .signIn(email, password)
+        .signIn({ email, password })
         .then((user) => {
           if (user) {
+            user.token = this.signPayload(user.uid, user.email, user.password);
             return res.json(this.sendUser(user));
           } else {
             res.status(404);
@@ -34,6 +37,36 @@ class UserService {
           res.status(400);
           return next(new Error(err));
         });
+    } else {
+      return res.sendStatus(400);
+    }
+  }
+
+  autoConnect(req: Request, res: Response, next: NextFunction) {
+    const token = req.query.token;
+    if (typeof token === "string") {
+      const verifyedToken = this.verifyToken(token);
+      if (typeof verifyedToken === "object") {
+        db.user
+          .signIn({
+            email: verifyedToken.email,
+            uid: verifyedToken.uid,
+          })
+          .then((user) => {
+            if (user) {
+              user.token = this.signPayload(
+                user.uid,
+                user.email,
+                user.password
+              );
+              return res.json(this.sendUser(user));
+            } else {
+              res.sendStatus(498);
+            }
+          });
+      } else {
+        return res.sendStatus(498);
+      }
     } else {
       return res.sendStatus(400);
     }

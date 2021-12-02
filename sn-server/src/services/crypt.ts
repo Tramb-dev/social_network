@@ -1,14 +1,30 @@
 import * as bcrypt from "bcryptjs";
+import { sign, verify, JwtPayload, SignOptions } from "jsonwebtoken";
+import { secret } from "../config";
 
-class Crypt {
-  cryptPassword(password: string): string {
+export class Crypt {
+  constructor() {}
+
+  protected cryptPassword(password: string): string {
     const salt = bcrypt.genSaltSync(10);
     return bcrypt.hashSync(password, salt);
   }
 
-  comparePasswords(userPassword: string, dbPassword: string): Promise<boolean> {
-    return bcrypt.compare(userPassword, dbPassword);
+  protected comparePasswords(
+    userPassword: string,
+    dbPassword: string
+  ): boolean {
+    return bcrypt.compareSync(userPassword, dbPassword);
+  }
+
+  protected signPayload(uid: string, email: string, password: string): string {
+    const options: SignOptions = {
+      expiresIn: "24h",
+    };
+    return sign({ uid, email, password }, secret, options);
+  }
+
+  protected verifyToken(token: string): JwtPayload | string {
+    return verify(token, secret);
   }
 }
-
-export const crypt = new Crypt();

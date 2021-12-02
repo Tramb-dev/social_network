@@ -1,46 +1,70 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, Collection, Document, UpdateResult } from "mongodb";
 import { v4 as uuidv4 } from "uuid";
-import { crypt } from "../crypt";
+import { Crypt } from "../crypt";
 
 import { mongoUri } from "../../config";
 
 import { User, RightsLevels } from "../../interfaces/user.interface";
 
 const client = new MongoClient(mongoUri);
+interface SigninCredentials {
+  email: string;
+  password?: string;
+  uid?: string;
+}
 
-class UserDB {
+class UserDB extends Crypt {
   private readonly _expirationTime = 48 * 3600 * 1000;
   private readonly _DB_NAME = "social_network";
   private readonly _COLLECTION = "users";
 
-  async signIn(login: string, password: string): Promise<User | null> {
+  async signIn(creds: SigninCredentials): Promise<User | null> {
     await client.connect();
     const collection = client.db(this._DB_NAME).collection(this._COLLECTION);
-    const result = await collection.findOne({
-      email: login,
-    });
-    if (result) {
-      return crypt.comparePasswords(password, result.password).then((match) => {
+    let result: Document | null;
+    if (creds.uid && creds.email) {
+      result = await collection.findOne({
+        email: creds.email,
+        uid: creds.uid,
+      });
+      if (result) {
+        this.updateDateField(collection, result.uid).then(() => {
+          client.close();
+        });
+        return result as User;
+      }
+      return null;
+    } else if (creds.email && creds.password) {
+      result = await collection.findOne({
+        email: creds.email,
+      });
+      if (result) {
+        const match = this.comparePasswords(creds.password, result.password);
         if (match) {
-          collection
-            .updateOne(
-              {
-                uid: result.uid,
-              },
-              {
-                $currentDate: { lastUpdated: true },
-              }
-            )
-            .then(() => {
-              client.close();
-            });
+          this.updateDateField(collection, result.uid).then(() => {
+            client.close();
+          });
           return result as User;
         }
-        return null;
-      });
+      }
+      return null;
     }
     client.close();
     return null;
+  }
+
+  private async updateDateField(
+    collection: Collection<Document>,
+    uid: string
+  ): Promise<UpdateResult> {
+    return collection.updateOne(
+      {
+        uid,
+      },
+      {
+        $currentDate: { lastUpdated: true },
+      }
+    );
   }
 
   async register(
@@ -55,14 +79,15 @@ class UserDB {
       const collection = client.db(this._DB_NAME).collection(this._COLLECTION);
       const isUserInDB = await collection.findOne({ email: email });
       if (!isUserInDB) {
-        const cryptedPassword = crypt.cryptPassword(password);
+        const cryptedPassword = this.cryptPassword(password);
+        const uid = uuidv4();
         const user: User = {
-          uid: uuidv4(),
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
+          uid,
+          email,
+          firstName,
+          lastName,
           password: cryptedPassword,
-          dateOfBirth: dateOfBirth,
+          dateOfBirth,
           isConnected: true,
           rightsLevel: RightsLevels.MEMBER,
           creationDate: new Date(),
@@ -135,7 +160,7 @@ class UserDB {
       const find = await collection.findOne({ resetLink: rid });
       if (find && find.resetTime) {
         if (find.resetTime + this._expirationTime > Date.now()) {
-          const cryptedPassword = crypt.cryptPassword(newPassword);
+          const cryptedPassword = this.cryptPassword(newPassword);
           const result = await collection.updateOne(
             {
               resetLink: rid,

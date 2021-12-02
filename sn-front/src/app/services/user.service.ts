@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
 
+import { AuthService } from "./auth.service";
+
 import { RightsLevels } from "../interfaces/auth";
 import { User } from "../interfaces/user";
 
@@ -16,14 +18,23 @@ export class UserService {
     rightsLevel: RightsLevels.NOT_CONNECTED,
   };
 
-  constructor() {}
+  constructor(private auth: AuthService) {}
 
   getUser(): User {
     return this.user;
   }
 
-  updateUser(user: User): void {
+  updateUser(user: User): UserService {
     this.user = user;
-    console.log(user);
+    return this;
+  }
+
+  reconnect(token: string): void {
+    const sub = this.auth.getSession(token).subscribe((user) => {
+      if (user) {
+        this.updateUser(user);
+      }
+      sub.unsubscribe();
+    });
   }
 }

@@ -7,6 +7,7 @@ import { HttpService } from "./http.service";
 import { AuthService } from "./auth.service";
 
 import { User, UserCreation } from "../interfaces/user";
+import { LocalStorageService } from "./local-storage.service";
 
 @Injectable({
   providedIn: "root",
@@ -15,6 +16,7 @@ export class RegisterService {
   constructor(
     private httpService: HttpService,
     private auth: AuthService,
+    private storage: LocalStorageService,
     private router: Router
   ) {}
 
@@ -24,6 +26,7 @@ export class RegisterService {
         if (data.body && data.body.isConnected) {
           this.auth.setConnection(data.body.isConnected);
           this.auth.setRightsLevel(data.body.rightsLevel);
+          //this.storage.userConnects(user);
         }
         return data.body;
       })

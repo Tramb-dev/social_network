@@ -47,6 +47,8 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<boolean | UrlTree> {
+    let url: string = state.url;
+    console.log("Url: " + url);
     return this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
       if (isLoggedIn) {
         return this.auth.getRightsLevel().then((rightsLevel: RightsLevels) => {
@@ -56,6 +58,7 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
           return false;
         });
       }
+      this.auth.setRedirectUrl(url);
       return this.router.navigate(["/sign-in"]);
     });
   }

@@ -27,6 +27,15 @@ export class HttpService {
 
   constructor(private httpClient: HttpClient) {}
 
+  getSession(token: string): Observable<HttpResponse<User>> {
+    const options = {
+      observe: "response" as const,
+    };
+    return this.httpClient
+      .get<User>(this._userUrl + `reconnect?token=${token}`, options)
+      .pipe(retry(3), catchError(this.handleError));
+  }
+
   /**
    * Send the data for the login
    * @param email
