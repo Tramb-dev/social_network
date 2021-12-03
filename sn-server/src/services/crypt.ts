@@ -17,11 +17,11 @@ export class Crypt {
     return bcrypt.compareSync(userPassword, dbPassword);
   }
 
-  protected signPayload(uid: string, email: string, password: string): string {
+  protected signPayload(uid: string, email: string): string {
     const options: SignOptions = {
       expiresIn: "24h",
     };
-    return sign({ uid, email, password }, secret, options);
+    return sign({ uid, email }, secret, options);
   }
 
   protected verifyToken(token: string): JwtPayload | string {

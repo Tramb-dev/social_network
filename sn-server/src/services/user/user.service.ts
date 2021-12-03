@@ -9,7 +9,7 @@ class UserService extends Crypt {
     return {
       uid: user.uid,
       email: user.email,
-      token: user.token,
+      token: this.signPayload(user.uid, user.email),
       firstName: user.firstName,
       lastName: user.lastName,
       isConnected: user.isConnected,
@@ -25,7 +25,6 @@ class UserService extends Crypt {
         .signIn({ email, password })
         .then((user) => {
           if (user) {
-            user.token = this.signPayload(user.uid, user.email, user.password);
             return res.json(this.sendUser(user));
           } else {
             res.status(404);
@@ -54,11 +53,6 @@ class UserService extends Crypt {
           })
           .then((user) => {
             if (user) {
-              user.token = this.signPayload(
-                user.uid,
-                user.email,
-                user.password
-              );
               return res.json(this.sendUser(user));
             } else {
               res.sendStatus(498);
