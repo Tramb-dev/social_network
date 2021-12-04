@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { Validators, FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router";
 import { Subscription } from "rxjs";
@@ -17,7 +17,7 @@ type Field = "firstName" | "lastName" | "email" | "password" | "dateOfBirth";
   templateUrl: "./sign-up.component.html",
   styleUrls: ["./sign-up.component.scss"],
 })
-export class SignUpComponent implements OnInit {
+export class SignUpComponent {
   hidePwd = true;
   registerForm = this.fb.group({
     firstName: ["", [Validators.required, Validators.pattern("[a-zA-Z ]*")]],
@@ -45,14 +45,6 @@ export class SignUpComponent implements OnInit {
     private auth: AuthService,
     private snackBar: SnackBarService
   ) {}
-
-  ngOnInit(): void {
-    this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
-      if (isLoggedIn) {
-        this.router.navigate(["/member"]);
-      }
-    });
-  }
 
   onFormSubmit(): void {
     if (this.registerForm.invalid) {

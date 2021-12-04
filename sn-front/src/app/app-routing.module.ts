@@ -18,13 +18,14 @@ const routes: Routes = [
   },
   {
     path: "member",
-    canActivateChild: [MemberGuard],
+    canActivate: [MemberGuard],
     canLoad: [MemberGuard],
     loadChildren: () =>
       import("./pages/member/member.module").then((m) => m.MemberModule),
   },
   {
     path: "admin",
+    canActivate: [AdminGuard],
     canLoad: [AdminGuard],
     loadChildren: () =>
       import("./pages/admin/admin.module").then((m) => m.AdminModule),

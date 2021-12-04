@@ -26,49 +26,38 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
   canActivate(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Promise<boolean> {
+  ): boolean {
     let url: string = state.url;
-    return this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
-      if (isLoggedIn) {
-        return this.auth.getRightsLevel().then((rightsLevels: RightsLevels) => {
-          if (rightsLevels === RightsLevels.ADMIN) {
-            return true;
-          }
-          this.redirectUser(url);
-          return false;
-        });
+    if (this.auth.isUserLoggedIn()) {
+      if (this.auth.getRightsLevel() <= RightsLevels.MEMBER) {
+        return true;
       }
-      this.redirectUser(url);
-      return false;
-    });
+    }
+    this.redirectUser(url);
+    return false;
   }
 
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Promise<boolean | UrlTree> {
+  ): boolean {
     let url: string = state.url;
     console.log("Url: " + url);
-    return this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
-      if (isLoggedIn) {
-        return this.auth.getRightsLevel().then((rightsLevel: RightsLevels) => {
-          if (rightsLevel <= RightsLevels.MEMBER) {
-            return true;
-          }
-          return false;
-        });
+    if (this.auth.isUserLoggedIn()) {
+      if (this.auth.getRightsLevel() <= RightsLevels.MEMBER) {
+        return true;
       }
-      this.auth.setRedirectUrl(url);
-      return this.router.navigate(["/sign-in"]);
-    });
+    }
+    this.redirectUser(url);
+    return false;
   }
 
-  canLoad(route: Route, segments: UrlSegment[]): Promise<boolean> {
-    return this.auth.isUserLoggedIn().then((isLogged) => isLogged);
+  canLoad(route: Route, segments: UrlSegment[]): boolean {
+    return this.auth.isUserLoggedIn();
   }
 
-  redirectUser(url: string) {
+  private redirectUser(url: string): Promise<boolean> {
     this.auth.setRedirectUrl(url);
-    this.router.navigate(["/sign-in"]);
+    return this.router.navigate([this.auth.getLoginUrl()]);
   }
 }

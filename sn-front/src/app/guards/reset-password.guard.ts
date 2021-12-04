@@ -23,17 +23,15 @@ export class ResetPasswordGuard implements CanActivate {
   canActivate(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Promise<true | UrlTree> {
-    return this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
-      if (isLoggedIn) {
-        return this.router.parseUrl("/member");
-      } else {
-        const rid = childRoute.paramMap.get("rid");
-        if (rid) {
-          return this.register.checkResetLink(rid);
-        }
-        return this.router.parseUrl("/sign-in");
+  ): Promise<boolean | UrlTree> {
+    if (this.auth.isUserLoggedIn()) {
+      return this.router.navigate(["/member"]);
+    } else {
+      const rid = childRoute.paramMap.get("rid");
+      if (rid) {
+        return this.register.checkResetLink(rid);
       }
-    });
+      return this.router.navigate([this.auth.getLoginUrl()]);
+    }
   }
 }

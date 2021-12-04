@@ -16,7 +16,7 @@ export class RegisterService {
   constructor(
     private httpService: HttpService,
     private auth: AuthService,
-    private storage: LocalStorageService,
+    private localStorage: LocalStorageService,
     private router: Router
   ) {}
 
@@ -24,9 +24,12 @@ export class RegisterService {
     return this.httpService.sendSignUpRequest(user).pipe(
       map((data) => {
         if (data.body && data.body.isConnected) {
-          this.auth.setConnection(data.body.isConnected);
-          this.auth.setRightsLevel(data.body.rightsLevel);
-          //this.storage.userConnects(user);
+          this.auth
+            .setConnection(data.body.isConnected)
+            .setRightsLevel(data.body.rightsLevel);
+          if (data.body.token) {
+            this.localStorage.setToken(data.body.token);
+          }
         }
         return data.body;
       })

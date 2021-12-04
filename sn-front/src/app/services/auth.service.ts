@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { ActivatedRoute, Router } from "@angular/router";
 
@@ -8,35 +8,40 @@ import { LocalStorageService } from "./local-storage.service";
 
 import { User } from "../interfaces/user";
 import { RightsLevels } from "../interfaces/auth";
+import { SnackBarService } from "./snack-bar.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  private isLoggedIn: boolean = false;
-  private rightsLevel: RightsLevels = RightsLevels.NOT_CONNECTED;
-  private redirectUrl: string = "/";
+  private isLoggedIn = false;
+  private rightsLevel = RightsLevels.NOT_CONNECTED;
+  private redirectUrl = "/";
+  private loginUrl = "/sign-in";
+  private tokenExpirationDate: number = 0;
+  private readonly _tokenMaxTime = 86400; // 24h
 
   constructor(
     private httpService: HttpService,
     private localStorage: LocalStorageService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snack: SnackBarService
   ) {}
 
   /**
    * Getter of rights level for a user
    * @returns A number in a promise from RightsLevels enum
    */
-  async getRightsLevel(): Promise<number> {
+  getRightsLevel(): RightsLevels {
     return this.rightsLevel;
   }
 
   /**
    * Check if the user is logged in
-   * @returns A promise with a boolean, true if logged, false if not
+   * @returns A boolean, true if logged, false if not
    */
-  async isUserLoggedIn(): Promise<boolean> {
+  isUserLoggedIn(): boolean {
     return this.isLoggedIn;
   }
 
@@ -67,18 +72,32 @@ export class AuthService {
     return this;
   }
 
-  getSession(token: string): Observable<User | null> {
+  getLoginUrl(): string {
+    return this.loginUrl;
+  }
+
+  getSession(token: string): Observable<User | false | null> {
     //this.setRedirectUrl(window.location.pathname);
-    return this.httpService.getSession(token).pipe(
-      map((data) => {
-        if (data.body && data.body.isConnected) {
-          this.setConnection(data.body.isConnected).setRightsLevel(
-            data.body.rightsLevel
-          );
-        }
-        return data.body;
-      })
-    );
+    if (
+      this.tokenExpirationDate > Date.now() / 1000 ||
+      this.tokenExpirationDate === 0
+    ) {
+      return this.httpService.getSession(token).pipe(
+        map((data) => {
+          if (data.body && data.body.isConnected) {
+            this.setConnection(data.body.isConnected).setRightsLevel(
+              data.body.rightsLevel
+            );
+            if (data.body.token) {
+              this.localStorage.setToken(data.body.token);
+              this.tokenExpirationDate = Date.now() / 1000 + this._tokenMaxTime;
+            }
+          }
+          return data.body;
+        })
+      );
+    }
+    return of(false);
   }
 
   /**
@@ -94,7 +113,10 @@ export class AuthService {
           this.setConnection(data.body.isConnected).setRightsLevel(
             data.body.rightsLevel
           );
-          if (data.body.token) this.localStorage.setToken(data.body.token);
+          if (data.body.token) {
+            this.localStorage.setToken(data.body.token);
+            this.tokenExpirationDate = Date.now() / 1000 + this._tokenMaxTime;
+          }
         }
         return data.body;
       })

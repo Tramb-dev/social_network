@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 
@@ -15,7 +15,7 @@ import { Subscription } from "rxjs";
   templateUrl: "./sign-in.component.html",
   styleUrls: ["./sign-in.component.scss"],
 })
-export class SignInComponent implements OnInit, OnDestroy {
+export class SignInComponent implements OnDestroy {
   hidePwd = true;
   loginForm = new FormGroup({
     email: new FormControl("", [Validators.required, Validators.email]),
@@ -35,14 +35,6 @@ export class SignInComponent implements OnInit, OnDestroy {
     private snackBar: SnackBarService,
     private userSrv: UserService
   ) {}
-
-  ngOnInit(): void {
-    this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
-      if (isLoggedIn) {
-        this.router.navigate(["/member"]);
-      }
-    });
-  }
 
   ngOnDestroy() {
     this.snackBar.dismiss();

@@ -18,12 +18,10 @@ export class GlobalsGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Promise<UrlTree | true> {
-    return this.auth.isUserLoggedIn().then((isLoggedIn: boolean) => {
-      if (isLoggedIn) {
-        return this.router.parseUrl("/member");
-      }
-      return true;
-    });
+  ): UrlTree | true {
+    if (this.auth.isUserLoggedIn()) {
+      return this.router.parseUrl("/member");
+    }
+    return true;
   }
 }
