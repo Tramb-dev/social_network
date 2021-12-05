@@ -5,7 +5,7 @@ import {
   HttpHeaders,
   HttpResponse,
 } from "@angular/common/http";
-import { Observable, throwError } from "rxjs";
+import { firstValueFrom, Observable, throwError } from "rxjs";
 import { catchError, retry } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 
@@ -80,12 +80,13 @@ export class HttpService {
   }
 
   resetLinkVerif(rid: string): Promise<string> {
-    return this.httpClient
-      .get(this._userUrl + `reset-password-req?rid=${rid}`, {
-        responseType: "text",
-      })
-      .pipe(retry(3), catchError(this.handleError))
-      .toPromise();
+    return firstValueFrom(
+      this.httpClient
+        .get(this._userUrl + `reset-password-req?rid=${rid}`, {
+          responseType: "text",
+        })
+        .pipe(retry(3), catchError(this.handleError))
+    );
   }
 
   sendNewPassword(
