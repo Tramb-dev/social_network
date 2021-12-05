@@ -1,11 +1,57 @@
 @import "../../../../scss/variables";
 
-@media screen and (min-width: $sm) {
-  article {
-    background-color: #eee;
-    padding: 50px 20px 10px;
+$translate: 40px;
+
+.post-info {
+  img,
+  div {
+    display: inline-block;
+    margin-left: 20px;
   }
 
-  .leave-comment {
+  img.post-picture {
+    border: 7px $blue solid;
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    filter: $drop-shadow;
+    top: $translate;
+    position: relative;
+    z-index: 50;
+  }
+
+  .post-name {
+    padding-bottom: 5px;
+    font-weight: 500;
+    margin-left: 10px;
+  }
+}
+
+.article-content {
+  background-color: #f4f4f4;
+  border-radius: 15px;
+  padding: $translate 5px 0;
+  filter: $drop-shadow;
+}
+
+.comments {
+  margin-bottom: 10px;
+
+  .comment {
+    background-color: rgba(45, 154, 187, 0.25);
+    border-radius: 15px;
+    padding: 10px 10px 1px;
+    margin-bottom: 5px;
+
+    .comment-author {
+      font-weight: 500;
+      margin-right: 5px;
+    }
+  }
+}
+
+@media screen and (min-width: $sm) {
+  .article-content {
+    padding: $translate 20px 0;
   }
 }

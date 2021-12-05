@@ -1,17 +1,23 @@
-<article>
-  <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis omnis
-    commodi est itaque fugit, reprehenderit a vitae eligendi quidem ad illo
-    architecto. Consequatur quo laboriosam totam ullam sapiente facere
-    veritatis, at rem molestiae dolorum laborum incidunt molestias delectus
-    voluptatibus eaque velit soluta voluptates neque! Distinctio a, id harum
-    voluptatibus ad in unde, nam rerum, numquam dolor officiis ex delectus.
-    Deserunt tempora molestiae voluptate, error ducimus consequatur dolore
-    vitae, repellat provident dolor sequi quasi, maxime exercitationem officiis
-    saepe. Totam, cum amet.
-  </p>
-  <app-comment></app-comment>
-  <div class="leave-comment">
-    <app-reply></app-reply>
+<article [id]="post.id">
+  <div class="post-info">
+    <img class="post-picture"
+      [src]="post.pictureUrl"
+      [alt]="post.pictureAlt"
+    />
+    <div class="post-name">{{ post.name }}</div>
+  </div>
+  <div class="article-content">
+    <p>
+      {{ post.content }}
+    </p>
+    <div class="comments" *ngIf="post.comments">
+      <div [id]="comment.id" class="comment" *ngFor="let comment of post.comments">
+        <p class="comment-content"><span class="comment-author">{{ comment.name }} :</span>
+        {{ comment.content }}</p>
+      </div>
+    </div>
+    <div class="leave-comment">
+      <app-reply></app-reply>
+    </div>
   </div>
 </article>

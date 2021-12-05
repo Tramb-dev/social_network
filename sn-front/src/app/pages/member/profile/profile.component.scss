@@ -7,13 +7,46 @@
   margin: 1em auto;
 }
 
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, auto);
+  grid-template-areas: "circle" "messages" "breadcrumb" "section";
+}
+
 .breadcrumbs {
+  grid-area: breadcrumb;
   h2 {
     font-style: italic;
+    margin-bottom: 0;
   }
 }
 
+aside.circle {
+  grid-area: circle;
+}
+
+aside.messages {
+  grid-area: messages;
+}
+
+section {
+  grid-area: section;
+}
+
+main {
+  padding: 5px;
+}
+
 @media screen and (min-width: $sm) {
+  main {
+    grid-template-columns: repeat(3, auto);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "breadcrumb breadcrumb breadcrumb"
+      "circle section messages";
+  }
+
   section {
     margin: 5px 50px;
   }
