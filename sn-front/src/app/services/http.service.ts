@@ -10,6 +10,7 @@ import { catchError, retry } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 
 import { User, UserCreation } from "../interfaces/user";
+import { Post } from "../interfaces/post";
 
 @Injectable({
   providedIn: "root",
@@ -17,6 +18,7 @@ import { User, UserCreation } from "../interfaces/user";
 export class HttpService {
   private readonly _apiUrl = environment.serverUrl + "/";
   private readonly _userUrl = this._apiUrl + "user/";
+  private readonly _postsUrl = this._apiUrl + "posts/";
   // TODO: dev an auth connexion with server based on other security than username and password
   // Second argument in get, third in post
   httpOptions = {
@@ -108,6 +110,15 @@ export class HttpService {
       .pipe(retry(3), catchError(this.handleError));
   }
 
+  getAllWallPosts(wallId: string): Observable<HttpResponse<Post[]>> {
+    const options = {
+      observe: "response" as const,
+    };
+    return this.httpClient
+      .get<Post[]>(this._postsUrl + `all-wall-posts?wallId=${wallId}`, options)
+      .pipe(retry(3), catchError(this.handleError));
+  }
+
   /**
    * Handles error from http response
    * @param error
@@ -115,12 +126,14 @@ export class HttpService {
    */
   private handleError(error: HttpErrorResponse) {
     if (0 === error.status) {
-      console.error(`An error occured: ${error.error}`);
+      return throwError(() => new Error(`An error occured: ${error.error}`));
     } else {
-      console.error(
-        `Backend returned code ${error.status}, body was: ${error.statusText}`
+      return throwError(
+        () =>
+          new Error(
+            `Backend returned code ${error.status}, body was: ${error.statusText}`
+          )
       );
     }
-    return throwError(error);
   }
 }

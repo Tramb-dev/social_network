@@ -1,18 +1,18 @@
-<article [id]="post.id">
+<article [id]="post.pid">
   <div class="post-info">
     <img class="post-picture"
-      [src]="post.pictureUrl"
-      [alt]="post.pictureAlt"
+      [src]="post.picture"
+      [alt]="'Photo de profil de ' + post.author"
     />
-    <div class="post-name">{{ post.name }}</div>
+    <div class="post-name">{{ post.author }}</div>
   </div>
   <div class="article-content">
     <p>
       {{ post.content }}
     </p>
     <div class="comments" *ngIf="post.comments">
-      <div [id]="comment.id" class="comment" *ngFor="let comment of post.comments">
-        <p class="comment-content"><span class="comment-author">{{ comment.name }} :</span>
+      <div [id]="comment.cid" class="comment" *ngFor="let comment of post.comments">
+        <p class="comment-content"><span class="comment-author">{{ comment.author }} :</span>
         {{ comment.content }}</p>
       </div>
     </div>

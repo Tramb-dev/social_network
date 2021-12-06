@@ -1,16 +1,13 @@
 import { MongoClient } from "mongodb";
 import { mongoUri } from "../../config";
-import { userDB } from "./user.db";
-
-const client = new MongoClient(mongoUri);
-const _DB_NAME = "social_network";
-const _COLLECTION = "users";
-
-/* const DB = function () {};
-DB.prototype = userDB; */
+import { UserDB } from "./user.db";
+import { PostsDB } from "./posts.db";
 
 class DB {
-  user = userDB;
+  private client = new MongoClient(mongoUri);
+  private readonly _DB_NAME = "social_network";
+  user = new UserDB(this.client, this._DB_NAME);
+  posts = new PostsDB(this.client, this._DB_NAME);
 }
 
 export const db = new DB();

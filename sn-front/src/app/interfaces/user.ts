@@ -8,6 +8,7 @@ export interface User {
   firstName: string;
   lastName: string;
   dateOfBirth?: string;
+  picture?: string;
   isConnected: boolean;
   rightsLevel: RightsLevels;
   creationDate?: Date;
