@@ -39,7 +39,7 @@ export class UserService {
     const sub = this.auth.getSession(token).subscribe((user) => {
       if (user && typeof user === "object") {
         this.updateUser(user);
-        this.router.navigate(["/member", user.uid]);
+        this.router.navigate(["/member/wall", user.uid]);
       } else {
         this.snack.presentSnackBar(
           "Le temps de session est dépassé, veuillez vous reconnecter.",

@@ -2,13 +2,11 @@ import { MongoClient, Collection, Document, UpdateResult } from "mongodb";
 import { v4 as uuidv4 } from "uuid";
 import { Crypt } from "../crypt";
 
-import { User, RightsLevels } from "../../interfaces/user.interface";
-
-interface SigninCredentials {
-  email: string;
-  password?: string;
-  uid?: string;
-}
+import {
+  User,
+  RightsLevels,
+  SigninCredentials,
+} from "../../interfaces/user.interface";
 
 export class UserDB extends Crypt {
   private readonly _expirationTime = 48 * 3600 * 1000;
@@ -28,40 +26,38 @@ export class UserDB extends Crypt {
    * @returns A promise with the user or null if something goes wrong
    */
   async signIn(creds: SigninCredentials): Promise<User | null> {
-    await this.client.connect();
     const collection = this.client
       .db(this._DB_NAME)
       .collection(this._COLLECTION);
     let result: Document | null;
-    if (creds.uid && creds.email) {
-      result = await collection.findOne({
-        email: creds.email,
-        uid: creds.uid,
-      });
-      if (result) {
-        this.updateDateField(collection, result.uid).then(() => {
-          this.client.close();
+    try {
+      await this.client.connect();
+      if (creds.uid && creds.email) {
+        result = await collection.findOne({
+          email: creds.email,
+          uid: creds.uid,
         });
-        return result as User;
-      }
-      return null;
-    } else if (creds.email && creds.password) {
-      result = await collection.findOne({
-        email: creds.email,
-      });
-      if (result) {
-        const match = this.comparePasswords(creds.password, result.password);
-        if (match) {
-          this.updateDateField(collection, result.uid).then(() => {
-            this.client.close();
-          });
+        if (result) {
+          this.updateDateField(collection, result.uid);
           return result as User;
+        }
+        return null;
+      } else if (creds.email && creds.password) {
+        result = await collection.findOne({
+          email: creds.email,
+        });
+        if (result) {
+          const match = this.comparePasswords(creds.password, result.password);
+          if (match) {
+            this.updateDateField(collection, result.uid);
+            return result as User;
+          }
         }
       }
       return null;
+    } catch (err) {
+      throw new Error("Cannot sign in user " + err);
     }
-    this.client.close();
-    return null;
   }
 
   /**
@@ -100,11 +96,11 @@ export class UserDB extends Crypt {
     password: string,
     dateOfBirth: string
   ): Promise<User | null> {
+    const collection = this.client
+      .db(this._DB_NAME)
+      .collection(this._COLLECTION);
     try {
       await this.client.connect();
-      const collection = this.client
-        .db(this._DB_NAME)
-        .collection(this._COLLECTION);
       const isUserInDB = await collection.findOne({ email: email });
       if (!isUserInDB) {
         const cryptedPassword = this.cryptPassword(password);
@@ -138,11 +134,11 @@ export class UserDB extends Crypt {
    * @returns A promise with the user or null if something wrong
    */
   async insertForgotLink(emailAddress: string): Promise<User | null> {
+    const collection = this.client
+      .db(this._DB_NAME)
+      .collection(this._COLLECTION);
     try {
       await this.client.connect();
-      const collection = this.client
-        .db(this._DB_NAME)
-        .collection(this._COLLECTION);
       const isUserInDB = (await collection.findOne({
         email: emailAddress,
       })) as User | null;
@@ -202,11 +198,11 @@ export class UserDB extends Crypt {
    * @returns A promise with a boolean, if the operation ran successfuly or not
    */
   async changePassword(newPassword: string, rid: string): Promise<boolean> {
+    const collection = this.client
+      .db(this._DB_NAME)
+      .collection(this._COLLECTION);
     try {
       await this.client.connect();
-      const collection = this.client
-        .db(this._DB_NAME)
-        .collection(this._COLLECTION);
       const find = await collection.findOne({ resetLink: rid });
       if (find && find.resetTime) {
         if (find.resetTime + this._expirationTime > Date.now()) {
@@ -225,7 +221,6 @@ export class UserDB extends Crypt {
               },
             }
           );
-          this.client.close();
           if (result.modifiedCount) {
             return true;
           }
@@ -233,31 +228,35 @@ export class UserDB extends Crypt {
           throw new Error("Reset link is expired");
         }
       }
-      this.client.close();
       return false;
     } catch (err) {
-      throw new Error("Mongo error: " + JSON.stringify(err));
+      throw new Error("Mongo error: " + err);
     }
   }
 
   /**
-   * Retrieves the picture of the user to inject on the corresponding posts
-   * @param uid The user id from whom we gather the picture
-   * @returns A promise with the picture url, or null if there is no picture
+   * Retrieves a user
+   *
+   * @param uid The user id
+   * @returns A promise with the user, or null
    */
-  getProfilPicture(uid: string): Promise<string | null> {
-    return this.client.connect().then(() => {
-      const collection = this.client
-        .db(this._DB_NAME)
-        .collection(this._COLLECTION);
-      return collection.findOne({ uid }).then((doc) => {
-        this.client.close();
-        const user = doc as User;
-        if (user && user.picture) {
-          return user.picture;
-        }
-        return null;
+  getUser(uid: string): Promise<User | null> {
+    return this.client
+      .connect()
+      .then(() => {
+        return this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION)
+          .findOne({ uid })
+          .then((doc) => {
+            return doc as User;
+          })
+          .catch((err) => {
+            throw new Error("Cannot find user " + err);
+          });
+      })
+      .catch((err) => {
+        throw new Error("Mongo error: " + err);
       });
-    });
   }
 }

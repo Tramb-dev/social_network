@@ -1,4 +1,5 @@
 <mat-form-field class="reply" appearance="fill">
   <mat-label>Dire quelque chose</mat-label>
-  <textarea matInput></textarea>
+  <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="2" [formControl]="message"></textarea>
+  <mat-icon matSuffix (click)="publish()">{{ icon }}</mat-icon>
 </mat-form-field>

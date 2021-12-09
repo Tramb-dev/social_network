@@ -1,5 +1,3 @@
-import { Comment } from "./comment";
-
 export interface Post {
   pid: string;
   uid: string;
@@ -9,4 +7,17 @@ export interface Post {
   content: string;
   comments?: Comment[];
   creationDate: Date;
+}
+
+export interface Comment {
+  cid: string;
+  uid: string;
+  author: string;
+  content: string;
+  creationDate: Date;
+}
+
+export const enum PostRole {
+  POST_MESSAGE = "postMessage",
+  REPLY = "reply",
 }

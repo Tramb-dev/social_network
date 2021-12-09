@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { MemberGuard } from "src/app/guards/member.guard";
 import { MemberComponent } from "./member.component";
-import { ProfileComponent } from "./profile/profile.component";
+import { WallComponent } from "./wall/wall.component";
 
 const routes: Routes = [
   {
@@ -11,8 +11,8 @@ const routes: Routes = [
     canActivateChild: [MemberGuard],
     children: [
       {
-        path: ":id",
-        component: ProfileComponent,
+        path: "wall/:wallId",
+        component: WallComponent,
       },
     ],
   },

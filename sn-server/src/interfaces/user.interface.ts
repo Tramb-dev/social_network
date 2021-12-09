@@ -15,8 +15,14 @@ export interface User {
   resetTime?: number;
 }
 
-export enum RightsLevels {
+export const enum RightsLevels {
   ADMIN = 1,
   MEMBER,
   NOT_CONNECTED,
+}
+
+export interface SigninCredentials {
+  email: string;
+  password?: string;
+  uid?: string;
 }

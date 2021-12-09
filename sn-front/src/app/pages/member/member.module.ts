@@ -9,6 +9,7 @@ import { CircleComponent } from "../../components/member/circle/circle.component
 import { PostComponent } from "../../components/member/post/post.component";
 import { ReplyComponent } from "src/app/components/member/reply/reply.component";
 import { MemberComponent } from "./member.component";
+import { WallComponent } from "./wall/wall.component";
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { MemberComponent } from "./member.component";
     PostComponent,
     ReplyComponent,
     MemberComponent,
+    WallComponent,
   ],
   imports: [MemberRoutingModule, SharedModule, HeaderModule],
 })

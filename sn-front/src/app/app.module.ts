@@ -11,6 +11,7 @@ import { SharedModule } from "./shared/shared.module";
 import { AppComponent } from "./app.component";
 import { MemberModule } from "./pages/member/member.module";
 import { GlobalModule } from "./pages/global/global.module";
+import { AdminModule } from "./pages/admin/admin.module";
 
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
@@ -31,6 +32,7 @@ const config: SocketIoConfig = {
     BrowserAnimationsModule,
     GlobalModule,
     MemberModule,
+    AdminModule,
     SharedModule,
   ],
   providers: [],

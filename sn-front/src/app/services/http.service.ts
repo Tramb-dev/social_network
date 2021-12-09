@@ -19,6 +19,9 @@ export class HttpService {
   private readonly _apiUrl = environment.serverUrl + "/";
   private readonly _userUrl = this._apiUrl + "user/";
   private readonly _postsUrl = this._apiUrl + "posts/";
+  private options = {
+    observe: "response" as const,
+  };
   // TODO: dev an auth connexion with server based on other security than username and password
   // Second argument in get, third in post
   httpOptions = {
@@ -30,11 +33,8 @@ export class HttpService {
   constructor(private httpClient: HttpClient) {}
 
   getSession(token: string): Observable<HttpResponse<User>> {
-    const options = {
-      observe: "response" as const,
-    };
     return this.httpClient
-      .get<User>(this._userUrl + `reconnect?token=${token}`, options)
+      .get<User>(this._userUrl + `reconnect?token=${token}`, this.options)
       .pipe(retry(3), catchError(this.handleError));
   }
 
@@ -48,13 +48,10 @@ export class HttpService {
     email: string,
     password: string
   ): Observable<HttpResponse<User>> {
-    const options = {
-      observe: "response" as const,
-    };
     return this.httpClient
       .get<User>(
         this._userUrl + `sign-in?email=${email}&password=${password}`,
-        options
+        this.options
       )
       .pipe(retry(3), catchError(this.handleError));
   }
@@ -65,11 +62,8 @@ export class HttpService {
    * @returns An observable with the http response containing the user's data
    */
   sendSignUpRequest(user: UserCreation): Observable<HttpResponse<User>> {
-    const options = {
-      observe: "response" as const,
-    };
     return this.httpClient
-      .post<User>(this._userUrl + "sign-up", user, options)
+      .post<User>(this._userUrl + "sign-up", user, this.options)
       .pipe(retry(3), catchError(this.handleError));
   }
 
@@ -95,9 +89,6 @@ export class HttpService {
     password: string,
     rid: string
   ): Observable<HttpResponse<Object>> {
-    const options = {
-      observe: "response" as const,
-    };
     return this.httpClient
       .post(
         this._userUrl + "reset-password",
@@ -105,17 +96,45 @@ export class HttpService {
           password,
           rid,
         },
-        options
+        this.options
       )
       .pipe(retry(3), catchError(this.handleError));
   }
 
   getAllWallPosts(wallId: string): Observable<HttpResponse<Post[]>> {
-    const options = {
-      observe: "response" as const,
-    };
     return this.httpClient
-      .get<Post[]>(this._postsUrl + `all-wall-posts?wallId=${wallId}`, options)
+      .get<Post[]>(
+        this._postsUrl + `all-wall-posts?wallId=${wallId}`,
+        this.options
+      )
+      .pipe(retry(3), catchError(this.handleError));
+  }
+
+  sendProfileMessage(
+    content: string,
+    wallId: string,
+    uid: string
+  ): Observable<HttpResponse<Post>> {
+    return this.httpClient
+      .put<Post>(
+        this._postsUrl + "add-post",
+        { content, wallId, uid },
+        this.options
+      )
+      .pipe(retry(3), catchError(this.handleError));
+  }
+
+  sendComment(
+    content: string,
+    pid: string,
+    uid: string
+  ): Observable<HttpResponse<Post>> {
+    return this.httpClient
+      .put<Post>(
+        this._postsUrl + "add-comment",
+        { content, pid, uid },
+        this.options
+      )
       .pipe(retry(3), catchError(this.handleError));
   }
 

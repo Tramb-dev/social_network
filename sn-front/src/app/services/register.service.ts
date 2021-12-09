@@ -63,7 +63,6 @@ export class RegisterService {
     return this.httpService.sendNewPassword(newPassword, rid).pipe(
       map((data) => {
         if (data) {
-          console.log(data);
           return this.router.navigate(["/", "sign-in"]);
         }
         return false;
