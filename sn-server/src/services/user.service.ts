@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { db } from "../db/index.db";
-import { mailer } from "../emails/index";
-import { Crypt } from "../crypt";
-import { User } from "../../interfaces/user.interface";
+import { db } from "./db/index.db";
+import { mailer } from "./emails/index";
+import { Crypt } from "./crypt";
+
+import { User } from "../interfaces/user.interface";
 
 class UserService extends Crypt {
   private sendUser(user: User) {
     return {
       uid: user.uid,
       email: user.email,
-      token: this.signPayload(user.uid, user.email),
+      token: this.signPayload(user.uid, user.email, user.rightsLevel),
       firstName: user.firstName,
       lastName: user.lastName,
       isConnected: user.isConnected,

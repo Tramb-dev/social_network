@@ -51,8 +51,8 @@ export class SignInComponent implements OnDestroy {
     const userPwd = this.loginForm.get("password")?.value;
     this.signInSubscription = this.auth
       .signInUser(userEmail, userPwd)
-      .subscribe(
-        (user: User | null) => {
+      .subscribe({
+        next: (user: User | null) => {
           if (user && user.isConnected) {
             this.userSrv.updateUser(user);
             this.loginForm.reset();
@@ -61,7 +61,7 @@ export class SignInComponent implements OnDestroy {
               "snackBar-top",
               1500
             );
-            this.router.navigate(["/member/", user.uid]);
+            this.router.navigate(["/wall/", user.uid]);
           } else {
             this.snackBar.presentSnackBar(
               "Veuillez vérifier vos identifiants",
@@ -70,7 +70,7 @@ export class SignInComponent implements OnDestroy {
             );
           }
         },
-        (err) => {
+        error: (err) => {
           if (409 === err.status) {
             this.snackBar.presentSnackBar(
               "Veuillez vérifier vos identifiants",
@@ -84,8 +84,8 @@ export class SignInComponent implements OnDestroy {
             );
             console.error(err);
           }
-        }
-      );
+        },
+      });
   }
 
   validateField(field: string): boolean {

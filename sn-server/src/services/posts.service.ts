@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { db } from "../db/index.db";
+import { db } from "./db/index.db";
 
 class PostsService {
   /**

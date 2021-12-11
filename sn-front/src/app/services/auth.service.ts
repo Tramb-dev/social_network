@@ -1,14 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
-import { ActivatedRoute, Router } from "@angular/router";
 
 import { HttpService } from "./http.service";
 import { LocalStorageService } from "./local-storage.service";
 
 import { User } from "../interfaces/user";
 import { RightsLevels } from "../interfaces/auth";
-import { SnackBarService } from "./snack-bar.service";
 
 @Injectable({
   providedIn: "root",
@@ -23,10 +21,7 @@ export class AuthService {
 
   constructor(
     private httpService: HttpService,
-    private localStorage: LocalStorageService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private snack: SnackBarService
+    private localStorage: LocalStorageService
   ) {}
 
   /**

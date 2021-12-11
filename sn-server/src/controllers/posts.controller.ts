@@ -1,11 +1,32 @@
 import { Router } from "express";
-import { postsService } from "../services/posts/posts.service";
+import { postsService } from "../services/posts.service";
+import { authService } from "../services/auth/auth.service";
 
 const router = Router();
 
-router.get("/all-wall-posts", postsService.sendAllWallPosts.bind(postsService));
-router.put("/add-post", postsService.addPost.bind(postsService));
-router.put("/add-comment", postsService.addComment.bind(postsService));
-router.delete("/delete-post", postsService.deletePost.bind(postsService));
+router
+  .route("/all-wall-posts")
+  .get(
+    authService.checkIfAuthenticated.bind(authService),
+    postsService.sendAllWallPosts.bind(postsService)
+  );
+router
+  .route("/add-post")
+  .put(
+    authService.checkIfAuthenticated.bind(authService),
+    postsService.addPost.bind(postsService)
+  );
+router
+  .route("/add-comment")
+  .put(
+    authService.checkIfAuthenticated.bind(authService),
+    postsService.addComment.bind(postsService)
+  );
+router
+  .route("/delete-post")
+  .delete(
+    authService.checkIfAuthenticated.bind(authService),
+    postsService.deletePost.bind(postsService)
+  );
 
 export default router;

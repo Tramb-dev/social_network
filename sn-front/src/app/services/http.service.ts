@@ -22,13 +22,6 @@ export class HttpService {
   private options = {
     observe: "response" as const,
   };
-  // TODO: dev an auth connexion with server based on other security than username and password
-  // Second argument in get, third in post
-  httpOptions = {
-    headers: new HttpHeaders({
-      Authorization: btoa("username:password"),
-    }),
-  };
 
   constructor(private httpClient: HttpClient) {}
 
@@ -63,7 +56,7 @@ export class HttpService {
    */
   sendSignUpRequest(user: UserCreation): Observable<HttpResponse<User>> {
     return this.httpClient
-      .post<User>(this._userUrl + "sign-up", user, this.options)
+      .put<User>(this._userUrl + "sign-up", user, this.options)
       .pipe(retry(3), catchError(this.handleError));
   }
 

@@ -1,6 +1,8 @@
 import * as bcrypt from "bcryptjs";
 import { sign, verify, JwtPayload, SignOptions } from "jsonwebtoken";
+
 import { secret } from "../config";
+import { RightsLevels } from "../interfaces/user.interface";
 
 export class Crypt {
   constructor() {}
@@ -17,11 +19,15 @@ export class Crypt {
     return bcrypt.compareSync(userPassword, dbPassword);
   }
 
-  protected signPayload(uid: string, email: string): string {
+  protected signPayload(
+    uid: string,
+    email: string,
+    rightsLevel: RightsLevels
+  ): string {
     const options: SignOptions = {
       expiresIn: "24h",
     };
-    return sign({ uid, email }, secret, options);
+    return sign({ uid, email, rightsLevel }, secret, options);
   }
 
   protected verifyToken(token: string): JwtPayload | string {
