@@ -109,17 +109,22 @@ export class PostsDB {
     }
   }
 
-  async deletePost(pid: string): Promise<boolean> {
+  async deletePost(pid: string, uid: string): Promise<boolean> {
     const collection = this.client
       .db(this._DB_NAME)
       .collection(this._COLLECTION);
     try {
       await this.client.connect();
-      const result = await collection.deleteOne({
+      const post = (await collection.findOne({
         pid,
-      });
-      if (result.acknowledged && result.deletedCount === 1) {
-        return true;
+      })) as Post;
+      if (post && (post.wallId === uid || pid === uid)) {
+        const result = await collection.deleteOne({
+          pid,
+        });
+        if (result.acknowledged && result.deletedCount === 1) {
+          return true;
+        }
       }
       return false;
     } catch (err) {

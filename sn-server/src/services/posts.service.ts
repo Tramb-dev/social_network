@@ -100,9 +100,10 @@ class PostsService {
 
   deletePost(req: Request, res: Response, next: NextFunction) {
     const pid = req.query.pid;
-    if (typeof pid === "string") {
+    const uid = res.locals.token.uid;
+    if (typeof pid === "string" && typeof uid === "string") {
       return db.posts
-        .deletePost(pid)
+        .deletePost(pid, uid)
         .then((isDeleted) => {
           if (isDeleted) {
             return res.sendStatus(200);
