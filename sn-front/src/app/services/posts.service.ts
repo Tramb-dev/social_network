@@ -72,9 +72,7 @@ export class PostsService {
     this.http.sendComment(message, postId, uid).subscribe((data) => {
       if (data && data.body) {
         const updatedPost = data.body;
-        const indexToReplace = this.posts.findIndex(
-          (element) => element.pid === updatedPost.pid
-        );
+        const indexToReplace = this.findPost(updatedPost.pid);
         this.posts[indexToReplace] = updatedPost;
         this.posts$.next(this.posts);
       }
@@ -82,9 +80,26 @@ export class PostsService {
     return this;
   }
 
+  /**
+   * Delete a post
+   * @param pid the post id to delete
+   */
   deletePost(pid: string) {
     this.http.deletePost(pid).subscribe((response) => {
-      console.log(response);
+      if (response === "OK") {
+        const indexToDelete = this.findPost(pid);
+        this.posts.splice(indexToDelete, 1);
+        this.posts$.next(this.posts);
+      }
     });
+  }
+
+  /**
+   * Find a post in the post array
+   * @param postToFind the pid of the post to find
+   * @returns the index of this post in the posts array
+   */
+  private findPost(postToFind: string): number {
+    return this.posts.findIndex((element) => element.pid === postToFind);
   }
 }
