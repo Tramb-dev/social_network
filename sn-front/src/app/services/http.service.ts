@@ -138,6 +138,14 @@ export class HttpService {
       .pipe(retry(3), catchError(this.handleError));
   }
 
+  deletePost(pid: string): Observable<string> {
+    return this.httpClient
+      .delete(this._postsUrl + `delete-post?pid=${pid}`, {
+        responseType: "text",
+      })
+      .pipe(retry(3), catchError(this.handleError));
+  }
+
   /**
    * Handles error from http response
    * @param error

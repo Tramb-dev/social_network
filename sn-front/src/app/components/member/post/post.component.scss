@@ -2,7 +2,18 @@
 
 $translate: 40px;
 
+article {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "name menu"
+    "content content";
+}
+
 .post-info {
+  grid-area: name;
+
   img,
   div {
     display: inline-block;
@@ -27,11 +38,20 @@ $translate: 40px;
   }
 }
 
+.post-menu {
+  grid-area: menu;
+  position: relative;
+  top: 70px;
+  right: 0;
+  z-index: 10;
+}
+
 .article-content {
   background-color: #f4f4f4;
   border-radius: 15px;
   padding: $translate 5px 0;
   filter: $drop-shadow;
+  grid-area: content;
 }
 
 .comments {

@@ -8,6 +8,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatMenuModule } from "@angular/material/menu";
 import { LayoutModule } from "@angular/cdk/layout";
 
 import { FooterComponent } from "src/app/components/global/footer/footer.component";
@@ -24,6 +25,7 @@ export const modules = [
   MatInputModule,
   MatButtonModule,
   MatSnackBarModule,
+  MatMenuModule,
 ];
 
 @NgModule({

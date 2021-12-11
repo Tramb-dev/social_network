@@ -81,4 +81,10 @@ export class PostsService {
     });
     return this;
   }
+
+  deletePost(pid: string) {
+    this.http.deletePost(pid).subscribe((response) => {
+      console.log(response);
+    });
+  }
 }
