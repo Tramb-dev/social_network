@@ -8,9 +8,15 @@ class AuthService extends Crypt {
       const bearer = bearerHeader.split(" ");
       const token = bearer[1];
 
-      res.locals.token = this.verifyToken(token);
+      try {
+        res.locals.token = this.verifyToken(token);
+      } catch (err) {
+        res.statusMessage = "Invalid signature";
+        return res.sendStatus(403);
+      }
       return next();
     } else {
+      res.statusMessage = "Invalid signature";
       return res.sendStatus(403);
     }
   }

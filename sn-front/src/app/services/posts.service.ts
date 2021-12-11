@@ -80,6 +80,14 @@ export class PostsService {
     return this;
   }
 
+  canDisplayMenu(pid: string, wallId: string): boolean {
+    const uid = this.user.getUser().uid;
+    if (pid === uid || wallId === uid) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Delete a post
    * @param pid the post id to delete

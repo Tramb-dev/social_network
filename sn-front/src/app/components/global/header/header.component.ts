@@ -1,18 +1,20 @@
-import { Component, OnDestroy } from "@angular/core";
+import { Component } from "@angular/core";
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
-import { Subject } from "rxjs";
+import { UserService } from "src/app/services/user.service";
 
 @Component({
   selector: "app-header",
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"],
 })
-export class HeaderComponent implements OnDestroy {
-  userName: string = "Bertrand";
+export class HeaderComponent {
+  userName: string;
   isSmallScreen = false;
-  destroyed = new Subject<void>();
 
-  constructor(private breakpointObserver: BreakpointObserver) {
+  constructor(
+    private breakpointObserver: BreakpointObserver,
+    private user: UserService
+  ) {
     breakpointObserver
       .observe([
         Breakpoints.XSmall,
@@ -28,10 +30,6 @@ export class HeaderComponent implements OnDestroy {
           this.isSmallScreen = false;
         }
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroyed.next();
-    this.destroyed.complete();
+    this.userName = user.getUser().firstName;
   }
 }

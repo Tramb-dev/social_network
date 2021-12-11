@@ -6,7 +6,7 @@
     />
     <div class="post-name">{{ post.author }}</div>
   </div>
-  <div class="post-menu">
+  <div class="post-menu" *ngIf="canDisplayMenu">
     <button mat-icon-button [matMenuTriggerFor]="postMenu" aria-label="Post Menu">
       <mat-icon>more_vert</mat-icon>
     </button>

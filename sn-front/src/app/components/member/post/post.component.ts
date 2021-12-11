@@ -9,8 +9,16 @@ import { PostsService } from "src/app/services/posts.service";
 })
 export class PostComponent {
   @Input() post = {} as Post;
+  canDisplayMenu: boolean = false;
 
   constructor(private postsSvc: PostsService) {}
+
+  ngOnInit(): void {
+    this.canDisplayMenu = this.postsSvc.canDisplayMenu(
+      this.post.pid,
+      this.post.wallId
+    );
+  }
 
   deletePost() {
     this.postsSvc.deletePost(this.post.pid);
