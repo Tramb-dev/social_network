@@ -97,6 +97,25 @@ class PostsService {
     }
     return res.sendStatus(400);
   }
+
+  deletePost(req: Request, res: Response, next: NextFunction) {
+    const pid = req.query.pid;
+    if (typeof pid === "string") {
+      return db.posts
+        .deletePost(pid)
+        .then((isDeleted) => {
+          if (isDeleted) {
+            return res.sendStatus(200);
+          }
+          return res.sendStatus(404);
+        })
+        .catch((err) => {
+          res.status(500);
+          return next(err);
+        });
+    }
+    return res.sendStatus(400);
+  }
 }
 
 export const postsService = new PostsService();

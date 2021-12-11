@@ -108,4 +108,22 @@ export class PostsDB {
       throw new Error("unable to add a new comment " + err);
     }
   }
+
+  async deletePost(pid: string): Promise<boolean> {
+    const collection = this.client
+      .db(this._DB_NAME)
+      .collection(this._COLLECTION);
+    try {
+      await this.client.connect();
+      const result = await collection.deleteOne({
+        pid,
+      });
+      if (result.acknowledged && result.deletedCount === 1) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      throw new Error("Impossible to delete this post " + err);
+    }
+  }
 }
