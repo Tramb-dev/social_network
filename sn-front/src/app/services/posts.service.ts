@@ -18,7 +18,7 @@ export class PostsService {
    * Retrieves all posts for a given wall. If not provided, get the wall corresponding
    * to this user.
    * @param wallId
-   * @returns A promise with all retrieved posts or null
+   * @returns this service
    */
   private allWallPosts(wallId: string): PostsService {
     this.http.getAllWallPosts(wallId).subscribe((data) => {
@@ -30,6 +30,11 @@ export class PostsService {
     return this;
   }
 
+  /**
+   * Send an observable with the posts requested
+   * @param wallId
+   * @returns An observable with an array of posts
+   */
   displayPosts(wallId?: string): Observable<Post[]> {
     if (!wallId) {
       wallId = this.user.getUser().uid;
@@ -38,6 +43,12 @@ export class PostsService {
     return this.posts$.asObservable();
   }
 
+  /**
+   * Send a new post message and add it to the array of posts to display
+   * @param message the content of the message
+   * @param wallId the wall id to post this emssage
+   * @returns this service
+   */
   sendMessage(message: string, wallId: string): PostsService {
     const uid = this.user.getUser().uid;
     this.http.sendProfileMessage(message, wallId, uid).subscribe((data) => {
@@ -49,10 +60,23 @@ export class PostsService {
     return this;
   }
 
+  /**
+   * Send a comment to a post, and get this updated post to update the view
+   * with the observable
+   * @param message the content of the comment
+   * @param postId the post id to update
+   * @returns this service
+   */
   sendReply(message: string, postId: string): PostsService {
     const uid = this.user.getUser().uid;
     this.http.sendComment(message, postId, uid).subscribe((data) => {
       if (data && data.body) {
+        const updatedPost = data.body;
+        const indexToReplace = this.posts.findIndex(
+          (element) => element.pid === updatedPost.pid
+        );
+        this.posts[indexToReplace] = updatedPost;
+        this.posts$.next(this.posts);
       }
     });
     return this;
