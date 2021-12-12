@@ -1,0 +1,31 @@
+@import "./src/scss/variables";
+
+figure {
+  text-align: center;
+  max-width: 95vw;
+  margin: 2em auto;
+
+  h2 {
+    word-spacing: -0.15em;
+    font-weight: 300;
+    padding: 0.5em 0;
+  }
+
+  img {
+    filter: saturate(50%);
+    max-width: 100%;
+  }
+
+  figcaption {
+    padding: 2em;
+    color: $fontColor;
+    font-size: 1.25em;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: $md) {
+  figure {
+    margin: 10px auto 5vh;
+  }
+}

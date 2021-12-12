@@ -3,6 +3,7 @@ import { RouterModule, Routes } from "@angular/router";
 import { AdminGuard } from "./guards/admin.guard";
 import { GlobalsGuard } from "./guards/globals.guard";
 import { MemberGuard } from "./guards/member.guard";
+import { Error404Component } from "./pages/global/error404/error404.component";
 
 const routes: Routes = [
   {
@@ -29,6 +30,10 @@ const routes: Routes = [
     canLoad: [AdminGuard],
     loadChildren: () =>
       import("./pages/admin/admin.module").then((m) => m.AdminModule),
+  },
+  {
+    path: "not-found",
+    component: Error404Component,
   },
   {
     path: "**",

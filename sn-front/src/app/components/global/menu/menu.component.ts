@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { UserService } from "src/app/services/user.service";
 
 @Component({
   selector: "app-menu",
@@ -26,6 +27,18 @@ export class MenuComponent {
       visible: true,
     },
     {
+      anchor: "find-user",
+      label: "Trouver un utilisateur",
+      number: 0,
+      visible: true,
+    },
+    {
+      anchor: "wall/" + this.user.getUser().uid,
+      label: "Mon mur",
+      number: 0,
+      visible: false,
+    },
+    {
       anchor: "my-profile",
       label: "Mon profil",
       number: 0,
@@ -33,5 +46,5 @@ export class MenuComponent {
     },
   ];
 
-  constructor() {}
+  constructor(private user: UserService) {}
 }
