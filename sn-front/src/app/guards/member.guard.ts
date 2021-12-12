@@ -14,6 +14,7 @@ import {
 import { AuthService } from "../services/auth.service";
 
 import { RightsLevels } from "../interfaces/auth";
+import { map, Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -52,7 +53,7 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
     return false;
   }
 
-  canLoad(route: Route, segments: UrlSegment[]): boolean {
+  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> {
     return this.auth.isUserLoggedIn();
   }
 

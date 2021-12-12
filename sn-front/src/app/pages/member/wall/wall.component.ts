@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subscription } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 
 import { PostsService } from "src/app/services/posts.service";
@@ -30,8 +30,14 @@ export class WallComponent implements OnInit, OnDestroy {
     }
   }
 
-  wallPosts() {
-    this.postsSubscription = this.postsSvc.displayPosts().subscribe((posts) => {
+  private wallPosts() {
+    let displayPost$: Observable<Post[]>;
+    if (this.wallId) {
+      displayPost$ = this.postsSvc.displayPosts(this.wallId);
+    } else {
+      displayPost$ = this.postsSvc.displayPosts();
+    }
+    this.postsSubscription = displayPost$.subscribe((posts) => {
       if (posts) {
         this.posts = posts;
       }

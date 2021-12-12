@@ -4,6 +4,7 @@ import { map } from "rxjs/operators";
 
 import { HttpService } from "./http.service";
 import { LocalStorageService } from "./local-storage.service";
+import { UserService } from "./user.service";
 
 import { User } from "../interfaces/user";
 import { RightsLevels } from "../interfaces/auth";
@@ -21,7 +22,8 @@ export class AuthService {
 
   constructor(
     private httpService: HttpService,
-    private localStorage: LocalStorageService
+    private localStorage: LocalStorageService,
+    private user: UserService
   ) {}
 
   /**
@@ -33,11 +35,23 @@ export class AuthService {
   }
 
   /**
-   * Check if the user is logged in
-   * @returns A boolean, true if logged, false if not
+   * Check if the user is logged in, if not reconnect if possible
+   * @returns An observable boolean, true if logged, false if not
    */
-  isUserLoggedIn(): boolean {
-    return this.isLoggedIn;
+  isUserLoggedIn(): Observable<boolean> {
+    if (this.isLoggedIn) {
+      return of(this.isLoggedIn);
+    } else {
+      return this.getSession().pipe(
+        map((user) => {
+          if (user) {
+            this.user.setUser(user);
+            return true;
+          }
+          return false;
+        })
+      );
+    }
   }
 
   setRightsLevel(level: RightsLevels): AuthService {
@@ -71,11 +85,14 @@ export class AuthService {
     return this.loginUrl;
   }
 
-  getSession(token: string): Observable<User | false | null> {
-    //this.setRedirectUrl(window.location.pathname);
+  getSession(): Observable<User | false> {
+    //this.setRedirectUrl(this.route.snapshot.url);
+
+    const token = this.localStorage.retrieveToken();
     if (
-      this.tokenExpirationDate > Date.now() / 1000 ||
-      this.tokenExpirationDate === 0
+      token &&
+      (this.tokenExpirationDate > Date.now() / 1000 ||
+        this.tokenExpirationDate === 0)
     ) {
       return this.httpService.getSession(token).pipe(
         map((data) => {
@@ -87,8 +104,9 @@ export class AuthService {
               this.localStorage.setToken(data.body.token);
               this.tokenExpirationDate = Date.now() / 1000 + this._tokenMaxTime;
             }
+            return data.body;
           }
-          return data.body;
+          return false;
         })
       );
     }
