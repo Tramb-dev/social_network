@@ -92,7 +92,7 @@ export class PostsService {
    * Delete a post
    * @param pid the post id to delete
    */
-  deletePost(pid: string) {
+  deletePost(pid: string): PostsService {
     this.http.deletePost(pid).subscribe((response) => {
       if (response === "OK") {
         const indexToDelete = this.findPost(pid);
@@ -100,6 +100,7 @@ export class PostsService {
         this.posts$.next(this.posts);
       }
     });
+    return this;
   }
 
   /**

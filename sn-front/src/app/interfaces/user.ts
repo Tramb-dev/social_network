@@ -29,3 +29,11 @@ export type Field =
   | "email"
   | "password"
   | "dateOfBirth";
+
+export interface RandomUser {
+  uid: string;
+  firstName: string;
+  lastName: string;
+  picture?: string;
+  isConnected: boolean;
+}

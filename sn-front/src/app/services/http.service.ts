@@ -9,7 +9,7 @@ import { firstValueFrom, Observable, throwError } from "rxjs";
 import { catchError, retry } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 
-import { User, UserCreation } from "../interfaces/user";
+import { RandomUser, User, UserCreation } from "../interfaces/user";
 import { Post } from "../interfaces/post";
 
 @Injectable({
@@ -94,6 +94,11 @@ export class HttpService {
       .pipe(retry(3), catchError(this.handleError));
   }
 
+  /**
+   * Retrieves all posts for a given wall
+   * @param wallId the wall id to retrieve the posts
+   * @returns An array of posts in an observable with the http response
+   */
   getAllWallPosts(wallId: string): Observable<HttpResponse<Post[]>> {
     return this.httpClient
       .get<Post[]>(
@@ -103,6 +108,13 @@ export class HttpService {
       .pipe(retry(3), catchError(this.handleError));
   }
 
+  /**
+   * Send a new post to a specified wall
+   * @param content the content of this new post
+   * @param wallId the wall id to post this content
+   * @param uid the user id who posted this content
+   * @returns an observable with the http response containing the new post
+   */
   sendProfileMessage(
     content: string,
     wallId: string,
@@ -117,6 +129,13 @@ export class HttpService {
       .pipe(retry(3), catchError(this.handleError));
   }
 
+  /**
+   * Send a comment for a specific post
+   * @param content The content of the comment
+   * @param pid the post id where the comment is added
+   * @param uid the user id of the user who is commenting
+   * @returns An observable with the http response containing the modified post.
+   */
   sendComment(
     content: string,
     pid: string,
@@ -131,11 +150,26 @@ export class HttpService {
       .pipe(retry(3), catchError(this.handleError));
   }
 
+  /**
+   * Delete a specified field
+   * @param pid
+   * @returns An observable containing the response (OK or an error)
+   */
   deletePost(pid: string): Observable<string> {
     return this.httpClient
       .delete(this._postsUrl + `delete-post?pid=${pid}`, {
         responseType: "text",
       })
+      .pipe(retry(3), catchError(this.handleError));
+  }
+
+  /**
+   * Fetch all users from the server
+   * @returns All the users in a limited format
+   */
+  getAllUsers(): Observable<HttpResponse<RandomUser[]>> {
+    return this.httpClient
+      .get<RandomUser[]>(this._userUrl + "get-users", this.options)
       .pipe(retry(3), catchError(this.handleError));
   }
 

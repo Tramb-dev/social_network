@@ -6,6 +6,7 @@ import {
   User,
   RightsLevels,
   SigninCredentials,
+  RandomUser,
 } from "../../interfaces/user.interface";
 
 export class UserDB extends Crypt {
@@ -250,6 +251,31 @@ export class UserDB extends Crypt {
           .findOne({ uid })
           .then((doc) => {
             return doc as User;
+          })
+          .catch((err) => {
+            throw new Error("Cannot find user " + err);
+          });
+      })
+      .catch((err) => {
+        throw new Error("Mongo error: " + err);
+      });
+  }
+
+  /**
+   * Retieves all users
+   * @returns A promise with the users, or null
+   */
+  getUsers(): Promise<User[] | null> {
+    return this.client
+      .connect()
+      .then(() => {
+        return this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION)
+          .find({})
+          .toArray()
+          .then((doc) => {
+            return doc as User[] | null;
           })
           .catch((err) => {
             throw new Error("Cannot find user " + err);

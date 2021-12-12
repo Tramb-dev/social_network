@@ -3,7 +3,7 @@ import { db } from "./db/index.db";
 import { mailer } from "./emails/index";
 import { Crypt } from "./crypt";
 
-import { User } from "../interfaces/user.interface";
+import { RandomUser, User } from "../interfaces/user.interface";
 
 class UserService extends Crypt {
   private sendUser(user: User) {
@@ -16,6 +16,25 @@ class UserService extends Crypt {
       isConnected: user.isConnected,
       rightsLevel: user.rightsLevel,
     };
+  }
+
+  /**
+   * Convert a user output to a random user output
+   * @param users
+   */
+  private sendRandomUsers(users: User[]): RandomUser[] {
+    return users.map((user) => {
+      const randomUser: RandomUser = {
+        uid: user.uid,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isConnected: user.isConnected,
+      };
+      if (user.picture) {
+        randomUser.picture = user.picture;
+      }
+      return randomUser;
+    });
   }
 
   signIn(req: Request, res: Response, next: NextFunction) {
@@ -160,6 +179,23 @@ class UserService extends Crypt {
     } else {
       return res.sendStatus(400);
     }
+  }
+
+  getAllUsers(req: Request, res: Response, next: NextFunction) {
+    db.user
+      .getUsers()
+      .then((users) => {
+        if (users) {
+          const randomUsers = this.sendRandomUsers(users);
+          return res.json(randomUsers);
+        }
+        res.status(404);
+        return next(new Error("No user found"));
+      })
+      .catch((err) => {
+        res.status(500);
+        return next(new Error(err));
+      });
   }
 }
 

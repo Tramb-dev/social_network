@@ -26,3 +26,11 @@ export interface SigninCredentials {
   password?: string;
   uid?: string;
 }
+
+export interface RandomUser {
+  uid: string;
+  firstName: string;
+  lastName: string;
+  picture?: string;
+  isConnected: boolean;
+}

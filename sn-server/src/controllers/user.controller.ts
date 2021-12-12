@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { userService } from "../services/user.service";
+import { authService } from "../services/auth/auth.service";
 
 const router = Router();
 
@@ -15,5 +16,11 @@ router
 router
   .route("/reset-password")
   .post(userService.resetPassword.bind(userService));
+router
+  .route("/get-users")
+  .get(
+    authService.checkIfAuthenticated.bind(authService),
+    userService.getAllUsers.bind(userService)
+  );
 
 export default router;

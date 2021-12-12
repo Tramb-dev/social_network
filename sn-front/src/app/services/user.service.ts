@@ -1,7 +1,10 @@
 import { Injectable } from "@angular/core";
 
+import { HttpService } from "./http.service";
+
 import { RightsLevels } from "../interfaces/auth";
-import { User } from "../interfaces/user";
+import { RandomUser, User } from "../interfaces/user";
+import { map, Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -16,7 +19,7 @@ export class UserService {
     rightsLevel: RightsLevels.NOT_CONNECTED,
   };
 
-  constructor() {}
+  constructor(private httpSvc: HttpService) {}
 
   getUser(): User {
     return this.user;
@@ -30,5 +33,16 @@ export class UserService {
   updateUser(user: User): UserService {
     this.user = user;
     return this;
+  }
+
+  displayUsers(): Observable<RandomUser[] | null> {
+    return this.httpSvc.getAllUsers().pipe(
+      map((response) => {
+        if (response && response.body) {
+          return response.body;
+        }
+        return null;
+      })
+    );
   }
 }
