@@ -7,10 +7,8 @@ import { RegisterService } from "src/app/services/register.service";
 import { FormsValidationService } from "src/app/services/forms-validation.service";
 import { AuthService } from "src/app/services/auth.service";
 
-import { User } from "src/app/interfaces/user";
+import { User, Field } from "src/app/interfaces/user";
 import { SnackBarService } from "src/app/services/snack-bar.service";
-
-type Field = "firstName" | "lastName" | "email" | "password" | "dateOfBirth";
 
 @Component({
   selector: "app-sign-up",
@@ -27,7 +25,6 @@ export class SignUpComponent {
     dateOfBirth: ["", [Validators.required]],
   });
   maxDate = this.validation.limitedAge();
-  fields = ["firstName", "lastName"];
   registerErrors = {
     firstName: "",
     lastName: "",
@@ -57,8 +54,8 @@ export class SignUpComponent {
     const dateOfBirth = this.registerForm.get("dateOfBirth")?.value._d;
     this.signUpSubscription = this.register
       .createUser({ firstName, lastName, email, password, dateOfBirth })
-      .subscribe(
-        (user: User | null) => {
+      .subscribe({
+        next: (user: User | null) => {
           if (user && user.isConnected) {
             this.registerForm.reset();
             this.snackBar.presentSnackBar(
@@ -74,7 +71,7 @@ export class SignUpComponent {
             );
           }
         },
-        (err) => {
+        error: (err) => {
           if (404 === err.status) {
             this.snackBar.presentSnackBar(
               "Adresse courriel déjà présente. Veuillez changer d'adresse ou récupérer votre mot de passe depuis la page de connexion.",
@@ -87,8 +84,8 @@ export class SignUpComponent {
             );
             console.error(err);
           }
-        }
-      );
+        },
+      });
   }
 
   validateField(field: Field): boolean {

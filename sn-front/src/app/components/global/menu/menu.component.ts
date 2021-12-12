@@ -1,5 +1,4 @@
 import { Component } from "@angular/core";
-import { UserService } from "src/app/services/user.service";
 
 @Component({
   selector: "app-menu",
@@ -9,30 +8,30 @@ import { UserService } from "src/app/services/user.service";
 export class MenuComponent {
   badges = [
     {
-      anchor: "member/messages",
+      anchor: "messages",
       label: "Messages",
       number: 4,
       visible: true,
     },
     {
-      anchor: "member/friends",
+      anchor: "friends",
       label: "Amis",
       number: 5,
       visible: true,
     },
     {
-      anchor: "member/circles",
+      anchor: "circles",
       label: "Cercles",
       number: 3,
       visible: true,
     },
     {
-      anchor: "user/" + this.user.getUser().uid,
+      anchor: "my-profile",
       label: "Mon profil",
       number: 0,
       visible: false,
     },
   ];
 
-  constructor(private user: UserService) {}
+  constructor() {}
 }

@@ -16,7 +16,7 @@ const routes: Routes = [
         component: WallComponent,
       },
       {
-        path: "user/:uid",
+        path: "my-profile",
         component: ProfileComponent,
       },
     ],

@@ -22,3 +22,10 @@ export interface UserCreation {
   lastName: string;
   dateOfBirth: string;
 }
+
+export type Field =
+  | "firstName"
+  | "lastName"
+  | "email"
+  | "password"
+  | "dateOfBirth";

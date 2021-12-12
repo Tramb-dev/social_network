@@ -9,8 +9,23 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatMenuModule } from "@angular/material/menu";
 import { LayoutModule } from "@angular/cdk/layout";
+import { MatMomentDateModule } from "@angular/material-moment-adapter";
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from "@angular/material/core";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 
 import { FooterComponent } from "src/app/components/global/footer/footer.component";
+
+const DATE_FORMATS = {
+  parse: {
+    dateInput: "DD MM YYYY",
+  },
+  display: {
+    dateInput: "DD MMMM YYYY",
+    monthYearLabel: "MMMM YYYY",
+    dateA11yLabel: "LL",
+    monthYearA11yLabel: "MMMM YYYY",
+  },
+};
 
 export const modules = [
   CommonModule,
@@ -24,11 +39,17 @@ export const modules = [
   MatButtonModule,
   MatSnackBarModule,
   MatMenuModule,
+  MatMomentDateModule,
+  MatDatepickerModule,
 ];
 
 @NgModule({
   declarations: [FooterComponent],
-  imports: [CommonModule],
+  imports: [CommonModule, MatMomentDateModule, MatDatepickerModule],
   exports: [FooterComponent, ...modules],
+  providers: [
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: "fr-FR" },
+  ],
 })
 export class SharedModule {}

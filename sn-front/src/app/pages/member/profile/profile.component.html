@@ -1,1 +1,43 @@
-<p>profile component works</p>
+<form class="form" [formGroup]="profileForm" (ngSubmit)="onFormSubmit()">
+    <div class="form-fields">
+        <mat-form-field appearance="fill">
+            <mat-label>Prénom</mat-label>
+            <input matInput [type]="'text'" required formControlName="firstName" pattern="[a-zA-Z ]*" autocomplete="name">
+            <mat-error *ngIf="validateField('firstName')">{{ profileErrors.firstName }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Nom</mat-label>
+            <input matInput [type]="'text'" required formControlName="lastName" pattern="[a-zA-Z ]*" autocomplete="family-name">
+            <mat-error *ngIf="validateField('lastName')">{{ profileErrors.lastName }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Courriel</mat-label>
+            <input matInput [type]="'email'" placeholder="exemple@exemple.com" required formControlName="email" autocomplete="email">
+            <mat-error *ngIf="validateField('email')">{{ profileErrors.email }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Entrez votre mot de passe</mat-label>
+            <input matInput required [type]="hidePwd ? 'password' : 'text'" formControlName="password" autocomplete="new-password">
+            <button mat-icon-button matSuffix (click)="hidePwd = !hidePwd" [attr.aria-label]="'Masquer le mot de passe'" [attr.aria-pressed]="hidePwd">
+                <mat-icon>{{ hidePwd ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-hint>Min 8 caractères</mat-hint>
+            <mat-error *ngIf="validateField('password')">{{ profileErrors.password }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Date de naissance</mat-label>
+            <input matInput [matDatepicker]="datepicker" formControlName="dateOfBirth" required [max]="maxDate" autocomplete="bday">
+            <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker startView="multi-year">
+                <mat-datepicker-actions>
+                    <button mat-button matDatepickerCancel>Cancel</button>
+                    <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+                  </mat-datepicker-actions>
+            </mat-datepicker>
+            <mat-error *ngIf="validateField('dateOfBirth')">{{ profileErrors.dateOfBirth }}</mat-error>
+        </mat-form-field>
+    </div>
+    <div class="buttons">
+        <button mat-raised-button color="primary" [disabled]="profileForm.invalid">Enregistrer</button>
+    </div>
+</form>
