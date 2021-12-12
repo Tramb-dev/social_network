@@ -30,7 +30,7 @@ export class MenuComponent {
       anchor: "find-user",
       label: "Trouver un utilisateur",
       number: 0,
-      visible: true,
+      visible: false,
     },
     {
       anchor: "wall/" + this.user.getUser().uid,

@@ -10,6 +10,7 @@ import { PostComponent } from "../../components/member/post/post.component";
 import { ReplyComponent } from "src/app/components/member/reply/reply.component";
 import { MemberComponent } from "./member.component";
 import { WallComponent } from "./wall/wall.component";
+import { FindUserComponent } from './find-user/find-user.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { WallComponent } from "./wall/wall.component";
     ReplyComponent,
     MemberComponent,
     WallComponent,
+    FindUserComponent,
   ],
   imports: [MemberRoutingModule, SharedModule, HeaderModule],
 })

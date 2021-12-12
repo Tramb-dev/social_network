@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { MemberGuard } from "src/app/guards/member.guard";
+import { FindUserComponent } from "./find-user/find-user.component";
 import { MemberComponent } from "./member.component";
 import { ProfileComponent } from "./profile/profile.component";
 import { WallComponent } from "./wall/wall.component";
@@ -18,6 +19,10 @@ const routes: Routes = [
       {
         path: "my-profile",
         component: ProfileComponent,
+      },
+      {
+        path: "find-user",
+        component: FindUserComponent,
       },
     ],
   },
