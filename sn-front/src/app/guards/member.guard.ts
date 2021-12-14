@@ -27,30 +27,37 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
   canActivate(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): boolean {
+  ): Observable<boolean> {
     let url: string = state.url;
-    if (this.auth.isUserLoggedIn()) {
-      if (this.auth.getRightsLevel() <= RightsLevels.MEMBER) {
-        return true;
-      }
-    }
-    this.redirectUser(url);
-    return false;
+    return this.auth.isUserLoggedIn().pipe(
+      map((isLoggedIn) => {
+        if (isLoggedIn) {
+          if (this.auth.getRightsLevel() <= RightsLevels.MEMBER) {
+            return true;
+          }
+        }
+        this.redirectUser(url);
+        return false;
+      })
+    );
   }
 
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): boolean {
+  ): Observable<boolean> {
     let url: string = state.url;
-    console.log("Url: " + url);
-    if (this.auth.isUserLoggedIn()) {
-      if (this.auth.getRightsLevel() <= RightsLevels.MEMBER) {
-        return true;
-      }
-    }
-    this.redirectUser(url);
-    return false;
+    return this.auth.isUserLoggedIn().pipe(
+      map((isLoggedIn) => {
+        if (isLoggedIn) {
+          if (this.auth.getRightsLevel() <= RightsLevels.MEMBER) {
+            return true;
+          }
+        }
+        this.redirectUser(url);
+        return false;
+      })
+    );
   }
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> {
@@ -59,6 +66,6 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
 
   private redirectUser(url: string): Promise<boolean> {
     this.auth.setRedirectUrl(url);
-    return this.router.navigate([this.auth.getLoginUrl()]);
+    return this.router.navigateByUrl(this.auth.getLoginUrl());
   }
 }

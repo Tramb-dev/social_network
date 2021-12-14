@@ -6,6 +6,7 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from "@angular/router";
+import { map, Observable } from "rxjs";
 
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";
@@ -23,10 +24,17 @@ export class GlobalsGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): UrlTree | true {
-    if (this.auth.isUserLoggedIn()) {
-      return this.router.parseUrl("/member/wallId/" + this.user.getUser().uid);
-    }
-    return true;
+  ): Observable<true | UrlTree> {
+    return this.auth.isUserLoggedIn().pipe(
+      map((isLoggedIn) => {
+        if (isLoggedIn) {
+          return this.router.parseUrl(
+            "/member/wall/" + this.user.getUser().uid
+          );
+        }
+        console.log(this.user.getUser().uid);
+        return true;
+      })
+    );
   }
 }

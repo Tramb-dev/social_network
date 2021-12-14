@@ -1,1 +1,22 @@
-<p>find-user works!</p>
+<table *ngIf="users">
+    <thead>
+        <tr>
+            <th>En ligne</th>
+            <th></th>
+            <th>Utilisateurs</th>
+            <th>Envoyer une demande d'ami</th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let user of users">
+            <tr *ngIf="user.uid !== currentUserId">
+                <td><div class="ball" [ngClass]="{ 'connected': user.isConnected }"></div></td>
+                <td><img [src]="user.picture" [alt]="'Photo de profil de ' + user.firstName" width="40"></td>
+                <td>{{ user.firstName }} {{ user.lastName }}</td>
+                <td>
+                    <button mat-stroked-button (click)="onFriend(user.uid)">Demande d'ami</button>
+                </td>
+            </tr>
+        </ng-container>
+    </tbody>
+</table>

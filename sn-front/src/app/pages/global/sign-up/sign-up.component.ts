@@ -17,9 +17,16 @@ import { SnackBarService } from "src/app/services/snack-bar.service";
 })
 export class SignUpComponent {
   hidePwd = true;
+  private readonly _namePattern = /^[A-Za-zÀ-ÿ '-]+$/;
   registerForm = this.fb.group({
-    firstName: ["", [Validators.required, Validators.pattern("[a-zA-Z ]*")]],
-    lastName: ["", [Validators.required, Validators.pattern("[a-zA-Z ]*")]],
+    firstName: [
+      "",
+      [Validators.required, Validators.pattern(this._namePattern)],
+    ],
+    lastName: [
+      "",
+      [Validators.required, Validators.pattern(this._namePattern)],
+    ],
     email: ["", [Validators.required, Validators.email]],
     password: ["", [Validators.required, Validators.minLength(8)]],
     dateOfBirth: ["", [Validators.required]],
@@ -63,7 +70,6 @@ export class SignUpComponent {
               "snackBar-top",
               3000
             );
-            this.router.navigate(["/member", user.uid]);
           } else {
             this.snackBar.presentSnackBar(
               "Adresse courriel déjà présente. Veuillez changer d'adresse ou récupérer votre mot de passe depuis la page de connexion.",

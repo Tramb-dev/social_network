@@ -29,6 +29,7 @@ export class RegisterService {
             .setRightsLevel(data.body.rightsLevel);
           if (data.body.token) {
             this.localStorage.setToken(data.body.token);
+            this.router.navigate(["/member/wall", data.body.uid]);
           }
         }
         return data.body;
@@ -47,12 +48,12 @@ export class RegisterService {
     );
   }
 
-  checkResetLink(rid: string): Promise<true | UrlTree> {
+  checkResetLink(rid: string): Promise<boolean> {
     return this.httpService.resetLinkVerif(rid).then((data) => {
       if (data && data === "OK") {
         return true;
       }
-      return this.router.parseUrl("/sign-in");
+      return false;
     });
   }
 
