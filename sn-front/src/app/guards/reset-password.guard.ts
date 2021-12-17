@@ -30,9 +30,7 @@ export class ResetPasswordGuard implements CanActivate {
     return this.auth.isUserLoggedIn().pipe(
       mergeMap((isLoggedIn) => {
         if (isLoggedIn) {
-          return of(
-            this.router.parseUrl("/member/wallId/" + this.user.getUser().uid)
-          );
+          return of(this.router.parseUrl("/member/wallId/" + this.user.me.uid));
         } else {
           const rid = childRoute.paramMap.get("rid");
           if (rid) {

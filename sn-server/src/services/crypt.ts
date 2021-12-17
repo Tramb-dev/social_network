@@ -7,30 +7,29 @@ import { RightsLevels } from "../interfaces/user.interface";
 export class Crypt {
   constructor() {}
 
-  protected cryptPassword(password: string): string {
+  cryptPassword(password: string): string {
     const salt = bcrypt.genSaltSync(10);
     return bcrypt.hashSync(password, salt);
   }
 
-  protected comparePasswords(
-    userPassword: string,
-    dbPassword: string
-  ): boolean {
+  comparePasswords(userPassword: string, dbPassword: string): boolean {
     return bcrypt.compareSync(userPassword, dbPassword);
   }
 
-  protected signPayload(
-    uid: string,
-    email: string,
-    rightsLevel: RightsLevels
-  ): string {
+  signPayload(uid: string, email: string, rightsLevel: RightsLevels): string {
     const options: SignOptions = {
       expiresIn: "24h",
     };
     return sign({ uid, email, rightsLevel }, secret, options);
   }
 
-  protected verifyToken(token: string): JwtPayload | string {
-    return verify(token, secret);
+  verifyToken(token: string): JwtPayload | string | null {
+    try {
+      return verify(token, secret);
+    } catch (err) {
+      return null;
+    }
   }
 }
+
+export const crypt = new Crypt();

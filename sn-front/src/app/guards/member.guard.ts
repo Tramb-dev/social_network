@@ -29,6 +29,7 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
     state: RouterStateSnapshot
   ): Observable<boolean> {
     let url: string = state.url;
+    console.log("member", url);
     return this.auth.isUserLoggedIn().pipe(
       map((isLoggedIn) => {
         if (isLoggedIn) {
@@ -61,7 +62,16 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
   }
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> {
-    return this.auth.isUserLoggedIn();
+    return this.auth.isUserLoggedIn().pipe(
+      map((isLoggedIn) => {
+        if (isLoggedIn) {
+          if (this.auth.getRightsLevel() <= RightsLevels.MEMBER) {
+            return true;
+          }
+        }
+        return false;
+      })
+    );
   }
 
   private redirectUser(url: string): Promise<boolean> {

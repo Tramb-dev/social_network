@@ -17,7 +17,7 @@ import { UserService } from "src/app/services/user.service";
 export class ProfileComponent {
   hidePwd = true;
   private readonly _fakePwd = "********";
-  user: User = this.userSvc.getUser();
+  user: User = this.userSvc.me;
   profileForm = this.fb.group({
     firstName: [
       this.user.firstName,

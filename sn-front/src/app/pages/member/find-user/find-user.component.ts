@@ -14,7 +14,7 @@ export class FindUserComponent implements OnInit {
   constructor(private user: UserService) {}
 
   ngOnInit(): void {
-    this.currentUserId = this.user.getUser().uid;
+    this.currentUserId = this.user.me.uid;
     this.user.displayUsers().subscribe((users) => {
       if (users) {
         console.log(users);

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ReplaySubject, map, Observable } from "rxjs";
+import { ReplaySubject, Observable } from "rxjs";
 
 import { HttpService } from "./http.service";
 import { UserService } from "./user.service";
@@ -22,9 +22,9 @@ export class PostsService {
    */
   private allWallPosts(wallId: string): PostsService {
     this.http.getAllWallPosts(wallId).subscribe((data) => {
-      if (data && data.body) {
-        this.posts = data.body;
-        this.posts$.next(data.body);
+      if (data) {
+        this.posts = data;
+        this.posts$.next(data);
       }
     });
     return this;
@@ -37,7 +37,7 @@ export class PostsService {
    */
   displayPosts(wallId?: string): Observable<Post[]> {
     if (!wallId) {
-      wallId = this.user.getUser().uid;
+      wallId = this.user.me.uid;
     }
     this.allWallPosts(wallId);
     return this.posts$.asObservable();
@@ -50,10 +50,10 @@ export class PostsService {
    * @returns this service
    */
   sendMessage(message: string, wallId: string): PostsService {
-    const uid = this.user.getUser().uid;
+    const uid = this.user.me.uid;
     this.http.sendProfileMessage(message, wallId, uid).subscribe((data) => {
-      if (data && data.body) {
-        this.posts.unshift(data.body);
+      if (data) {
+        this.posts.unshift(data);
         this.posts$.next(this.posts);
       }
     });
@@ -68,10 +68,10 @@ export class PostsService {
    * @returns this service
    */
   sendReply(message: string, postId: string): PostsService {
-    const uid = this.user.getUser().uid;
+    const uid = this.user.me.uid;
     this.http.sendComment(message, postId, uid).subscribe((data) => {
-      if (data && data.body) {
-        const updatedPost = data.body;
+      if (data) {
+        const updatedPost = data;
         const indexToReplace = this.findPost(updatedPost.pid);
         this.posts[indexToReplace] = updatedPost;
         this.posts$.next(this.posts);
@@ -81,7 +81,7 @@ export class PostsService {
   }
 
   canDisplayMenu(pid: string, wallId: string): boolean {
-    const uid = this.user.getUser().uid;
+    const uid = this.user.me.uid;
     if (pid === uid || wallId === uid) {
       return true;
     }

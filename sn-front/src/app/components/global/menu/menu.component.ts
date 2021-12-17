@@ -33,7 +33,7 @@ export class MenuComponent {
       visible: false,
     },
     {
-      anchor: "wall/" + this.user.getUser().uid,
+      anchor: "wall/" + this.user.me.uid,
       label: "Mon mur",
       number: 0,
       visible: false,

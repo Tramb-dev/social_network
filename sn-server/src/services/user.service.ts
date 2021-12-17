@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { db } from "./db/index.db";
 import { mailer } from "./emails/index";
-import { Crypt } from "./crypt";
+import { crypt } from "./crypt";
 
 import { RandomUser, User } from "../interfaces/user.interface";
 
-class UserService extends Crypt {
+class UserService {
   private sendUser(user: User) {
     return {
       uid: user.uid,
       email: user.email,
-      token: this.signPayload(user.uid, user.email, user.rightsLevel),
+      token: crypt.signPayload(user.uid, user.email, user.rightsLevel),
       firstName: user.firstName,
       lastName: user.lastName,
       isConnected: user.isConnected,
@@ -64,8 +64,8 @@ class UserService extends Crypt {
   autoConnect(req: Request, res: Response, next: NextFunction) {
     const token = req.query.token;
     if (typeof token === "string") {
-      const verifyedToken = this.verifyToken(token);
-      if (typeof verifyedToken === "object") {
+      const verifyedToken = crypt.verifyToken(token);
+      if (typeof verifyedToken === "object" && verifyedToken) {
         db.user
           .signIn({
             email: verifyedToken.email,
@@ -75,11 +75,13 @@ class UserService extends Crypt {
             if (user) {
               return res.json(this.sendUser(user));
             } else {
-              res.sendStatus(498);
+              res.statusMessage = "Invalid token";
+              return res.sendStatus(401);
             }
           });
       } else {
-        return res.sendStatus(498);
+        res.statusMessage = "Token expired";
+        return res.sendStatus(401);
       }
     } else {
       return res.sendStatus(400);

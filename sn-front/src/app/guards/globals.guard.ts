@@ -25,14 +25,13 @@ export class GlobalsGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<true | UrlTree> {
+    console.log("global: ", state.url);
     return this.auth.isUserLoggedIn().pipe(
       map((isLoggedIn) => {
+        console.log(isLoggedIn);
         if (isLoggedIn) {
-          return this.router.parseUrl(
-            "/member/wall/" + this.user.getUser().uid
-          );
+          return this.router.parseUrl("/member/wall/" + this.user.me.uid);
         }
-        console.log(this.user.getUser().uid);
         return true;
       })
     );

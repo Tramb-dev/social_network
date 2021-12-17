@@ -23,16 +23,16 @@ export class RegisterService {
   createUser(user: UserCreation): Observable<User | null> {
     return this.httpService.sendSignUpRequest(user).pipe(
       map((data) => {
-        if (data.body && data.body.isConnected) {
+        if (data && data.isConnected) {
           this.auth
-            .setConnection(data.body.isConnected)
-            .setRightsLevel(data.body.rightsLevel);
-          if (data.body.token) {
-            this.localStorage.setToken(data.body.token);
-            this.router.navigate(["/member/wall", data.body.uid]);
+            .setConnection(data.isConnected)
+            .setRightsLevel(data.rightsLevel);
+          if (data.token) {
+            this.localStorage.setToken(data.token);
+            this.router.navigate(["/member/wall", data.uid]);
           }
         }
-        return data.body;
+        return data;
       })
     );
   }

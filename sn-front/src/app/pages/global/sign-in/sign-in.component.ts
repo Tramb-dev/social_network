@@ -61,7 +61,7 @@ export class SignInComponent implements OnDestroy {
               "snackBar-top",
               1500
             );
-            this.router.navigate(["/wall/", user.uid]);
+            this.router.navigate(["member/wall/", user.uid]);
           } else {
             this.snackBar.presentSnackBar(
               "Veuillez vérifier vos identifiants",
@@ -71,7 +71,7 @@ export class SignInComponent implements OnDestroy {
           }
         },
         error: (err) => {
-          if (409 === err.status) {
+          if (404 === err.status) {
             this.snackBar.presentSnackBar(
               "Veuillez vérifier vos identifiants",
               "snackBar-error",
@@ -79,10 +79,9 @@ export class SignInComponent implements OnDestroy {
             );
           } else {
             this.snackBar.presentSnackBar(
-              "Une erreur s'est produite : " + err.statusText,
+              "Une erreur s'est produite : " + err,
               "snackBar-error"
             );
-            console.error(err);
           }
         },
       });

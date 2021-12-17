@@ -30,6 +30,6 @@ export class HeaderComponent {
           this.isSmallScreen = false;
         }
       });
-    this.userName = user.getUser().firstName;
+    this.userName = user.me.firstName;
   }
 }

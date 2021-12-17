@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 
 import { HttpService } from "./http.service";
 import { LocalStorageService } from "./local-storage.service";
 import { UserService } from "./user.service";
+import { SnackBarService } from "./snack-bar.service";
 
 import { User } from "../interfaces/user";
 import { RightsLevels } from "../interfaces/auth";
@@ -23,7 +24,8 @@ export class AuthService {
   constructor(
     private httpService: HttpService,
     private localStorage: LocalStorageService,
-    private user: UserService
+    private user: UserService,
+    private snackBar: SnackBarService
   ) {}
 
   /**
@@ -45,7 +47,7 @@ export class AuthService {
       return this.getSession().pipe(
         map((user) => {
           if (user) {
-            this.user.setUser(user);
+            this.user.me = user;
             return true;
           }
           return false;
@@ -87,7 +89,6 @@ export class AuthService {
 
   getSession(): Observable<User | false> {
     //this.setRedirectUrl(this.route.snapshot.url);
-
     const token = this.localStorage.retrieveToken();
     if (
       token &&
@@ -95,18 +96,8 @@ export class AuthService {
         this.tokenExpirationDate === 0)
     ) {
       return this.httpService.getSession(token).pipe(
-        map((data) => {
-          if (data.body && data.body.isConnected) {
-            this.setConnection(data.body.isConnected).setRightsLevel(
-              data.body.rightsLevel
-            );
-            if (data.body.token) {
-              this.localStorage.setToken(data.body.token);
-              this.tokenExpirationDate = Date.now() / 1000 + this._tokenMaxTime;
-            }
-            return data.body;
-          }
-          return false;
+        tap((data) => {
+          this.setSignedUserInSession(data);
         })
       );
     }
@@ -121,19 +112,21 @@ export class AuthService {
    */
   signInUser(email: string, password: string): Observable<User | null> {
     return this.httpService.sendSignInRequest(email, password).pipe(
-      map((data) => {
-        if (data.body && data.body.isConnected) {
-          this.setConnection(data.body.isConnected).setRightsLevel(
-            data.body.rightsLevel
-          );
-          if (data.body.token) {
-            this.localStorage.setToken(data.body.token);
-            this.tokenExpirationDate = Date.now() / 1000 + this._tokenMaxTime;
-          }
-        }
-        return data.body;
+      tap((data) => {
+        this.setSignedUserInSession(data);
       })
     );
+  }
+
+  private setSignedUserInSession(data: User): AuthService {
+    if (data && data.isConnected) {
+      this.setConnection(data.isConnected).setRightsLevel(data.rightsLevel);
+      if (data.token) {
+        this.localStorage.setToken(data.token);
+        this.tokenExpirationDate = Date.now() / 1000 + this._tokenMaxTime;
+      }
+    }
+    return this;
   }
 
   /**

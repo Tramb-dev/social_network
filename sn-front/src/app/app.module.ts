@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
+import { HttpClientModule } from "@angular/common/http";
 
 import { environment } from "src/environments/environment";
 
@@ -14,7 +14,7 @@ import { MemberModule } from "./pages/member/member.module";
 import { GlobalModule } from "./pages/global/global.module";
 import { AdminModule } from "./pages/admin/admin.module";
 
-import { AuthInterceptor } from "./_helpers/auth.interceptor";
+import { httpInterceptorProviders } from "./interceptors/";
 
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
@@ -39,13 +39,7 @@ const config: SocketIoConfig = {
     AdminModule,
     SharedModule,
   ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true,
-    },
-  ],
+  providers: [httpInterceptorProviders],
   bootstrap: [AppComponent],
   exports: [],
 })
