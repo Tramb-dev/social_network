@@ -9,6 +9,7 @@ import { UserService } from "src/app/services/user.service";
 })
 export class HeaderComponent {
   userName: string;
+  picture: string;
   isSmallScreen = false;
 
   constructor(
@@ -31,5 +32,8 @@ export class HeaderComponent {
         }
       });
     this.userName = user.me.firstName;
+    this.picture = user.me.picture
+      ? user.me.picture
+      : "assets/images/default-user.jpg";
   }
 }
