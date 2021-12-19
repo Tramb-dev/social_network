@@ -6,7 +6,7 @@ export interface User {
   firstName: string;
   lastName: string;
   dateOfBirth?: string;
-  picture?: string;
+  picture: string;
   isConnected: boolean;
   rightsLevel: RightsLevels;
   creationDate?: Date;
@@ -42,8 +42,15 @@ export interface RandomUser {
   uid: string;
   firstName: string;
   lastName: string;
-  picture?: string;
+  picture: string;
   isConnected: boolean;
   alreadyFriend: boolean;
-  requested: boolean;
+}
+
+export interface FriendUser {
+  uid: string;
+  firstName: string;
+  lastName: string;
+  picture: string;
+  isConnected: boolean;
 }

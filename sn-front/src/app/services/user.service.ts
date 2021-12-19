@@ -15,6 +15,7 @@ export class UserService {
     email: "",
     firstName: "",
     lastName: "",
+    picture: "assets/images/default-user.jpg",
     isConnected: false,
     rightsLevel: RightsLevels.NOT_CONNECTED,
   };
@@ -38,13 +39,32 @@ export class UserService {
   }
 
   /**
+   * Display all friends for this user
+   * @returns an array of friends in a observable
+   */
+  displayFriends(): Observable<RandomUser[] | null> {
+    return this.httpSvc.getAllFriends();
+  }
+
+  /**
    * Send a friend request for this friend
    * @param friendUid friend user id
-   * @returns
+   * @returns The current user
    */
   sendFriendRequest(friendUid: string): Observable<User> {
     return this.httpSvc
       .friendRequest(friendUid)
+      .pipe(tap((user) => (this.me = user)));
+  }
+
+  /**
+   * Validate the invitaiton to become friends
+   * @param friendUid friend user id
+   * @returns The current user
+   */
+  acceptFriendRequest(friendUid: string): Observable<User> {
+    return this.httpSvc
+      .acceptFriendRequest(friendUid)
       .pipe(tap((user) => (this.me = user)));
   }
 }

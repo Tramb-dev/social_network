@@ -33,5 +33,17 @@ router
     authService.checkIfAuthenticated.bind(authService),
     userService.addFriendRequest.bind(userService)
   );
+router
+  .route("/accept-invitation")
+  .patch(
+    authService.checkIfAuthenticated.bind(authService),
+    userService.acceptFriendRequest.bind(userService)
+  );
+router
+  .route("/get-friends")
+  .get(
+    authService.checkIfAuthenticated.bind(authService),
+    userService.getAllFriends.bind(userService)
+  );
 
 export default router;

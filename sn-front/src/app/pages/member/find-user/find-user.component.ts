@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { RandomUser } from "src/app/interfaces/user";
+
 import { UserService } from "src/app/services/user.service";
+
+import { RandomUser } from "src/app/interfaces/user";
 
 @Component({
   selector: "app-find-user",
@@ -16,8 +18,15 @@ export class FindUserComponent implements OnInit {
     this.userSvc.displayUsers().subscribe((users) => {
       if (users) {
         users.map((user) => {
-          if (!user.picture) {
-            user.picture = "assets/images/default-user.jpg";
+          if (this.userSvc.me.sendedFriendRequests?.includes(user.uid)) {
+            user.requested = true;
+          } else {
+            user.requested = false;
+          }
+          if (this.userSvc.me.receivedFriendRequests?.includes(user.uid)) {
+            user.incomingRequest = true;
+          } else {
+            user.incomingRequest = false;
           }
         });
         this.users = users;
@@ -30,6 +39,18 @@ export class FindUserComponent implements OnInit {
       if (currentUser.sendedFriendRequests?.includes(friendUid)) {
         const index = this.users.findIndex((user) => user.uid === friendUid);
         this.users[index].requested = true;
+      }
+    });
+    return this;
+  }
+
+  onAccept(friendUid: string): FindUserComponent {
+    this.userSvc.acceptFriendRequest(friendUid).subscribe((currentUser) => {
+      if (currentUser.friends?.includes(friendUid)) {
+        const index = this.users.findIndex((user) => user.uid === friendUid);
+        this.users[index].requested = false;
+        this.users[index].incomingRequest = false;
+        this.users[index].alreadyFriend = true;
       }
     });
     return this;

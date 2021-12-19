@@ -13,6 +13,12 @@
   top: 10vh;
 }
 
+.profile-picture {
+  border: 7px $blue solid;
+  border-radius: 50%;
+  filter: $drop-shadow;
+}
+
 @media screen and (min-width: $sm) {
   .snackBar-top,
   .snackBar-error {

@@ -1,7 +1,7 @@
 <table *ngIf="users">
     <thead>
         <tr>
-            <th colspan="2">En ligne</th>
+            <th>En ligne</th>
             <th>Utilisateurs</th>
             <th>Envoyer une demande d'ami</th>
         </tr>
@@ -9,16 +9,19 @@
     <tbody>
         <ng-container *ngFor="let user of users">
             <tr>
-                <td><div class="ball" [ngClass]="{ 'connected': user.isConnected }"></div></td>
-                <td><img [src]="user.picture" [alt]="'Photo de profil de ' + user.firstName" width="40"></td>
+                <td>
+                    <img class="profile-picture" [src]="user.picture" [alt]="'Photo de profil de ' + user.firstName" width="40">
+                    <div class="ball" [ngClass]="{ 'connected': user.isConnected }"></div>
+                </td>
                 <td>{{ user.firstName }} {{ user.lastName }}</td>
                 <td>
                     <ng-container *ngIf="user.alreadyFriend; else notAlreadyFriend">
-                        <button mat-stroked-button disabled>Déjà ami</button>
+                        <button mat-button disabled>Déjà ami</button>
                     </ng-container>
                     <ng-template #notAlreadyFriend>
-                        <button *ngIf="user.requested; else enabledButton" mat-stroked-button disabled >Demande envoyée</button>
-                        <ng-template #enabledButton><button mat-stroked-button (click)="onFriend(user.uid)">Demande d'ami</button></ng-template>
+                        <button *ngIf="user.requested" mat-stroked-button disabled >Demande envoyée</button>
+                        <button *ngIf="user.incomingRequest" mat-stroked-button (click)="onAccept(user.uid)">Accepter l'invitation</button>
+                        <button *ngIf="!user.requested && !user.incomingRequest" mat-stroked-button (click)="onFriend(user.uid)">Demande d'ami</button>
                     </ng-template>
                 </td>
             </tr>

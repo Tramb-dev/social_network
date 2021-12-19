@@ -42,13 +42,10 @@ header {
     }
   }
 
-  .user-picture > img {
-    border: 7px $blue solid;
-    border-radius: 50%;
+  .profile-picture {
     height: 50px;
     transform: translateY(-20px);
     width: 50px;
-    filter: $drop-shadow;
   }
 }
 

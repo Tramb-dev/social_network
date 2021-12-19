@@ -129,8 +129,32 @@ export class HttpService {
     return this.httpClient.get<RandomUser[]>(this._userUrl + "get-users");
   }
 
+  /**
+   * Fetch all friends fro this user
+   * @returns All the friends in a limited format
+   */
+  getAllFriends(): Observable<RandomUser[]> {
+    return this.httpClient.get<RandomUser[]>(this._userUrl + "get-friends");
+  }
+
+  /**
+   * Send a friend request
+   * @param friendUid the user id to send the friend request
+   * @returns The current user
+   */
   friendRequest(friendUid: string): Observable<User> {
     return this.httpClient.patch<User>(this._userUrl + "add-friend-request", {
+      friendUid,
+    });
+  }
+
+  /**
+   * Accept a user invitation to become friend
+   * @param friendUid the user id that is becoming friend
+   * @returns The current user
+   */
+  acceptFriendRequest(friendUid: string): Observable<User> {
+    return this.httpClient.patch<User>(this._userUrl + "accept-invitation", {
       friendUid,
     });
   }

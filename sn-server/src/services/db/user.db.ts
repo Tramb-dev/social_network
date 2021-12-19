@@ -113,6 +113,7 @@ export class UserDB extends Crypt {
           lastName,
           password: cryptedPassword,
           dateOfBirth,
+          picture: "assets/images/default-user.jpg",
           isConnected: true,
           rightsLevel: RightsLevels.MEMBER,
           creationDate: new Date(),
@@ -287,6 +288,39 @@ export class UserDB extends Crypt {
   }
 
   /**
+   * Retieves all friends for a given user
+   * @returns A promise with the users, or null
+   */
+  getFriends(uid: string): Promise<User[] | null> {
+    return this.client
+      .connect()
+      .then(() => {
+        const collection = this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION);
+        return collection.findOne<User>({ uid }).then((user) => {
+          const friends = user?.friends;
+          if (friends && friends.length > 0) {
+            return collection
+              .find<User>({})
+              .toArray()
+              .then((doc) => {
+                return doc;
+              })
+              .catch((err) => {
+                throw new Error("Cannot find user " + err);
+              });
+          } else {
+            return null;
+          }
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }
+
+  /**
    * Add a friend request in the current user and in the friend user
    * @param uid the current user id demanding to be friend with another user
    * @param friendUid the user id to send a friend request
@@ -338,6 +372,94 @@ export class UserDB extends Crypt {
                   )
                 );
 
+                return Promise.all(updateUsersPromises)
+                  .then(([userResult, friendResult]) => {
+                    if (
+                      1 === userResult.modifiedCount &&
+                      1 === friendResult.modifiedCount
+                    ) {
+                      return true;
+                    }
+                    return false;
+                  })
+                  .catch((err) => {
+                    throw err;
+                  });
+              }
+              return false;
+            }
+            throw new Error("User not found");
+          })
+          .catch((err) => {
+            throw err;
+          });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }
+
+  /**
+   * Transform friend requests to friendship.
+   * Add the users to friends array. Removes them from received and sended requests arrays
+   * @param uid the user who accepted the invitation
+   * @param friendUid the user who sended the invitation
+   * @returns True if the update was successful, false otherwise
+   */
+  convertInvitationToFriendship(
+    uid: string,
+    friendUid: string
+  ): Promise<boolean> {
+    return this.client
+      .connect()
+      .then(() => {
+        const collection = this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION);
+        const findUsersPromises: Promise<User | null>[] = [];
+        findUsersPromises.push(collection.findOne<User>({ uid }));
+        findUsersPromises.push(collection.findOne<User>({ uid: friendUid }));
+
+        return Promise.all(findUsersPromises)
+          .then(([currentUser, friendUser]) => {
+            if (currentUser && friendUser) {
+              if (
+                currentUser.receivedFriendRequests?.includes(friendUid) &&
+                friendUser.sendedFriendRequests?.includes(uid)
+              ) {
+                const updateUsersPromises: Promise<UpdateResult>[] = [];
+                updateUsersPromises.push(
+                  collection.updateOne(
+                    {
+                      uid,
+                    },
+                    {
+                      $push: {
+                        friends: friendUid,
+                      },
+                      $pull: {
+                        receivedFriendRequests: friendUid,
+                        sendedFriendRequests: friendUid,
+                      },
+                    }
+                  )
+                );
+                updateUsersPromises.push(
+                  collection.updateOne(
+                    {
+                      uid: friendUid,
+                    },
+                    {
+                      $push: {
+                        friends: uid,
+                      },
+                      $pull: {
+                        receivedFriendRequests: uid,
+                        sendedFriendRequests: uid,
+                      },
+                    }
+                  )
+                );
                 return Promise.all(updateUsersPromises)
                   .then(([userResult, friendResult]) => {
                     if (

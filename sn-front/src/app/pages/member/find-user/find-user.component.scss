@@ -26,6 +26,10 @@ table {
     border-left: 0;
     border-right: 0;
     white-space: nowrap;
+
+    &:first-child {
+      position: relative;
+    }
   }
 
   tbody tr {
@@ -43,13 +47,19 @@ table {
 
 .ball {
   border-radius: 50%;
-  width: 10px;
-  height: 10px;
+  width: 18px;
+  height: 18px;
   background-color: rgb(202, 39, 39);
   filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.3));
-  margin: 0 auto;
+  position: absolute;
+  top: 10px;
+  left: calc(50% + 10px);
 }
 
 .connected {
   background-color: rgb(24, 187, 24);
+}
+
+.profile-picture {
+  border-width: 5px;
 }

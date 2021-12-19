@@ -19,6 +19,7 @@ class UserService {
         token: crypt.signPayload(user.uid, user.email, user.rightsLevel),
         firstName: user.firstName,
         lastName: user.lastName,
+        picture: user.picture,
         isConnected: user.isConnected,
         rightsLevel: user.rightsLevel,
         sendedFriendRequests: user.sendedFriendRequests,
@@ -35,11 +36,7 @@ class UserService {
    */
   private sendRandomUsers(users: User[], uid: string): RandomUser[] {
     return users.map((user) => {
-      let requested = user.receivedFriendRequests?.includes(uid);
       let alreadyFriend = user.friends?.includes(uid);
-      if (typeof requested === "undefined") {
-        requested = false;
-      }
       if (typeof alreadyFriend === "undefined") {
         alreadyFriend = false;
       }
@@ -47,13 +44,10 @@ class UserService {
         uid: user.uid,
         firstName: user.firstName,
         lastName: user.lastName,
+        picture: user.picture,
         isConnected: user.isConnected,
-        requested,
         alreadyFriend,
       };
-      if (user.picture) {
-        randomUser.picture = user.picture;
-      }
       return randomUser;
     });
   }
@@ -230,12 +224,73 @@ class UserService {
       });
   }
 
+  getAllFriends(req: Request, res: Response, next: NextFunction) {
+    const context = res.locals.verifiedToken;
+    db.user
+      .getFriends(context.uid)
+      .then((users) => {
+        if (users) {
+          const modifiedUsers = users.filter(
+            (user) => user.uid !== context.uid
+          );
+          if (modifiedUsers.length > 0) {
+            const randomUsers = this.sendRandomUsers(
+              modifiedUsers,
+              context.uid
+            );
+            return res.json(randomUsers);
+          }
+        }
+        res.status(404);
+        return next(new Error("User not found"));
+      })
+      .catch((err) => {
+        res.status(500);
+        return next(new Error(err));
+      });
+  }
+
   addFriendRequest(req: Request, res: Response, next: NextFunction) {
     const context: VerifiedToken = res.locals.verifiedToken;
     const friendUid: string = req.body.friendUid;
     if (typeof friendUid === "string" && context.uid) {
       return db.user
         .addFriendRequest(context.uid, req.body.friendUid)
+        .then((isAdded) => {
+          if (isAdded) {
+            res.status(200);
+            return db.user
+              .getUser(context.uid)
+              .then((user) => res.json(this.sendUser(user)))
+              .catch((err) => {
+                res.status(404);
+                return next(err);
+              });
+          } else {
+            res.status(202);
+            return db.user
+              .getUser(context.uid)
+              .then((user) => res.json(this.sendUser(user)))
+              .catch((err) => {
+                res.status(404);
+                return next(err);
+              });
+          }
+        })
+        .catch((err) => {
+          res.status(500);
+          return next(err);
+        });
+    }
+    return res.sendStatus(400);
+  }
+
+  acceptFriendRequest(req: Request, res: Response, next: NextFunction) {
+    const context: VerifiedToken = res.locals.verifiedToken;
+    const friendUid: string = req.body.friendUid;
+    if (typeof friendUid === "string" && context.uid) {
+      return db.user
+        .convertInvitationToFriendship(context.uid, req.body.friendUid)
         .then((isAdded) => {
           if (isAdded) {
             res.status(200);
