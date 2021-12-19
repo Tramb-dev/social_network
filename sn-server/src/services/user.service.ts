@@ -3,32 +3,53 @@ import { db } from "./db/index.db";
 import { mailer } from "./emails/index";
 import { crypt } from "./crypt";
 
-import { RandomUser, User } from "../interfaces/user.interface";
+import { RandomUser, User, VerifiedToken } from "../interfaces/user.interface";
 
 class UserService {
-  private sendUser(user: User) {
-    return {
-      uid: user.uid,
-      email: user.email,
-      token: crypt.signPayload(user.uid, user.email, user.rightsLevel),
-      firstName: user.firstName,
-      lastName: user.lastName,
-      isConnected: user.isConnected,
-      rightsLevel: user.rightsLevel,
-    };
+  /**
+   * Send only necessary data about a user
+   * @param user
+   * @returns
+   */
+  private sendUser(user: User | null) {
+    if (user) {
+      return {
+        uid: user.uid,
+        email: user.email,
+        token: crypt.signPayload(user.uid, user.email, user.rightsLevel),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isConnected: user.isConnected,
+        rightsLevel: user.rightsLevel,
+        sendedFriendRequests: user.sendedFriendRequests,
+        receivedFriendRequests: user.receivedFriendRequests,
+        friends: user.friends,
+      };
+    }
+    return null;
   }
 
   /**
    * Convert a user output to a random user output
    * @param users
    */
-  private sendRandomUsers(users: User[]): RandomUser[] {
+  private sendRandomUsers(users: User[], uid: string): RandomUser[] {
     return users.map((user) => {
+      let requested = user.receivedFriendRequests?.includes(uid);
+      let alreadyFriend = user.friends?.includes(uid);
+      if (typeof requested === "undefined") {
+        requested = false;
+      }
+      if (typeof alreadyFriend === "undefined") {
+        alreadyFriend = false;
+      }
       const randomUser: RandomUser = {
         uid: user.uid,
         firstName: user.firstName,
         lastName: user.lastName,
         isConnected: user.isConnected,
+        requested,
+        alreadyFriend,
       };
       if (user.picture) {
         randomUser.picture = user.picture;
@@ -62,7 +83,7 @@ class UserService {
   }
 
   autoConnect(req: Request, res: Response, next: NextFunction) {
-    const token = req.query.token;
+    const token = res.locals.originalToken;
     if (typeof token === "string") {
       const verifyedToken = crypt.verifyToken(token);
       if (typeof verifyedToken === "object" && verifyedToken) {
@@ -184,20 +205,64 @@ class UserService {
   }
 
   getAllUsers(req: Request, res: Response, next: NextFunction) {
+    const context = res.locals.verifiedToken;
     db.user
       .getUsers()
       .then((users) => {
         if (users) {
-          const randomUsers = this.sendRandomUsers(users);
-          return res.json(randomUsers);
+          const modifiedUsers = users.filter(
+            (user) => user.uid !== context.uid
+          );
+          if (modifiedUsers.length > 0) {
+            const randomUsers = this.sendRandomUsers(
+              modifiedUsers,
+              context.uid
+            );
+            return res.json(randomUsers);
+          }
         }
         res.status(404);
-        return next(new Error("No user found"));
+        return next(new Error("User not found"));
       })
       .catch((err) => {
         res.status(500);
         return next(new Error(err));
       });
+  }
+
+  addFriendRequest(req: Request, res: Response, next: NextFunction) {
+    const context: VerifiedToken = res.locals.verifiedToken;
+    const friendUid: string = req.body.friendUid;
+    if (typeof friendUid === "string" && context.uid) {
+      return db.user
+        .addFriendRequest(context.uid, req.body.friendUid)
+        .then((isAdded) => {
+          if (isAdded) {
+            res.status(200);
+            return db.user
+              .getUser(context.uid)
+              .then((user) => res.json(this.sendUser(user)))
+              .catch((err) => {
+                res.status(404);
+                return next(err);
+              });
+          } else {
+            res.status(202);
+            return db.user
+              .getUser(context.uid)
+              .then((user) => res.json(this.sendUser(user)))
+              .catch((err) => {
+                res.status(404);
+                return next(err);
+              });
+          }
+        })
+        .catch((err) => {
+          res.status(500);
+          return next(err);
+        });
+    }
+    return res.sendStatus(400);
   }
 }
 

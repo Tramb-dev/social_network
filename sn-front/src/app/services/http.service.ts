@@ -16,10 +16,8 @@ export class HttpService {
 
   constructor(private httpClient: HttpClient) {}
 
-  getSession(token: string): Observable<User> {
-    return this.httpClient.get<User>(
-      this._userUrl + `reconnect?token=${token}`
-    );
+  getSession(): Observable<User> {
+    return this.httpClient.get<User>(this._userUrl + `reconnect`);
   }
 
   /**
@@ -90,7 +88,7 @@ export class HttpService {
     wallId: string,
     uid: string
   ): Observable<Post> {
-    return this.httpClient.put<Post>(this._postsUrl + "add-post", {
+    return this.httpClient.post<Post>(this._postsUrl + "add-post", {
       content,
       wallId,
       uid,
@@ -105,7 +103,7 @@ export class HttpService {
    * @returns An observable with the http response containing the modified post.
    */
   sendComment(content: string, pid: string, uid: string): Observable<Post> {
-    return this.httpClient.put<Post>(this._postsUrl + "add-comment", {
+    return this.httpClient.patch<Post>(this._postsUrl + "add-comment", {
       content,
       pid,
       uid,
@@ -129,5 +127,11 @@ export class HttpService {
    */
   getAllUsers(): Observable<RandomUser[]> {
     return this.httpClient.get<RandomUser[]>(this._userUrl + "get-users");
+  }
+
+  friendRequest(friendUid: string): Observable<User> {
+    return this.httpClient.patch<User>(this._userUrl + "add-friend-request", {
+      friendUid,
+    });
   }
 }

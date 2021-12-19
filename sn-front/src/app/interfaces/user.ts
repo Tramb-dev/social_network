@@ -13,6 +13,9 @@ export interface User {
   rightsLevel: RightsLevels;
   creationDate?: Date;
   lastUpdated?: Date;
+  sendedFriendRequests?: string[];
+  receivedFriendRequests?: string[];
+  friends?: string[];
 }
 
 export interface UserCreation {
@@ -36,4 +39,6 @@ export interface RandomUser {
   lastName: string;
   picture?: string;
   isConnected: boolean;
+  alreadyFriend: boolean;
+  requested: boolean;
 }

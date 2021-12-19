@@ -4,7 +4,7 @@ import { HttpService } from "./http.service";
 
 import { RightsLevels } from "../interfaces/auth";
 import { RandomUser, User } from "../interfaces/user";
-import { Observable } from "rxjs";
+import { Observable, tap } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -29,12 +29,22 @@ export class UserService {
     this.user = user;
   }
 
-  updateUser(user: User): UserService {
-    this.user = user;
-    return this;
-  }
-
+  /**
+   * Display all users to add them as friends
+   * @returns an array of users in an observable
+   */
   displayUsers(): Observable<RandomUser[] | null> {
     return this.httpSvc.getAllUsers();
+  }
+
+  /**
+   * Send a friend request for this friend
+   * @param friendUid friend user id
+   * @returns
+   */
+  sendFriendRequest(friendUid: string): Observable<User> {
+    return this.httpSvc
+      .friendRequest(friendUid)
+      .pipe(tap((user) => (this.me = user)));
   }
 }

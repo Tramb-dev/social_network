@@ -9,21 +9,29 @@ import { UserService } from "src/app/services/user.service";
 })
 export class FindUserComponent implements OnInit {
   users: RandomUser[] = [];
-  currentUserId: string = "";
 
-  constructor(private user: UserService) {}
+  constructor(private userSvc: UserService) {}
 
   ngOnInit(): void {
-    this.currentUserId = this.user.me.uid;
-    this.user.displayUsers().subscribe((users) => {
+    this.userSvc.displayUsers().subscribe((users) => {
       if (users) {
-        console.log(users);
+        users.map((user) => {
+          if (!user.picture) {
+            user.picture = "assets/images/default-user.jpg";
+          }
+        });
         this.users = users;
       }
     });
   }
 
-  onFriend(uid: string) {
-    console.log(uid);
+  onFriend(friendUid: string): FindUserComponent {
+    this.userSvc.sendFriendRequest(friendUid).subscribe((currentUser) => {
+      if (currentUser.sendedFriendRequests?.includes(friendUid)) {
+        const index = this.users.findIndex((user) => user.uid === friendUid);
+        this.users[index].requested = true;
+      }
+    });
+    return this;
   }
 }

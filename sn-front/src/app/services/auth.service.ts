@@ -95,7 +95,7 @@ export class AuthService {
       (this.tokenExpirationDate > Date.now() / 1000 ||
         this.tokenExpirationDate === 0)
     ) {
-      return this.httpService.getSession(token).pipe(
+      return this.httpService.getSession().pipe(
         tap((data) => {
           this.setSignedUserInSession(data);
         })

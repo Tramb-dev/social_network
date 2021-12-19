@@ -4,7 +4,12 @@ import { authService } from "../services/auth/auth.service";
 
 const router = Router();
 
-router.route("/reconnect").get(userService.autoConnect.bind(userService));
+router
+  .route("/reconnect")
+  .get(
+    authService.checkIfAuthenticated.bind(authService),
+    userService.autoConnect.bind(userService)
+  );
 router.route("/sign-in").get(userService.signIn.bind(userService));
 router.route("/sign-up").put(userService.signUp.bind(userService));
 router
@@ -21,6 +26,12 @@ router
   .get(
     authService.checkIfAuthenticated.bind(authService),
     userService.getAllUsers.bind(userService)
+  );
+router
+  .route("/add-friend-request")
+  .patch(
+    authService.checkIfAuthenticated.bind(authService),
+    userService.addFriendRequest.bind(userService)
   );
 
 export default router;

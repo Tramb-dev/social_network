@@ -30,28 +30,28 @@ export class UserDB extends Crypt {
     const collection = this.client
       .db(this._DB_NAME)
       .collection(this._COLLECTION);
-    let result: Document | null;
+    let result: User | null;
     try {
       await this.client.connect();
       if (creds.uid && creds.email) {
-        result = await collection.findOne({
+        result = await collection.findOne<User>({
           email: creds.email,
           uid: creds.uid,
         });
         if (result) {
           this.updateDateField(collection, result.uid);
-          return result as User;
+          return result;
         }
         return null;
       } else if (creds.email && creds.password) {
-        result = await collection.findOne({
+        result = await collection.findOne<User>({
           email: creds.email,
         });
         if (result) {
           const match = this.comparePasswords(creds.password, result.password);
           if (match) {
             this.updateDateField(collection, result.uid);
-            return result as User;
+            return result;
           }
         }
       }
@@ -102,7 +102,7 @@ export class UserDB extends Crypt {
       .collection(this._COLLECTION);
     try {
       await this.client.connect();
-      const isUserInDB = await collection.findOne({ email: email });
+      const isUserInDB = await collection.findOne<User>({ email: email });
       if (!isUserInDB) {
         const cryptedPassword = this.cryptPassword(password);
         const uid = uuidv4();
@@ -140,9 +140,9 @@ export class UserDB extends Crypt {
       .collection(this._COLLECTION);
     try {
       await this.client.connect();
-      const isUserInDB = (await collection.findOne({
+      const isUserInDB = await collection.findOne<User>({
         email: emailAddress,
-      })) as User | null;
+      });
       if (isUserInDB) {
         if (isUserInDB.resetLink) {
           return isUserInDB;
@@ -180,7 +180,7 @@ export class UserDB extends Crypt {
       const collection = this.client
         .db(this._DB_NAME)
         .collection(this._COLLECTION);
-      const ridInDB = await collection.findOne({
+      const ridInDB = await collection.findOne<User>({
         resetLink: rid,
       });
       if (ridInDB) {
@@ -204,7 +204,7 @@ export class UserDB extends Crypt {
       .collection(this._COLLECTION);
     try {
       await this.client.connect();
-      const find = await collection.findOne({ resetLink: rid });
+      const find = await collection.findOne<User>({ resetLink: rid });
       if (find && find.resetTime) {
         if (find.resetTime + this._expirationTime > Date.now()) {
           const cryptedPassword = this.cryptPassword(newPassword);
@@ -231,7 +231,7 @@ export class UserDB extends Crypt {
       }
       return false;
     } catch (err) {
-      throw new Error("Mongo error: " + err);
+      throw err;
     }
   }
 
@@ -248,16 +248,16 @@ export class UserDB extends Crypt {
         return this.client
           .db(this._DB_NAME)
           .collection(this._COLLECTION)
-          .findOne({ uid })
+          .findOne<User>({ uid })
           .then((doc) => {
-            return doc as User;
+            return doc;
           })
           .catch((err) => {
             throw new Error("Cannot find user " + err);
           });
       })
       .catch((err) => {
-        throw new Error("Mongo error: " + err);
+        throw err;
       });
   }
 
@@ -272,17 +272,96 @@ export class UserDB extends Crypt {
         return this.client
           .db(this._DB_NAME)
           .collection(this._COLLECTION)
-          .find({})
+          .find<User>({})
           .toArray()
           .then((doc) => {
-            return doc as User[] | null;
+            return doc;
           })
           .catch((err) => {
             throw new Error("Cannot find user " + err);
           });
       })
       .catch((err) => {
-        throw new Error("Mongo error: " + err);
+        throw err;
+      });
+  }
+
+  /**
+   * Add a friend request in the current user and in the friend user
+   * @param uid the current user id demanding to be friend with another user
+   * @param friendUid the user id to send a friend request
+   * @returns True if the update was successful, false otherwise
+   */
+  addFriendRequest(uid: string, friendUid: string): Promise<boolean> {
+    return this.client
+      .connect()
+      .then(() => {
+        const collection = this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION);
+        const findUsersPromises: Promise<User | null>[] = [];
+        findUsersPromises.push(collection.findOne<User>({ uid }));
+        findUsersPromises.push(collection.findOne<User>({ uid: friendUid }));
+
+        return Promise.all(findUsersPromises)
+          .then(([currentUser, friendUser]) => {
+            if (currentUser && friendUser) {
+              if (
+                (!currentUser.sendedFriendRequests ||
+                  !currentUser.sendedFriendRequests.includes(friendUid)) &&
+                (!friendUser.receivedFriendRequests ||
+                  !friendUser.receivedFriendRequests.includes(uid))
+              ) {
+                const updateUsersPromises: Promise<UpdateResult>[] = [];
+                updateUsersPromises.push(
+                  collection.updateOne(
+                    {
+                      uid,
+                    },
+                    {
+                      $push: {
+                        sendedFriendRequests: friendUid,
+                      },
+                    }
+                  )
+                );
+                updateUsersPromises.push(
+                  collection.updateOne(
+                    {
+                      uid: friendUid,
+                    },
+                    {
+                      $push: {
+                        receivedFriendRequests: uid,
+                      },
+                    }
+                  )
+                );
+
+                return Promise.all(updateUsersPromises)
+                  .then(([userResult, friendResult]) => {
+                    if (
+                      1 === userResult.modifiedCount &&
+                      1 === friendResult.modifiedCount
+                    ) {
+                      return true;
+                    }
+                    return false;
+                  })
+                  .catch((err) => {
+                    throw err;
+                  });
+              }
+              return false;
+            }
+            throw new Error("User not found");
+          })
+          .catch((err) => {
+            throw err;
+          });
+      })
+      .catch((err) => {
+        throw err;
       });
   }
 }

@@ -54,7 +54,7 @@ export class SignInComponent implements OnDestroy {
       .subscribe({
         next: (user: User | null) => {
           if (user && user.isConnected) {
-            this.userSrv.updateUser(user);
+            this.userSrv.me = user;
             this.loginForm.reset();
             this.snackBar.presentSnackBar(
               "Connexion réussie, heureux de vous revoir",

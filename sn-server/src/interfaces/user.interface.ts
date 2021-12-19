@@ -13,6 +13,17 @@ export interface User {
   lastUpdated?: Date;
   resetLink?: string;
   resetTime?: number;
+  sendedFriendRequests?: string[];
+  receivedFriendRequests?: string[];
+  friends?: string[];
+}
+
+export interface VerifiedToken {
+  uid: string;
+  email: string;
+  rightsLevel: RightsLevels;
+  iat: number;
+  exp: number;
 }
 
 export const enum RightsLevels {
@@ -33,4 +44,6 @@ export interface RandomUser {
   lastName: string;
   picture?: string;
   isConnected: boolean;
+  alreadyFriend: boolean;
+  requested: boolean;
 }

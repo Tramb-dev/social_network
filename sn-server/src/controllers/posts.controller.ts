@@ -12,13 +12,13 @@ router
   );
 router
   .route("/add-post")
-  .put(
+  .post(
     authService.checkIfAuthenticated.bind(authService),
     postsService.addPost.bind(postsService)
   );
 router
   .route("/add-comment")
-  .put(
+  .patch(
     authService.checkIfAuthenticated.bind(authService),
     postsService.addComment.bind(postsService)
   );

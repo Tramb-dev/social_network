@@ -100,7 +100,7 @@ class PostsService {
 
   deletePost(req: Request, res: Response, next: NextFunction) {
     const pid = req.query.pid;
-    const uid = res.locals.token.uid;
+    const uid = res.locals.verifiedToken.uid;
     if (typeof pid === "string" && typeof uid === "string") {
       return db.posts
         .deletePost(pid, uid)

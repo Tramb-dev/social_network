@@ -1,20 +1,25 @@
 <table *ngIf="users">
     <thead>
         <tr>
-            <th>En ligne</th>
-            <th></th>
+            <th colspan="2">En ligne</th>
             <th>Utilisateurs</th>
             <th>Envoyer une demande d'ami</th>
         </tr>
     </thead>
     <tbody>
         <ng-container *ngFor="let user of users">
-            <tr *ngIf="user.uid !== currentUserId">
+            <tr>
                 <td><div class="ball" [ngClass]="{ 'connected': user.isConnected }"></div></td>
                 <td><img [src]="user.picture" [alt]="'Photo de profil de ' + user.firstName" width="40"></td>
                 <td>{{ user.firstName }} {{ user.lastName }}</td>
                 <td>
-                    <button mat-stroked-button (click)="onFriend(user.uid)">Demande d'ami</button>
+                    <ng-container *ngIf="user.alreadyFriend; else notAlreadyFriend">
+                        <button mat-stroked-button disabled>Déjà ami</button>
+                    </ng-container>
+                    <ng-template #notAlreadyFriend>
+                        <button *ngIf="user.requested; else enabledButton" mat-stroked-button disabled >Demande envoyée</button>
+                        <ng-template #enabledButton><button mat-stroked-button (click)="onFriend(user.uid)">Demande d'ami</button></ng-template>
+                    </ng-template>
                 </td>
             </tr>
         </ng-container>

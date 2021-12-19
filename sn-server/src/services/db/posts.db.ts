@@ -31,10 +31,10 @@ export class PostsDB {
           })
           .sort({ _id: -1 })
           .limit(10)
-          .project({ _id: 0 })
+          .project<Post>({ _id: 0 })
           .toArray()
           .then((post) => {
-            return post as Post[];
+            return post;
           })
           .catch((err) => {
             throw new Error(
@@ -67,7 +67,7 @@ export class PostsDB {
       await this.client.connect();
       const result = await collection.insertOne(doc);
       if (result.acknowledged) {
-        return (await collection.findOne({ _id: result.insertedId })) as Post;
+        return await collection.findOne<Post>({ _id: result.insertedId });
       }
       return null;
     } catch (err) {
@@ -101,7 +101,7 @@ export class PostsDB {
         }
       );
       if (result.modifiedCount === 1) {
-        return (await collection.findOne({ pid })) as Post;
+        return await collection.findOne<Post>({ pid });
       }
       return null;
     } catch (err) {
@@ -115,9 +115,9 @@ export class PostsDB {
       .collection(this._COLLECTION);
     try {
       await this.client.connect();
-      const post = (await collection.findOne({
+      const post = await collection.findOne<Post>({
         pid,
-      })) as Post;
+      });
       if (post && (post.wallId === uid || pid === uid)) {
         const result = await collection.deleteOne({
           pid,
