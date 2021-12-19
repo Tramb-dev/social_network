@@ -1,8 +1,10 @@
 import { Component, OnInit } from "@angular/core";
+import { Title } from "@angular/platform-browser";
 
 import { UserService } from "src/app/services/user.service";
 
 import { RandomUser } from "src/app/interfaces/user";
+import { siteName } from "src/global-variable";
 
 @Component({
   selector: "app-find-user",
@@ -12,7 +14,9 @@ import { RandomUser } from "src/app/interfaces/user";
 export class FindUserComponent implements OnInit {
   users: RandomUser[] = [];
 
-  constructor(private userSvc: UserService) {}
+  constructor(private userSvc: UserService, private title: Title) {
+    title.setTitle("Liste des utilisateurs - " + siteName);
+  }
 
   ngOnInit(): void {
     this.userSvc.displayUsers().subscribe((users) => {

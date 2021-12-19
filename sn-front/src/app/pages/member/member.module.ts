@@ -11,6 +11,7 @@ import { ReplyComponent } from "src/app/components/member/reply/reply.component"
 import { MemberComponent } from "./member.component";
 import { WallComponent } from "./wall/wall.component";
 import { FindUserComponent } from './find-user/find-user.component';
+import { FriendsListComponent } from './friends-list/friends-list.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { FindUserComponent } from './find-user/find-user.component';
     MemberComponent,
     WallComponent,
     FindUserComponent,
+    FriendsListComponent,
   ],
   imports: [MemberRoutingModule, SharedModule, HeaderModule],
 })

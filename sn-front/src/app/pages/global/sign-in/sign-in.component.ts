@@ -1,14 +1,16 @@
 import { Component, OnDestroy } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
+import { Subscription } from "rxjs";
+import { Title } from "@angular/platform-browser";
 
 import { AuthService } from "src/app/services/auth.service";
 import { FormsValidationService } from "src/app/services/forms-validation.service";
 import { UserService } from "src/app/services/user.service";
+import { SnackBarService } from "src/app/services/snack-bar.service";
 
 import { User } from "src/app/interfaces/user";
-import { SnackBarService } from "src/app/services/snack-bar.service";
-import { Subscription } from "rxjs";
+import { siteName } from "src/global-variable";
 
 @Component({
   selector: "app-sign-in",
@@ -33,8 +35,11 @@ export class SignInComponent implements OnDestroy {
     private router: Router,
     private validation: FormsValidationService,
     private snackBar: SnackBarService,
-    private userSrv: UserService
-  ) {}
+    private userSrv: UserService,
+    private title: Title
+  ) {
+    title.setTitle("Connexion - " + siteName);
+  }
 
   ngOnDestroy() {
     this.snackBar.dismiss();

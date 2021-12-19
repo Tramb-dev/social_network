@@ -1,9 +1,12 @@
 import { Component, OnDestroy } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
+import { Title } from "@angular/platform-browser";
 import { Subscription } from "rxjs";
 
 import { RegisterService } from "src/app/services/register.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
+
+import { siteName } from "src/global-variable";
 
 @Component({
   selector: "app-forgot-password",
@@ -17,8 +20,11 @@ export class ForgotPasswordComponent implements OnDestroy {
 
   constructor(
     private snackBar: SnackBarService,
-    private register: RegisterService
-  ) {}
+    private register: RegisterService,
+    private title: Title
+  ) {
+    title.setTitle("Mot de passe perdu - " + siteName);
+  }
 
   ngOnDestroy(): void {
     this.snackBar.dismiss();

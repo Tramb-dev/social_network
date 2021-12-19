@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subscription } from "rxjs";
 
@@ -8,6 +9,8 @@ import { CustomValidators } from "src/app/providers/custom-validators";
 
 import { FormsValidationService } from "src/app/services/forms-validation.service";
 import { RegisterService } from "src/app/services/register.service";
+
+import { siteName } from "src/global-variable";
 
 @Component({
   selector: "app-reset-password",
@@ -36,8 +39,11 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     private register: RegisterService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private childRoute: ActivatedRoute
-  ) {}
+    private childRoute: ActivatedRoute,
+    private title: Title
+  ) {
+    title.setTitle("Changement de mot de passe - " + siteName);
+  }
 
   ngOnInit(): void {
     const rid = this.childRoute.snapshot.paramMap.get("rid");

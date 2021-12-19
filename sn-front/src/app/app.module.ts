@@ -6,7 +6,7 @@ import { environment } from "src/environments/environment";
 
 import { SocketIoModule, SocketIoConfig } from "ngx-socket-io";
 
-import { BrowserModule } from "@angular/platform-browser";
+import { BrowserModule, Title } from "@angular/platform-browser";
 import { AppRoutingModule } from "./app-routing.module";
 import { SharedModule } from "./shared/shared.module";
 import { AppComponent } from "./app.component";
@@ -39,7 +39,7 @@ const config: SocketIoConfig = {
     AdminModule,
     SharedModule,
   ],
-  providers: [httpInterceptorProviders],
+  providers: [httpInterceptorProviders, Title],
   bootstrap: [AppComponent],
   exports: [],
 })

@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
+import { Title } from "@angular/platform-browser";
 
 import { PostsService } from "src/app/services/posts.service";
 
 import { Post } from "src/app/interfaces/post";
+import { siteName } from "src/global-variable";
 
 @Component({
   selector: "app-wall",
@@ -17,7 +19,13 @@ export class WallComponent implements OnInit, OnDestroy {
   posts: Post[] = [];
   wallId: string | null = "";
 
-  constructor(private postsSvc: PostsService, private route: ActivatedRoute) {}
+  constructor(
+    private postsSvc: PostsService,
+    private route: ActivatedRoute,
+    private title: Title
+  ) {
+    title.setTitle("Mon mur - " + siteName);
+  }
 
   ngOnInit(): void {
     this.wallId = this.route.snapshot.paramMap.get("wallId");

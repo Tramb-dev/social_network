@@ -1,9 +1,12 @@
 import { Component } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
+import { Title } from "@angular/platform-browser";
+
 import { FormsValidationService } from "src/app/services/forms-validation.service";
+import { UserService } from "src/app/services/user.service";
 
 import { Field, User } from "src/app/interfaces/user";
-import { UserService } from "src/app/services/user.service";
+import { siteName } from "src/global-variable";
 
 /**
  * Not functionnal, work in progress
@@ -43,9 +46,11 @@ export class ProfileComponent {
   constructor(
     private fb: FormBuilder,
     private validation: FormsValidationService,
-    private userSvc: UserService
+    private userSvc: UserService,
+    private title: Title
   ) {
     console.log(this.user.dateOfBirth);
+    title.setTitle("Mon profil - " + siteName);
   }
 
   onFormSubmit(): void {

@@ -3,28 +3,30 @@
         <tr>
             <th>En ligne</th>
             <th>Utilisateurs</th>
-            <th>Envoyer une demande d'ami</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
-        <ng-container *ngFor="let user of users">
-            <tr>
-                <td>
-                    <img class="profile-picture" [src]="user.picture" [alt]="'Photo de profil de ' + user.firstName" width="40">
-                    <div class="ball" [ngClass]="{ 'connected': user.isConnected }"></div>
-                </td>
-                <td>{{ user.firstName }} {{ user.lastName }}</td>
-                <td>
-                    <ng-container *ngIf="user.alreadyFriend; else notAlreadyFriend">
-                        <button mat-button disabled>Déjà ami</button>
-                    </ng-container>
-                    <ng-template #notAlreadyFriend>
-                        <button *ngIf="user.requested" mat-stroked-button disabled >Demande envoyée</button>
-                        <button *ngIf="user.incomingRequest" mat-stroked-button (click)="onAccept(user.uid)">Accepter l'invitation</button>
-                        <button *ngIf="!user.requested && !user.incomingRequest" mat-stroked-button (click)="onFriend(user.uid)">Demande d'ami</button>
-                    </ng-template>
-                </td>
-            </tr>
-        </ng-container>
+        <tr *ngFor="let user of users">
+            <td>
+                <img class="profile-picture" [src]="user.picture" [alt]="'Photo de profil de ' + user.firstName" width="40">
+                <div class="ball" [ngClass]="{ 'connected': user.isConnected }"></div>
+            </td>
+            <td>{{ user.firstName }} {{ user.lastName }}</td>
+            <td>
+                <ng-container *ngIf="user.alreadyFriend; else notAlreadyFriend">
+                    <button mat-icon-button disabled>
+                        <mat-icon>how_to_reg</mat-icon>
+                    </button>
+                </ng-container>
+                <ng-template #notAlreadyFriend>
+                    <button *ngIf="user.requested" mat-stroked-button disabled >Demande envoyée</button>
+                    <button *ngIf="user.incomingRequest" mat-stroked-button (click)="onAccept(user.uid)">Accepter l'invitation</button>
+                    <button *ngIf="!user.requested && !user.incomingRequest" mat-mini-fab (click)="onFriend(user.uid)">
+                        <mat-icon>person_add</mat-icon>
+                    </button>
+                </ng-template>
+            </td>
+        </tr>
     </tbody>
 </table>

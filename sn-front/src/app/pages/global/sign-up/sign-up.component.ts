@@ -2,13 +2,15 @@ import { Component } from "@angular/core";
 import { Validators, FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router";
 import { Subscription } from "rxjs";
+import { Title } from "@angular/platform-browser";
 
 import { RegisterService } from "src/app/services/register.service";
 import { FormsValidationService } from "src/app/services/forms-validation.service";
 import { AuthService } from "src/app/services/auth.service";
+import { SnackBarService } from "src/app/services/snack-bar.service";
 
 import { User, Field } from "src/app/interfaces/user";
-import { SnackBarService } from "src/app/services/snack-bar.service";
+import { siteName } from "src/global-variable";
 
 @Component({
   selector: "app-sign-up",
@@ -47,8 +49,11 @@ export class SignUpComponent {
     private router: Router,
     private validation: FormsValidationService,
     private auth: AuthService,
-    private snackBar: SnackBarService
-  ) {}
+    private snackBar: SnackBarService,
+    private title: Title
+  ) {
+    title.setTitle("Créer un compte - " + siteName);
+  }
 
   onFormSubmit(): void {
     if (this.registerForm.invalid) {
