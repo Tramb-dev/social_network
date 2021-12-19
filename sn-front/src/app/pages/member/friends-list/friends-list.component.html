@@ -1,0 +1,23 @@
+<table *ngIf="friends">
+    <thead>
+        <tr>
+            <th>En ligne</th>
+            <th>Amis</th>
+            <th>Rompre</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let friend of friends">
+            <td>
+                <img class="profile-picture" [src]="friend.picture" [alt]="'Photo de profil de ' + friend.firstName" width="40">
+                <div class="ball" [ngClass]="{ 'connected': friend.isConnected }"></div>
+            </td>
+            <td>{{ friend.firstName }} {{ friend.lastName }}</td>
+            <td>
+                <button mat-icon-button (click)="blockFriend(friend.uid)">
+                    <mat-icon>person_remove</mat-icon>
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>

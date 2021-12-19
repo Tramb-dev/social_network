@@ -1,0 +1,65 @@
+@import "../../../../scss/variables";
+
+table {
+  width: 100%;
+  background-color: $white;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: center;
+    padding: 10px 5px;
+    box-sizing: border-box;
+  }
+
+  th {
+    color: $white;
+    font-weight: normal;
+    background-color: $blue;
+    border-bottom: solid 2px #d8d8d8;
+    position: sticky;
+    top: 0;
+  }
+
+  td {
+    border: solid 1px #d8d8d8;
+    border-left: 0;
+    border-right: 0;
+    white-space: nowrap;
+
+    &:first-child {
+      position: relative;
+    }
+  }
+
+  tbody tr {
+    transition: background-color 150ms ease-out;
+
+    &:nth-child(even) {
+      background-color: darken($white, 4%);
+    }
+
+    &:hover {
+      background-color: darken($white, 8%);
+    }
+  }
+}
+
+.ball {
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  background-color: rgb(202, 39, 39);
+  filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.3));
+  position: absolute;
+  top: 10px;
+  left: calc(50% + 10px);
+}
+
+.connected {
+  background-color: rgb(24, 187, 24);
+}
+
+.profile-picture {
+  border-width: 5px;
+}
