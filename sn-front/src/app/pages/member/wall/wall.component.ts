@@ -26,19 +26,21 @@ export class WallComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private title: Title,
     private user: UserService
-  ) {
-    title.setTitle("Mon mur - " + siteName);
-  }
+  ) {}
 
   ngOnInit(): void {
     this.wallSubscription = this.route.paramMap.subscribe((params) => {
       this.wallId = this.route.snapshot.paramMap.get("wallId");
       if (this.wallId === this.user.me.uid) {
         this.breadcrumbs = "Mon fil d'actualité";
+        this.title.setTitle("Mon mur - " + siteName);
       } else {
         if (this.wallId) {
           this.user.getUser(this.wallId).subscribe((user) => {
             this.breadcrumbs = `Fil de ${user.firstName}`;
+            this.title.setTitle(
+              `Mur de ${user.firstName} ${user.lastName} - ${siteName}`
+            );
           });
         }
       }
