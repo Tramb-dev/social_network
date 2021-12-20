@@ -1,10 +1,14 @@
 <article [id]="post.pid">
   <div class="post-info">
-    <img class="post-picture"
-      [src]="post.picture"
-      [alt]="'Photo de profil de ' + post.author"
-    />
-    <div class="post-name">{{ post.author }}</div>
+    <a [routerLink]="['/member/wall', post.uid]">
+      <img class="post-picture"
+        [src]="post.picture"
+        [alt]="'Photo de profil de ' + post.author"
+      />
+    </a>
+    <div class="post-name">
+      <a [routerLink]="['/member/wall', post.uid]">{{ post.author }}</a>
+    </div>
   </div>
   <div class="post-menu" *ngIf="canDisplayMenu">
     <button mat-icon-button [matMenuTriggerFor]="postMenu" aria-label="Post Menu">
