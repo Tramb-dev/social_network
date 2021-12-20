@@ -319,6 +319,41 @@ class UserService {
     }
     return res.sendStatus(400);
   }
+
+  removeFriend(req: Request, res: Response, next: NextFunction) {
+    const context: VerifiedToken = res.locals.verifiedToken;
+    const friendUid: string = req.body.friendUid;
+    if (typeof friendUid === "string" && context.uid) {
+      return db.user
+        .removeUserFromFriendList(context.uid, friendUid)
+        .then((isRemoved) => {
+          if (isRemoved) {
+            res.status(200);
+            return db.user
+              .getUser(context.uid)
+              .then((user) => res.json(this.sendUser(user)))
+              .catch((err) => {
+                res.status(404);
+                return next(err);
+              });
+          } else {
+            res.status(202);
+            return db.user
+              .getUser(context.uid)
+              .then((user) => res.json(this.sendUser(user)))
+              .catch((err) => {
+                res.status(404);
+                return next(err);
+              });
+          }
+        })
+        .catch((err) => {
+          res.status(500);
+          return next(err);
+        });
+    }
+    return res.sendStatus(400);
+  }
 }
 
 export const userService = new UserService();

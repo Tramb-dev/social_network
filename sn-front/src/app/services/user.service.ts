@@ -67,4 +67,10 @@ export class UserService {
       .acceptFriendRequest(friendUid)
       .pipe(tap((user) => (this.me = user)));
   }
+
+  removeFriend(friendUid: string): Observable<User> {
+    return this.httpSvc
+      .removeFriend(friendUid)
+      .pipe(tap((user) => (this.me = user)));
+  }
 }

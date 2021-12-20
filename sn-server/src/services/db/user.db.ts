@@ -486,4 +486,56 @@ export class UserDB extends Crypt {
         throw err;
       });
   }
+
+  removeUserFromFriendList(uid: string, friendUid: string): Promise<boolean> {
+    return this.client
+      .connect()
+      .then(() => {
+        const collection = this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION);
+        const updatePromises: Promise<UpdateResult>[] = [];
+        updatePromises.push(
+          collection.updateOne(
+            {
+              uid,
+            },
+            {
+              $pull: {
+                friends: friendUid,
+              },
+            }
+          )
+        );
+        updatePromises.push(
+          collection.updateOne(
+            {
+              uid: friendUid,
+            },
+            {
+              $pull: {
+                friends: uid,
+              },
+            }
+          )
+        );
+
+        return Promise.all(updatePromises)
+          .then(([userResult, friendResult]) => {
+            if (
+              1 === userResult.modifiedCount &&
+              1 === friendResult.modifiedCount
+            ) {
+              return true;
+            }
+            return false;
+          })
+          .catch((err) => {
+            throw err;
+          });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }
 }

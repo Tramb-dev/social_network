@@ -45,5 +45,11 @@ router
     authService.checkIfAuthenticated.bind(authService),
     userService.getAllFriends.bind(userService)
   );
+router
+  .route("/remove-friend")
+  .patch(
+    authService.checkIfAuthenticated.bind(authService),
+    userService.removeFriend.bind(userService)
+  );
 
 export default router;

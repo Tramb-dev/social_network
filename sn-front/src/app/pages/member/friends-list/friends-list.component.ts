@@ -27,6 +27,11 @@ export class FriendsListComponent implements OnInit {
   }
 
   blockFriend(friendUid: string) {
-    console.log(friendUid);
+    this.userSvc.removeFriend(friendUid).subscribe((currentUser) => {
+      if (!currentUser.friends?.includes(friendUid)) {
+        const index = this.friends.findIndex((user) => user.uid === friendUid);
+        this.friends.splice(index, 1);
+      }
+    });
   }
 }

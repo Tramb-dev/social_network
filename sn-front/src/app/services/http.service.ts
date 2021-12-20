@@ -158,4 +158,15 @@ export class HttpService {
       friendUid,
     });
   }
+
+  /**
+   * Remove a user from its friend list
+   * @param friendUid the user id that will be removed from the friend list
+   * @returns The current user
+   */
+  removeFriend(friendUid: string): Observable<User> {
+    return this.httpClient.patch<User>(this._userUrl + "remove-friend", {
+      friendUid,
+    });
+  }
 }
