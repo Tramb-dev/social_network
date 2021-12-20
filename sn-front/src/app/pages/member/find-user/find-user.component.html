@@ -22,7 +22,7 @@
                 <ng-template #notAlreadyFriend>
                     <button *ngIf="user.requested" mat-stroked-button disabled >Demande envoyée</button>
                     <button *ngIf="user.incomingRequest" mat-stroked-button (click)="onAccept(user.uid)">Accepter l'invitation</button>
-                    <button *ngIf="!user.requested && !user.incomingRequest" mat-mini-fab (click)="onFriend(user.uid)">
+                    <button *ngIf="!user.requested && !user.incomingRequest" mat-mini-fab color="primary" (click)="onFriend(user.uid)">
                         <mat-icon>person_add</mat-icon>
                     </button>
                 </ng-template>
