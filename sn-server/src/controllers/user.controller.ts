@@ -22,6 +22,12 @@ router
   .route("/reset-password")
   .post(userService.resetPassword.bind(userService));
 router
+  .route("/get-user")
+  .get(
+    authService.checkIfAuthenticated.bind(authService),
+    userService.getUser.bind(userService)
+  );
+router
   .route("/get-users")
   .get(
     authService.checkIfAuthenticated.bind(authService),

@@ -13,7 +13,7 @@
     </mat-menu>
   </ng-container>
   <div class="logo">
-    <img src="assets/images/logo.jpg" alt="Logo Social Network" />
+      <img src="assets/images/logo.jpg" alt="Logo Social Network" />
   </div>
   <div class="user-container">
     <div class="user">
@@ -21,10 +21,12 @@
         Bonjour <span class="user-name">{{ userName }}</span>
       </div>
       <div>
-        <img class="profile-picture"
-          [src]="picture"
-          alt="Photo de profil de {{ userName}}"
-        />
+        <a [routerLink]="['/member/wall', uid]">
+          <img class="profile-picture"
+            [src]="picture"
+            alt="Photo de profil de {{ userName}}"
+          />
+        </a>
       </div>
     </div>
     <app-menu *ngIf="!isSmallScreen"></app-menu>

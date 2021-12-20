@@ -30,11 +30,15 @@ export class UserService {
     this.user = user;
   }
 
+  getUser(uid: string): Observable<RandomUser> {
+    return this.httpSvc.getUser(uid);
+  }
+
   /**
    * Display all users to add them as friends
    * @returns an array of users in an observable
    */
-  displayUsers(): Observable<RandomUser[] | null> {
+  displayUsers(): Observable<RandomUser[]> {
     return this.httpSvc.getAllUsers();
   }
 
@@ -42,7 +46,7 @@ export class UserService {
    * Display all friends for this user
    * @returns an array of friends in a observable
    */
-  displayFriends(): Observable<RandomUser[] | null> {
+  displayFriends(): Observable<RandomUser[]> {
     return this.httpSvc.getAllFriends();
   }
 

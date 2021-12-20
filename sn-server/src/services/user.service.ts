@@ -31,11 +31,11 @@ class UserService {
   }
 
   /**
-   * Convert a user output to a random user output
+   * Convert a users output to a random users output
    * @param users
    */
   private sendRandomUsers(users: User[], uid: string): RandomUser[] {
-    return users.map((user) => {
+    /* return users.map((user) => {
       let alreadyFriend = user.friends?.includes(uid);
       if (typeof alreadyFriend === "undefined") {
         alreadyFriend = false;
@@ -49,7 +49,27 @@ class UserService {
         alreadyFriend,
       };
       return randomUser;
-    });
+    }); */
+    return users.map((user) => this.sendRandomUser(user, uid));
+  }
+
+  /**
+   * Convert a single user output to a random user output
+   * @param user
+   */
+  private sendRandomUser(user: User, uid: string): RandomUser {
+    let alreadyFriend = user.friends?.includes(uid);
+    if (typeof alreadyFriend === "undefined") {
+      alreadyFriend = false;
+    }
+    return {
+      uid: user.uid,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      picture: user.picture,
+      isConnected: user.isConnected,
+      alreadyFriend,
+    };
   }
 
   signIn(req: Request, res: Response, next: NextFunction) {
@@ -196,6 +216,28 @@ class UserService {
     } else {
       return res.sendStatus(400);
     }
+  }
+
+  getUser(req: Request, res: Response, next: NextFunction) {
+    const context = res.locals.verifiedToken;
+    const uid = req.query.uid;
+    if (typeof uid === "string") {
+      return db.user
+        .getUser(uid)
+        .then((user) => {
+          if (user) {
+            const randomUser = this.sendRandomUser(user, context.uid);
+            return res.json(randomUser);
+          }
+          res.status(404);
+          return next(new Error("User not found"));
+        })
+        .catch((err) => {
+          res.status(500);
+          return next(new Error(err));
+        });
+    }
+    return res.sendStatus(400);
   }
 
   getAllUsers(req: Request, res: Response, next: NextFunction) {

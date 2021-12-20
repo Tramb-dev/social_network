@@ -169,4 +169,15 @@ export class HttpService {
       friendUid,
     });
   }
+
+  /**
+   * Get data about a user
+   * @param uid the user id to retrieve
+   * @returns The user's data
+   */
+  getUser(uid: string): Observable<RandomUser> {
+    return this.httpClient.get<RandomUser>(
+      this._userUrl + `get-user?uid=${uid}`
+    );
+  }
 }
