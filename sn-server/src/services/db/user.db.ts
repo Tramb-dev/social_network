@@ -487,6 +487,12 @@ export class UserDB extends Crypt {
       });
   }
 
+  /**
+   * Remove the friendship between two users
+   * @param uid the current user id
+   * @param friendUid the friend id involved in the broken relationship
+   * @returns True if the update was successful, false otherwise
+   */
   removeUserFromFriendList(uid: string, friendUid: string): Promise<boolean> {
     return this.client
       .connect()

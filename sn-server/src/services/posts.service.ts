@@ -11,22 +11,37 @@ class PostsService {
    */
   sendAllWallPosts(req: Request, res: Response, next: NextFunction) {
     const wallId = req.query.wallId;
+    const context = res.locals.verifiedToken;
     if (typeof wallId === "string") {
-      return db
-        .getAllWallPosts(wallId)
-        .then((posts) => {
-          return res.json(posts);
-        })
-        .catch((err) => {
-          res.status(500);
-          return next(
-            new Error(
-              "Error in getting all wall posts of wallID " + wallId + " " + err
-            )
-          );
-        });
+      if (wallId === context.uid || this.isUserAFriend(wallId, context.uid)) {
+        return db
+          .getAllWallPosts(wallId)
+          .then((posts) => {
+            return res.json(posts);
+          })
+          .catch((err) => {
+            res.status(500);
+            return next(err);
+          });
+      }
+      return res.sendStatus(401);
     }
     return res.sendStatus(400);
+  }
+
+  /**
+   * Check if the current user is a friend of this wall owner
+   * @param wallId the owner of this wall
+   * @param uid the current user id
+   * @returns true if it's a friend, false otherwise
+   */
+  private isUserAFriend(wallId: string, uid: string): Promise<boolean> {
+    return db.user.getUser(uid).then((user) => {
+      if (user?.friends?.includes(wallId)) {
+        return true;
+      }
+      return false;
+    });
   }
 
   /**

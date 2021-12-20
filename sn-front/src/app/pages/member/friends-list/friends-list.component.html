@@ -12,7 +12,11 @@
                 <img class="profile-picture" [src]="friend.picture" [alt]="'Photo de profil de ' + friend.firstName" width="40">
                 <div class="ball" [ngClass]="{ 'connected': friend.isConnected }"></div>
             </td>
-            <td>{{ friend.firstName }} {{ friend.lastName }}</td>
+            <td>
+                <a [routerLink]="['/member/wall', friend.uid]">
+                    {{ friend.firstName }} {{ friend.lastName }}
+                </a>
+            </td>
             <td>
                 <button mat-icon-button (click)="blockFriend(friend.uid)">
                     <mat-icon>person_remove</mat-icon>
