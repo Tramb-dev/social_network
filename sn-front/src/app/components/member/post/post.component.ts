@@ -15,7 +15,7 @@ export class PostComponent {
 
   ngOnInit(): void {
     this.canDisplayMenu = this.postsSvc.canDisplayMenu(
-      this.post.pid,
+      this.post.uid,
       this.post.wallId
     );
   }

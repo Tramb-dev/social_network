@@ -109,26 +109,35 @@ export class PostsDB {
     }
   }
 
-  async deletePost(pid: string, uid: string): Promise<boolean> {
+  async deletePost(pid: string): Promise<boolean> {
     const collection = this.client
       .db(this._DB_NAME)
       .collection(this._COLLECTION);
     try {
       await this.client.connect();
-      const post = await collection.findOne<Post>({
+      const result = await collection.deleteOne({
         pid,
       });
-      if (post && (post.wallId === uid || pid === uid)) {
-        const result = await collection.deleteOne({
-          pid,
-        });
-        if (result.acknowledged && result.deletedCount === 1) {
-          return true;
-        }
+      if (result.acknowledged && result.deletedCount === 1) {
+        return true;
       }
       return false;
     } catch (err) {
-      throw new Error("Impossible to delete this post " + err);
+      throw err;
     }
+  }
+
+  /**
+   * Retrieve a specified post
+   * @param pid the post id to retrieve
+   * @returns The post or null if it does not exists
+   */
+  getPost(pid: string): Promise<Post | null> {
+    return this.client.connect().then(() => {
+      const collection = this.client
+        .db(this._DB_NAME)
+        .collection(this._COLLECTION);
+      return collection.findOne<Post>({ pid });
+    });
   }
 }

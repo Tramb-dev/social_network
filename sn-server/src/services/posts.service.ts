@@ -118,15 +118,27 @@ class PostsService {
     const uid = res.locals.verifiedToken.uid;
     if (typeof pid === "string" && typeof uid === "string") {
       return db.posts
-        .deletePost(pid, uid)
-        .then((isDeleted) => {
-          if (isDeleted) {
-            return res.sendStatus(200);
+        .getPost(pid)
+        .then((post) => {
+          if (post && (post.wallId === uid || post.uid === uid)) {
+            return db.posts
+              .deletePost(pid)
+              .then((isDeleted) => {
+                if (isDeleted) {
+                  return res.sendStatus(200);
+                }
+                return res.sendStatus(500);
+              })
+              .catch((err) => {
+                res.status(500);
+                return next(err);
+              });
           }
-          return res.sendStatus(404);
+          res.status(403);
+          return next(new Error("Your are not allowed to delete this post."));
         })
         .catch((err) => {
-          res.status(500);
+          res.status(404);
           return next(err);
         });
     }

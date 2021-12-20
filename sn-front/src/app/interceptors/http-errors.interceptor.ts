@@ -68,10 +68,9 @@ export class HttpErrorsInterceptor implements HttpInterceptor {
         break;
 
       case 403:
-        this.routeMsg.message = "Veuillez vous reconnecter.";
-        this.auth.logoutUser();
+        this.routeMsg.message =
+          "Vous n'avez pas l'autorisation pour cette action.";
         handled = true;
-        this.router.navigateByUrl(this.auth.getLoginUrl());
         break;
     }
 

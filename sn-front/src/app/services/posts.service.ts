@@ -80,9 +80,16 @@ export class PostsService {
     return this;
   }
 
-  canDisplayMenu(pid: string, wallId: string): boolean {
+  /**
+   * Check if the user can access to post menu. The post must be on the user wall
+   * or the user is its author
+   * @param postUid the user id who has written this post
+   * @param wallId the wall id where this post is
+   * @returns true if the user can display the menu, false otherwise
+   */
+  canDisplayMenu(postUid: string, wallId: string): boolean {
     const uid = this.user.me.uid;
-    if (pid === uid || wallId === uid) {
+    if (postUid === uid || wallId === uid) {
       return true;
     }
     return false;
