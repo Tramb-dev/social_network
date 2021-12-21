@@ -11,6 +11,12 @@ router
     postsService.sendAllWallPosts.bind(postsService)
   );
 router
+  .route("/all-friends-posts")
+  .get(
+    authService.checkIfAuthenticated.bind(authService),
+    postsService.sendAllFriendsPosts.bind(postsService)
+  );
+router
   .route("/add-post")
   .post(
     authService.checkIfAuthenticated.bind(authService),

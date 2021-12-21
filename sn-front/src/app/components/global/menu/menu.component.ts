@@ -15,7 +15,7 @@ export class MenuComponent {
       visible: true,
     },
     {
-      anchor: "friends",
+      anchor: "feed",
       label: "Amis",
       number: 5,
       visible: true,

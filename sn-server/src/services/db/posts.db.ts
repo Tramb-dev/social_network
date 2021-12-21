@@ -33,17 +33,42 @@ export class PostsDB {
           .limit(10)
           .project<Post>({ _id: 0 })
           .toArray()
-          .then((post) => {
-            return post;
-          })
+          .then((posts) => posts)
+          .catch((err) => {
+            throw new Error("Error getting all wall posts: " + err);
+          });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }
+
+  /**
+   * Get a limited number of post from a user
+   * @param uid
+   * @returns
+   */
+  getUserPosts(uid: string): Promise<Post[]> {
+    return this.client
+      .connect()
+      .then(() => {
+        return this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION)
+          .find({ uid })
+          .sort({ _id: -1 })
+          .limit(5)
+          .project<Post>({ _id: 0 })
+          .toArray()
+          .then((posts) => posts)
           .catch((err) => {
             throw new Error(
-              "Error getting all wall posts: " + JSON.stringify(err)
+              "Error getting this friend posts: " + uid + " " + err
             );
           });
       })
       .catch((err) => {
-        throw new Error("Mongo error: " + err);
+        throw err;
       });
   }
 

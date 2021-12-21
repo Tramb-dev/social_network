@@ -30,6 +30,26 @@ class PostsService {
   }
 
   /**
+   * Send the all the posts from the user's friend list
+   * @param req
+   * @param res
+   * @param next
+   * @returns An array of posts
+   */
+  sendAllFriendsPosts(req: Request, res: Response, next: NextFunction) {
+    const context = res.locals.verifiedToken;
+    return db
+      .getAllFriendsPosts(context.uid)
+      .then((posts) => {
+        return res.json(posts);
+      })
+      .catch((err) => {
+        res.status(500);
+        return next(err);
+      });
+  }
+
+  /**
    * Check if the current user is a friend of this wall owner
    * @param wallId the owner of this wall
    * @param uid the current user id

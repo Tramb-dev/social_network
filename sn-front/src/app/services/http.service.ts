@@ -77,6 +77,14 @@ export class HttpService {
   }
 
   /**
+   * Retrieves all posts from friends
+   * @returns An array of posts
+   */
+  getAllFriendsPosts(): Observable<Post[]> {
+    return this.httpClient.get<Post[]>(this._postsUrl + "all-friends-posts");
+  }
+
+  /**
    * Send a new post to a specified wall
    * @param content the content of this new post
    * @param wallId the wall id to post this content

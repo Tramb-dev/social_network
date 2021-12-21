@@ -13,14 +13,51 @@ class DB {
 
   async getAllWallPosts(wallId: string): Promise<Post[]> {
     const promises: Promise<Post>[] = [];
-    await this.client.connect();
     const posts = await this.posts.getAllWallPosts(wallId);
     posts.forEach((post) => {
       promises.push(this.addPicture(post));
     });
 
-    const postsWithPictures = await Promise.all(promises);
-    return postsWithPictures;
+    return await Promise.all(promises);
+  }
+
+  getAllFriendsPosts(uid: string): Promise<Post[] | null> {
+    const promises: Promise<Post[]>[] = [];
+    return this.user
+      .getUser(uid)
+      .then((user) => {
+        if (user && user.friends && user.friends.length > 0) {
+          user.friends.forEach((friend) => {
+            promises.push(
+              this.posts.getUserPosts(friend).then((posts) => {
+                const picturesPromises: Promise<Post>[] = [];
+                posts.forEach((post) => {
+                  picturesPromises.push(this.addPicture(post));
+                });
+                return Promise.all(picturesPromises);
+              })
+            );
+          });
+          return Promise.all(promises).then((allPosts) => {
+            let posts: Post[] = [];
+            allPosts.forEach((friendPosts) => {
+              posts = posts.concat(friendPosts);
+            });
+            posts.sort((a, b) =>
+              this.compareDates(b.creationDate, a.creationDate)
+            );
+            return posts;
+          });
+        }
+        return null;
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }
+
+  private compareDates(firstDate: Date, secondDate: Date): number {
+    return firstDate.getTime() - secondDate.getTime();
   }
 
   async addPost(

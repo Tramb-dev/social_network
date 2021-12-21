@@ -10,8 +10,8 @@ import { PostComponent } from "../../components/member/post/post.component";
 import { ReplyComponent } from "src/app/components/member/reply/reply.component";
 import { MemberComponent } from "./member.component";
 import { WallComponent } from "./wall/wall.component";
-import { FindUserComponent } from './find-user/find-user.component';
-import { FriendsListComponent } from './friends-list/friends-list.component';
+import { FindUserComponent } from "./find-user/find-user.component";
+import { FriendsListComponent } from "./friends-list/friends-list.component";
 
 @NgModule({
   declarations: [

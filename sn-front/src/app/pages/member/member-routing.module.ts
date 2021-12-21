@@ -29,6 +29,10 @@ const routes: Routes = [
         path: "friends",
         component: FriendsListComponent,
       },
+      {
+        path: "feed",
+        component: WallComponent,
+      },
     ],
   },
 ];

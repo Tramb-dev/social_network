@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
+import { combineLatest, map, merge, Observable, Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { Title } from "@angular/platform-browser";
 
@@ -29,22 +29,29 @@ export class WallComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.wallSubscription = this.route.paramMap.subscribe((params) => {
-      this.wallId = this.route.snapshot.paramMap.get("wallId");
-      if (this.wallId === this.user.me.uid) {
-        this.breadcrumbs = "Mon fil d'actualité";
-        this.title.setTitle("Mon mur - " + siteName);
+    this.wallSubscription = combineLatest([
+      this.route.url,
+      this.route.paramMap,
+    ]).subscribe(([url, params]) => {
+      if (url[0].path === "feed") {
+        this.wallPosts();
       } else {
-        if (this.wallId) {
-          this.user.getUser(this.wallId).subscribe((user) => {
-            this.breadcrumbs = `Fil de ${user.firstName}`;
-            this.title.setTitle(
-              `Mur de ${user.firstName} ${user.lastName} - ${siteName}`
-            );
-          });
+        this.wallId = params.get("wallId");
+        if (this.wallId === this.user.me.uid) {
+          this.breadcrumbs = "Mon fil d'actualité";
+          this.title.setTitle("Mon mur - " + siteName);
+        } else {
+          if (this.wallId) {
+            this.user.getUser(this.wallId).subscribe((user) => {
+              this.breadcrumbs = `Fil de ${user.firstName}`;
+              this.title.setTitle(
+                `Mur de ${user.firstName} ${user.lastName} - ${siteName}`
+              );
+            });
+          }
         }
+        this.wallPosts(this.wallId);
       }
-      this.wallPosts();
     });
   }
 
@@ -57,10 +64,10 @@ export class WallComponent implements OnInit, OnDestroy {
     }
   }
 
-  private wallPosts() {
+  private wallPosts(wallId?: string | null): WallComponent {
     let displayPost$: Observable<Post[]>;
-    if (this.wallId) {
-      displayPost$ = this.postsSvc.displayPosts(this.wallId);
+    if (wallId) {
+      displayPost$ = this.postsSvc.displayPosts(wallId);
     } else {
       displayPost$ = this.postsSvc.displayPosts();
     }
@@ -69,5 +76,6 @@ export class WallComponent implements OnInit, OnDestroy {
         this.posts = posts;
       }
     });
+    return this;
   }
 }

@@ -15,31 +15,48 @@ export class PostsService {
   constructor(private http: HttpService, private user: UserService) {}
 
   /**
-   * Retrieves all posts for a given wall. If not provided, get the wall corresponding
-   * to this user.
+   * Retrieves all posts for a given wall.
    * @param wallId
    * @returns this service
    */
   private allWallPosts(wallId: string): PostsService {
-    this.http.getAllWallPosts(wallId).subscribe((data) => {
-      if (data) {
-        this.posts = data;
-        this.posts$.next(data);
-      }
-    });
+    this.http.getAllWallPosts(wallId).subscribe(this.updatePosts.bind(this));
+    return this;
+  }
+
+  /**
+   * Retrieves all post from user's friends.
+   * @returns this service
+   */
+  private allFriendsPosts(): PostsService {
+    this.http.getAllFriendsPosts().subscribe(this.updatePosts.bind(this));
+    return this;
+  }
+
+  /**
+   * Takes the data providen to update and send the posts
+   * @param data an array of posts
+   * @returns this service
+   */
+  private updatePosts(data: Post[]): PostsService {
+    if (data) {
+      this.posts = data;
+      this.posts$.next(data);
+    }
     return this;
   }
 
   /**
    * Send an observable with the posts requested
-   * @param wallId
+   * @param wallId The wall id requested. If not, request the posts from friends
    * @returns An observable with an array of posts
    */
   displayPosts(wallId?: string): Observable<Post[]> {
-    if (!wallId) {
-      wallId = this.user.me.uid;
+    if (wallId) {
+      this.allWallPosts(wallId);
+    } else {
+      this.allFriendsPosts();
     }
-    this.allWallPosts(wallId);
     return this.posts$.asObservable();
   }
 
