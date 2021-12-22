@@ -26,7 +26,7 @@ const routes: Routes = [
         component: FindUserComponent,
       },
       {
-        path: "friends",
+        path: "friends/:uid",
         component: FriendsListComponent,
       },
       {

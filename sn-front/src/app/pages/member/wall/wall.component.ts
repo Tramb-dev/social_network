@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { combineLatest, map, merge, Observable, Subscription } from "rxjs";
+import { combineLatest, Observable, Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { Title } from "@angular/platform-browser";
 

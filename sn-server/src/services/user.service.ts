@@ -35,21 +35,6 @@ class UserService {
    * @param users
    */
   private sendRandomUsers(users: User[], uid: string): RandomUser[] {
-    /* return users.map((user) => {
-      let alreadyFriend = user.friends?.includes(uid);
-      if (typeof alreadyFriend === "undefined") {
-        alreadyFriend = false;
-      }
-      const randomUser: RandomUser = {
-        uid: user.uid,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        picture: user.picture,
-        isConnected: user.isConnected,
-        alreadyFriend,
-      };
-      return randomUser;
-    }); */
     return users.map((user) => this.sendRandomUser(user, uid));
   }
 
@@ -267,29 +252,28 @@ class UserService {
   }
 
   getAllFriends(req: Request, res: Response, next: NextFunction) {
-    const context = res.locals.verifiedToken;
-    db.user
-      .getFriends(context.uid)
-      .then((users) => {
-        if (users) {
-          const modifiedUsers = users.filter(
-            (user) => user.uid !== context.uid
-          );
-          if (modifiedUsers.length > 0) {
-            const randomUsers = this.sendRandomUsers(
-              modifiedUsers,
-              context.uid
-            );
-            return res.json(randomUsers);
+    const uid = req.query.uid;
+    if (typeof uid === "string") {
+      db.user
+        .getFriends(uid)
+        .then((users) => {
+          if (users) {
+            const modifiedUsers = users.filter((user) => user.uid !== uid);
+            if (modifiedUsers.length > 0) {
+              const randomUsers = this.sendRandomUsers(modifiedUsers, uid);
+              return res.json(randomUsers);
+            }
           }
-        }
-        res.status(404);
-        return next(new Error("User not found"));
-      })
-      .catch((err) => {
-        res.status(500);
-        return next(new Error(err));
-      });
+          res.status(404);
+          return next(new Error("User not found"));
+        })
+        .catch((err) => {
+          res.status(500);
+          return next(new Error(err));
+        });
+    } else {
+      res.sendStatus(400);
+    }
   }
 
   addFriendRequest(req: Request, res: Response, next: NextFunction) {

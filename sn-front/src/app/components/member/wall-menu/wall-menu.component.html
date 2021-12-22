@@ -1,0 +1,8 @@
+<button mat-icon-button [matMenuTriggerFor]="breadcrumbMenu" aria-label="Breadcrumb Menu">
+    <mat-icon>more_vert</mat-icon>
+</button>
+<mat-menu #breadcrumbMenu>
+    <button mat-menu-item [routerLink]="['/member/friends', uid]">
+        <span>{{ friendText }}</span>
+    </button>
+</mat-menu>

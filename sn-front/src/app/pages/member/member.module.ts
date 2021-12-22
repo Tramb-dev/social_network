@@ -12,6 +12,7 @@ import { MemberComponent } from "./member.component";
 import { WallComponent } from "./wall/wall.component";
 import { FindUserComponent } from "./find-user/find-user.component";
 import { FriendsListComponent } from "./friends-list/friends-list.component";
+import { WallMenuComponent } from "src/app/components/member/wall-menu/wall-menu.component";
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { FriendsListComponent } from "./friends-list/friends-list.component";
     WallComponent,
     FindUserComponent,
     FriendsListComponent,
+    WallMenuComponent,
   ],
   imports: [MemberRoutingModule, SharedModule, HeaderModule],
 })

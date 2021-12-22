@@ -138,11 +138,14 @@ export class HttpService {
   }
 
   /**
-   * Fetch all friends fro this user
+   * Fetch all friends from this user
+   * @param uid user id to fetch friends
    * @returns All the friends in a limited format
    */
-  getAllFriends(): Observable<RandomUser[]> {
-    return this.httpClient.get<RandomUser[]>(this._userUrl + "get-friends");
+  getAllFriends(uid: string): Observable<RandomUser[]> {
+    return this.httpClient.get<RandomUser[]>(
+      this._userUrl + `get-friends?uid=${uid}`
+    );
   }
 
   /**
