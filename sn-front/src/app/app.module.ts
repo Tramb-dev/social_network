@@ -17,6 +17,7 @@ import { AdminModule } from "./pages/admin/admin.module";
 import { httpInterceptorProviders } from "./interceptors/";
 
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { RecommendToComponent } from './components/member/recommend-to/recommend-to.component';
 
 const config: SocketIoConfig = {
   url: environment.socketUrl,
@@ -26,7 +27,7 @@ const config: SocketIoConfig = {
 };
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, RecommendToComponent],
   imports: [
     AppRoutingModule,
     BrowserModule,

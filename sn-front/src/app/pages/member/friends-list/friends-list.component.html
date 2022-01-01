@@ -3,6 +3,7 @@
         <tr>
             <th>En ligne</th>
             <th>Amis</th>
+            <th>Recommander</th>
             <th *ngIf="isMyList">Rompre</th>
         </tr>
     </thead>
@@ -16,6 +17,11 @@
                 <a [routerLink]="['/member/wall', friend.uid]">
                     {{ friend.firstName }} {{ friend.lastName }}
                 </a>
+            </td>
+            <td>
+                <button mat-icon-button (click)="openRecommendModal(friend.uid)">
+                    <mat-icon>recommend</mat-icon>
+                </button>
             </td>
             <td *ngIf="isMyList">
                 <button mat-icon-button (click)="blockFriend(friend.uid)">

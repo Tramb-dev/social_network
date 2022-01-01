@@ -171,6 +171,22 @@ export class HttpService {
   }
 
   /**
+   * Send a recommendation to a friend for another friend
+   * @param friendToRecommendUid The friend the user want to recommend
+   * @param friendToSendInviteUid The friend the user want to send the recommendation
+   * @returns True if the recommendation is sended, false otherwise
+   */
+  recommendFriend(
+    friendToRecommendUid: string,
+    friendToSendInviteUid: string
+  ): Observable<boolean> {
+    return this.httpClient.post<boolean>(this._userUrl + "recommend-friend", {
+      friendToRecommendUid,
+      friendToSendInviteUid,
+    });
+  }
+
+  /**
    * Remove a user from its friend list
    * @param friendUid the user id that will be removed from the friend list
    * @returns The current user

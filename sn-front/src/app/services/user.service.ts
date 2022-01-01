@@ -72,6 +72,24 @@ export class UserService {
       .pipe(tap((user) => (this.me = user)));
   }
 
+  /**
+   * Send a recommendation to a friend for another friend
+   * @param friendToRecommendUid The friend the user want to recommend
+   * @param friendToSendInviteUid The friend the user want to send the recommendation
+   * @returns True if the recommendation is sended, false otherwise
+   */
+  recommendFriend(friendToRecommendUid: string, friendToSendInviteUid: string) {
+    return this.httpSvc.recommendFriend(
+      friendToRecommendUid,
+      friendToSendInviteUid
+    );
+  }
+
+  /**
+   * Removes a friend from the user friends list
+   * @param friendUid the friend to remove
+   * @returns The current user in an observable
+   */
   removeFriend(friendUid: string): Observable<User> {
     return this.httpSvc
       .removeFriend(friendUid)

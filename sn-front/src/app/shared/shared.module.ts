@@ -12,6 +12,7 @@ import { LayoutModule } from "@angular/cdk/layout";
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from "@angular/material/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatDialogModule } from "@angular/material/dialog";
 
 import { FooterComponent } from "src/app/components/global/footer/footer.component";
 
@@ -41,6 +42,7 @@ export const modules = [
   MatMenuModule,
   MatMomentDateModule,
   MatDatepickerModule,
+  MatDialogModule,
 ];
 
 @NgModule({

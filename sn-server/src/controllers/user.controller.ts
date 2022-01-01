@@ -52,6 +52,12 @@ router
     userService.getAllFriends.bind(userService)
   );
 router
+  .route("/recommend-friend")
+  .post(
+    authService.checkIfAuthenticated.bind(authService),
+    userService.recommendFriend.bind(userService)
+  );
+router
   .route("/remove-friend")
   .patch(
     authService.checkIfAuthenticated.bind(authService),

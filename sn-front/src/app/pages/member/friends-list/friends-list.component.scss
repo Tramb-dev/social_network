@@ -36,11 +36,16 @@ table {
     transition: background-color 150ms ease-out;
 
     &:nth-child(even) {
-      background-color: darken($white, 4%);
+      background-color: lighten($triadic1, 40%);
     }
 
     &:hover {
-      background-color: darken($white, 8%);
+      background-color: lighten($triadic1, 20%);
+    }
+
+    &:hover a,
+    &:hover {
+      color: $white;
     }
   }
 }

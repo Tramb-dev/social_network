@@ -346,6 +346,30 @@ class UserService {
     return res.sendStatus(400);
   }
 
+  recommendFriend(req: Request, res: Response, next: NextFunction) {
+    const context: VerifiedToken = res.locals.verifiedToken;
+    const friendToRecommendUid = req.body.friendToRecommendUid;
+    const friendToSendInviteUid = req.body.friendToSendInviteUid;
+    if (
+      typeof friendToRecommendUid === "string" &&
+      typeof friendToSendInviteUid === "string"
+    ) {
+      return db.user
+        .addFriendRequest(friendToRecommendUid, friendToSendInviteUid)
+        .then((isSended) => {
+          if (isSended) {
+            return res.sendStatus(200);
+          }
+          return res.sendStatus(500);
+        })
+        .catch((err) => {
+          res.status(500);
+          return next(err);
+        });
+    }
+    return res.sendStatus(400);
+  }
+
   removeFriend(req: Request, res: Response, next: NextFunction) {
     const context: VerifiedToken = res.locals.verifiedToken;
     const friendUid: string = req.body.friendUid;

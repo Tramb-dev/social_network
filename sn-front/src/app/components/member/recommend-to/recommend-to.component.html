@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>A quel ami recommander ?</h2>
+<mat-dialog-content>
+    <div *ngFor="let friend of data.friends">
+        <button mat-button [mat-dialog-close]="friend.uid">{{ friend.firstName }} {{ friend.lastName }}</button>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Annuler</button>
+</mat-dialog-actions>
