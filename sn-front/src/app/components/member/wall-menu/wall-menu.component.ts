@@ -26,6 +26,8 @@ export class WallMenuComponent implements OnInit, OnDestroy {
         } else {
           this.friendText = "Voir mes amis";
         }
+      } else {
+        this.friendText = "Voir mes amis";
       }
     });
   }
