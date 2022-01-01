@@ -43,8 +43,8 @@ export class FindUserComponent implements OnInit {
   filter(event: string) {
     this.filteredUsers = this.users.filter(
       (user) =>
-        user.firstName.toLowerCase().includes(event) ||
-        user.lastName.toLowerCase().includes(event)
+        user.firstName.toLowerCase().includes(event.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(event.toLowerCase())
     );
   }
 
