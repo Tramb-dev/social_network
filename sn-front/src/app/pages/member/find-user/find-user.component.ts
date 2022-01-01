@@ -13,6 +13,7 @@ import { siteName } from "src/global-variable";
 })
 export class FindUserComponent implements OnInit {
   users: RandomUser[] = [];
+  filteredUsers: RandomUser[] = [];
 
   constructor(private userSvc: UserService, private title: Title) {
     title.setTitle("Liste des utilisateurs - " + siteName);
@@ -34,8 +35,17 @@ export class FindUserComponent implements OnInit {
           }
         });
         this.users = users;
+        this.filteredUsers = users;
       }
     });
+  }
+
+  filter(event: string) {
+    this.filteredUsers = this.users.filter(
+      (user) =>
+        user.firstName.toLowerCase().includes(event) ||
+        user.lastName.toLowerCase().includes(event)
+    );
   }
 
   onFriend(friendUid: string): FindUserComponent {
