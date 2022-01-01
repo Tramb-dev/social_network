@@ -1,14 +1,15 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { MatDialog } from "@angular/material/dialog";
+import { ActivatedRoute } from "@angular/router";
+import { combineLatest, Observable, Subscription, switchMap } from "rxjs";
 
 import { UserService } from "src/app/services/user.service";
-import { combineLatest, Observable, Subscription, switchMap } from "rxjs";
-import { ActivatedRoute } from "@angular/router";
+import { SnackBarService } from "src/app/services/snack-bar.service";
+import { RecommendToComponent } from "src/app/components/member/recommend-to/recommend-to.component";
 
 import { RandomUser } from "src/app/interfaces/user";
 import { siteName } from "src/global-variable";
-import { RecommendToComponent } from "src/app/components/member/recommend-to/recommend-to.component";
 
 @Component({
   selector: "app-friends-list",
@@ -24,7 +25,8 @@ export class FriendsListComponent implements OnInit, OnDestroy {
     private userSvc: UserService,
     private title: Title,
     private route: ActivatedRoute,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private snackBar: SnackBarService
   ) {
     title.setTitle("Liste de mes amis - " + siteName);
   }
@@ -88,7 +90,17 @@ export class FriendsListComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result && result !== "") {
-        this.userSvc.recommendFriend(friendUid, result).subscribe();
+        this.userSvc
+          .recommendFriend(friendUid, result)
+          .subscribe((response) => {
+            if (response) {
+              this.snackBar.presentSnackBar(
+                "La recommendation a bien été envoyée",
+                "snackBar-top",
+                3000
+              );
+            }
+          });
       }
     });
   }
