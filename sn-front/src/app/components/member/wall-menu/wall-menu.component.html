@@ -2,6 +2,9 @@
     <mat-icon>more_vert</mat-icon>
 </button>
 <mat-menu #breadcrumbMenu>
+    <button mat-menu-item [routerLink]="['/member/discussion', uid]">
+        <span>Lancer une discussion</span>
+    </button>
     <button mat-menu-item [routerLink]="['/member/friends', uid]">
         <span>{{ friendText }}</span>
     </button>

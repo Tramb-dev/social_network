@@ -1,6 +1,8 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { MemberGuard } from "src/app/guards/member.guard";
+import { DiscussionComponent } from "./discussion/discussion.component";
+import { DiscussionsListComponent } from "./discussions-list/discussions-list.component";
 import { FindUserComponent } from "./find-user/find-user.component";
 import { FriendsListComponent } from "./friends-list/friends-list.component";
 import { MemberComponent } from "./member.component";
@@ -32,6 +34,14 @@ const routes: Routes = [
       {
         path: "feed",
         component: WallComponent,
+      },
+      {
+        path: "discussions-list",
+        component: DiscussionsListComponent,
+      },
+      {
+        path: "discussion/:did",
+        component: DiscussionComponent,
       },
     ],
   },

@@ -1,0 +1,13 @@
+<section>
+    <mat-card class="message" *ngFor="let message of messages">
+        <mat-card-content>{{ message.content }}</mat-card-content>
+        <mat-card-footer class="message-date">{{ message.date | date:'short':'+0200':'fr' }}</mat-card-footer>
+    </mat-card>
+</section>
+<div class="sending-zone">
+    <mat-form-field class="send-message-form">
+        <mat-label>Envoyer un message</mat-label>
+        <textarea type="text" matInput cdkTextareaAutosize="true" [formControl]="messageForm" class="send-message"></textarea>
+        <mat-icon matSuffix (click)="publish()">send</mat-icon>
+    </mat-form-field>
+</div>

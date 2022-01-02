@@ -9,7 +9,7 @@ import { UserService } from "src/app/services/user.service";
 export class MenuComponent {
   badges = [
     {
-      anchor: "messages",
+      anchor: "discussions-list",
       label: "Messages",
       number: 4,
       visible: true,

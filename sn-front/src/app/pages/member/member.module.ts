@@ -14,6 +14,8 @@ import { FindUserComponent } from "./find-user/find-user.component";
 import { FriendsListComponent } from "./friends-list/friends-list.component";
 import { WallMenuComponent } from "src/app/components/member/wall-menu/wall-menu.component";
 import { UserFinderComponent } from "../../components/global/user-finder/user-finder.component";
+import { DiscussionsListComponent } from "./discussions-list/discussions-list.component";
+import { DiscussionComponent } from "./discussion/discussion.component";
 
 @NgModule({
   declarations: [
@@ -27,6 +29,8 @@ import { UserFinderComponent } from "../../components/global/user-finder/user-fi
     FriendsListComponent,
     WallMenuComponent,
     UserFinderComponent,
+    DiscussionsListComponent,
+    DiscussionComponent,
   ],
   imports: [MemberRoutingModule, SharedModule, HeaderModule],
 })
