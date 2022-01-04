@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { JwtPayload } from "jsonwebtoken";
 import { Crypt } from "../crypt";
 
 class AuthService extends Crypt {
@@ -28,6 +29,18 @@ class AuthService extends Crypt {
     } else {
       res.statusMessage = "Invalid signature";
       return res.sendStatus(403);
+    }
+  }
+
+  checkWebsocketAuth(token: string): string | false | JwtPayload {
+    try {
+      const verifiedToken = this.verifyToken(token);
+      if (verifiedToken) {
+        return verifiedToken;
+      }
+      return false;
+    } catch (err) {
+      return false;
     }
   }
 }

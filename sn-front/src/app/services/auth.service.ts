@@ -5,7 +5,6 @@ import { map, tap } from "rxjs/operators";
 import { HttpService } from "./http.service";
 import { LocalStorageService } from "./local-storage.service";
 import { UserService } from "./user.service";
-import { SnackBarService } from "./snack-bar.service";
 
 import { User } from "../interfaces/user";
 import { RightsLevels } from "../interfaces/auth";
@@ -24,8 +23,7 @@ export class AuthService {
   constructor(
     private httpService: HttpService,
     private localStorage: LocalStorageService,
-    private user: UserService,
-    private snackBar: SnackBarService
+    private user: UserService
   ) {}
 
   /**

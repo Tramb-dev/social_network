@@ -17,12 +17,13 @@ import { AdminModule } from "./pages/admin/admin.module";
 import { httpInterceptorProviders } from "./interceptors/";
 
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { RecommendToComponent } from './components/member/recommend-to/recommend-to.component';
+import { RecommendToComponent } from "./components/member/recommend-to/recommend-to.component";
 
 const config: SocketIoConfig = {
-  url: environment.socketUrl,
+  url: environment.serverUrl,
   options: {
     transports: ["websocket"],
+    autoConnect: false,
   },
 };
 

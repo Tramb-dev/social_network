@@ -3,12 +3,14 @@ import cors from "cors";
 import http from "http";
 import { PORT } from "./config";
 import route from "./routes/index";
+import { SocketIO } from "./io";
 
 const app: Application = express();
 const server = http.createServer(app);
 const corsOptions = {
   origin: ["http://localhost:4200"],
 };
+const socketIO = new SocketIO(server, corsOptions);
 
 // Server settings
 /* app.set('env', config.env);
@@ -29,6 +31,6 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.listen(PORT, (): void => {
+server.listen(PORT, (): void => {
   console.log(`Server listening on port ${PORT}`);
 });

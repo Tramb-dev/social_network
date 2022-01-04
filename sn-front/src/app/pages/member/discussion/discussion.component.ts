@@ -47,5 +47,6 @@ export class DiscussionComponent implements OnInit {
       mId: Math.random().toString(),
     };
     this.messages.push(newMessage);
+    this.messagingSvc.sendMessage(this.discussionId, this.messageForm.value);
   }
 }

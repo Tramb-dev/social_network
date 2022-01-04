@@ -1,14 +1,16 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { Discussion } from "../interfaces/discussion";
 
+import { WebsocketsService } from "./websockets.service";
+
+import { Discussion } from "../interfaces/discussion";
 import { Message } from "../interfaces/message";
 
 @Injectable({
   providedIn: "root",
 })
 export class MessagingService {
-  constructor() {}
+  constructor(private socket: WebsocketsService) {}
 
   /**
    * Get all the messages for a given discussion
@@ -37,5 +39,7 @@ export class MessagingService {
    * @param dId the discussion to send this message
    * @param content the content of the message
    */
-  sendMessage(dId: string, content: string) {}
+  sendMessage(dId: string, content: string) {
+    this.socket.sendMessage(content);
+  }
 }
