@@ -29,17 +29,22 @@ export class SocketIO {
     const token = socket.handshake.query.token;
     const verifiedToken = this.checkAuth(token);
     if (verifiedToken) {
-      socket.emit("noArg");
-      socket.on("newMessage", (msg) => {
-        console.log("message : " + msg);
-        this.io.emit("test", "string");
-      });
-      //socket.on("");
+      this.socketCtrl(socket);
     }
   }
 
+  private socketCtrl(socket: Socket) {
+    socket.on("newMessage", (msg) => this.onNewMessage(msg));
+    socket.on("disconnect", () => this.onDeconnection(socket));
+  }
+
+  private onNewMessage(msg: string) {
+    console.log("message : " + msg);
+    this.io.emit("test", "string");
+  }
+
   private onDeconnection(socket: Socket) {
-    console.log("a user deconnected");
+    console.log("a user disconnected");
   }
 
   private checkAuth(token: unknown): string | false | JwtPayload {

@@ -1,6 +1,7 @@
 import { MongoClient } from "mongodb";
 import { UserDB } from "./user.db";
 import { PostsDB } from "./posts.db";
+import { DiscussionsDB } from "./discussions.db";
 
 import { mongoUri } from "../../config";
 import { Post } from "../../interfaces/post.interface";
@@ -10,6 +11,7 @@ class DB {
   private readonly _DB_NAME = "social_network";
   user = new UserDB(this.client, this._DB_NAME);
   posts = new PostsDB(this.client, this._DB_NAME);
+  discussions = new DiscussionsDB(this.client, this._DB_NAME);
 
   async getAllWallPosts(wallId: string): Promise<Post[]> {
     const promises: Promise<Post>[] = [];
