@@ -33,7 +33,6 @@ export class PostsDB {
           .limit(10)
           .project<Post>({ _id: 0 })
           .toArray()
-          .then((posts) => posts)
           .catch((err) => {
             throw new Error("Error getting all wall posts: " + err);
           });

@@ -7,7 +7,7 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   hello: () => void;
-  newMessage: (msg: string) => void;
+  newMessage: (msg: string, dId: string, uid: string) => void;
 }
 
 export interface InterServerEvents {

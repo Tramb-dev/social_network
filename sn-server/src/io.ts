@@ -9,11 +9,7 @@ import { authService } from "./services/auth/auth.service";
 import { JwtPayload } from "jsonwebtoken";
 
 export class SocketIO {
-  private io = new Server<
-    ClientToServerEvents,
-    ServerToClientEvents,
-    InterServerEvents
-  >(this.server, {
+  private io = new Server(this.server, {
     cors: this.corsOptions,
   });
 
@@ -30,16 +26,18 @@ export class SocketIO {
     const verifiedToken = this.checkAuth(token);
     if (verifiedToken) {
       this.socketCtrl(socket);
+    } else {
+      console.log("not auth");
     }
   }
 
   private socketCtrl(socket: Socket) {
-    socket.on("newMessage", (msg) => this.onNewMessage(msg));
+    socket.on("newMessage", (data) => this.onNewMessage(data));
     socket.on("disconnect", () => this.onDeconnection(socket));
   }
 
-  private onNewMessage(msg: string) {
-    console.log("message : " + msg);
+  private onNewMessage(data: string) {
+    console.log("message : " + data);
     this.io.emit("test", "string");
   }
 

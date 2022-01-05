@@ -14,7 +14,33 @@ class DiscussionsService {
         return db.discussions
           .getPrivateDiscussionWithUsers(uid1, uid2)
           .then((discussion) => {
-            return res.json(discussion);
+            if (discussion) {
+              return res.json(discussion);
+            }
+            return res.sendStatus(404);
+          })
+          .catch((err) => {
+            res.status(500);
+            return next(err);
+          });
+      }
+      return res.sendStatus(401);
+    }
+    return res.sendStatus(400);
+  }
+
+  getAllDiscussions(req: Request, res: Response, next: NextFunction) {
+    const uid = req.query.uid;
+    const context = res.locals.verifiedToken;
+    if (typeof uid === "string") {
+      if (uid === context.uid) {
+        return db.discussions
+          .getAllDiscussions(uid)
+          .then((discussions) => {
+            if (discussions) {
+              return res.json(discussions);
+            }
+            return res.sendStatus(404);
           })
           .catch((err) => {
             res.status(500);

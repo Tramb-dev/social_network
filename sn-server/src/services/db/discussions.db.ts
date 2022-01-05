@@ -76,6 +76,33 @@ export class DiscussionsDB {
   }
 
   /**
+   * Get all the discussion for a user, sorted by the last in first
+   * @param uid The user id
+   * @returns An array of discussions
+   */
+  getAllDiscussions(uid: string): Promise<Discussion[]> {
+    return this.client
+      .connect()
+      .then(() => {
+        return this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION)
+          .find({
+            users: uid,
+          })
+          .sort({ _id: -1 })
+          .project<Discussion>({ _id: 0 })
+          .toArray()
+          .catch((err) => {
+            throw new Error("Error getting all discussions: " + err);
+          });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }
+
+  /**
    * Create a new discussion
    * @param users An array of users involved in the discussion
    * @param privateDiscussion True if it is a private discussion (between two members)

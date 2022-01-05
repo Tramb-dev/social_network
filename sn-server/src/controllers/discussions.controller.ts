@@ -10,5 +10,11 @@ router
     authService.checkIfAuthenticated.bind(authService),
     discussionsService.getPrivateDiscussion.bind(discussionsService)
   );
+router
+  .route("/all-discussions")
+  .get(
+    authService.checkIfAuthenticated.bind(authService),
+    discussionsService.getAllDiscussions.bind(discussionsService)
+  );
 
 export default router;
