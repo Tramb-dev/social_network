@@ -53,6 +53,10 @@ class DiscussionsService {
     return res.sendStatus(400);
   }
 
+  getAllRooms(uid: string): Promise<string[]> {
+    return db.discussions.getAllRooms(uid);
+  }
+
   addNewMessage(dId: string, uid: string, content: string): Promise<Message> {
     return db.discussions.addNewMessage(dId, uid, content);
   }

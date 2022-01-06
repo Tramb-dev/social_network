@@ -404,6 +404,10 @@ class UserService {
     }
     return res.sendStatus(400);
   }
+
+  userDisconnect(socketId: string) {
+    console.log("user disconnected");
+  }
 }
 
 export const userService = new UserService();

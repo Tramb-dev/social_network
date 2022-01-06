@@ -9,6 +9,7 @@ import {
   InterServerEvents,
   ServerToClientEvents,
 } from "./interfaces/socketIO.interface";
+import { userService } from "./services/user.service";
 
 export class SocketIO {
   private io = new Server<
@@ -37,7 +38,7 @@ export class SocketIO {
     const token = socket.handshake.query.token;
     const verifiedToken = this.checkAuth(token);
     if (verifiedToken) {
-      this.socketCtrl(socket);
+      this.joinsRooms(verifiedToken, socket);
     } else {
       console.log("not auth");
     }
@@ -51,7 +52,19 @@ export class SocketIO {
     >
   ) {
     socket.on("newMessage", this.onNewMessage.bind(this));
-    socket.on("disconnect", () => this.onDeconnection(socket));
+    socket.on("disconnect", () => this.onDisconnect(socket));
+  }
+
+  private joinsRooms(token: string | JwtPayload, socket: Socket) {
+    if (typeof token === "object" && token.uid) {
+      const uid = token.uid;
+      discussionsService.getAllRooms(uid).then((rooms) => {
+        rooms.forEach((room) => {
+          socket.join(room);
+        });
+        this.socketCtrl(socket);
+      });
+    }
   }
 
   private onNewMessage(content: string, dId: string, uid: string) {
@@ -74,8 +87,14 @@ export class SocketIO {
     }
   }
 
-  private onDeconnection(socket: Socket) {
-    console.log("a user disconnected");
+  private onDisconnect(
+    socket: Socket<
+      ClientToServerEvents,
+      ServerToClientEvents,
+      InterServerEvents
+    >
+  ) {
+    userService.userDisconnect(socket.id);
   }
 
   private checkAuth(token: unknown): string | false | JwtPayload {

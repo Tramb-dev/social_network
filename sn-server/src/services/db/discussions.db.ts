@@ -105,6 +105,38 @@ export class DiscussionsDB {
   }
 
   /**
+   * Find all the discussion ids to use them in socket rooms
+   * @param uid The user id who will join these rooms
+   * @returns An array of rooms/discussion ids
+   */
+  getAllRooms(uid: string): Promise<string[]> {
+    return this.client
+      .connect()
+      .then(() => {
+        return this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION)
+          .find({
+            users: uid,
+          })
+          .project({ _id: 0, dId: 1 })
+          .toArray()
+          .then((results) => {
+            if (results) {
+              return results.map((room) => room.dId);
+            }
+            return [];
+          })
+          .catch((err) => {
+            throw new Error("Error getting all discussions: " + err);
+          });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }
+
+  /**
    * Create a new discussion
    * @param users An array of users involved in the discussion
    * @param privateDiscussion True if it is a private discussion (between two members)
