@@ -90,7 +90,9 @@ export class DiscussionsDB {
           .find({
             users: uid,
           })
-          .sort({ _id: -1 })
+          .sort({
+            "message.date": -1,
+          })
           .project<Discussion>({ _id: 0 })
           .toArray()
           .catch((err) => {
