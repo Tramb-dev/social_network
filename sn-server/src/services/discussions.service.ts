@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { Message } from "../interfaces/message.interface";
 import { db } from "./db/index.db";
 
 class DiscussionsService {
@@ -50,6 +51,10 @@ class DiscussionsService {
       return res.sendStatus(401);
     }
     return res.sendStatus(400);
+  }
+
+  addNewMessage(dId: string, uid: string, content: string): Promise<Message> {
+    return db.discussions.addNewMessage(dId, uid, content);
   }
 
   /**

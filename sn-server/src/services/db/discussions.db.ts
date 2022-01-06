@@ -192,46 +192,53 @@ export class DiscussionsDB {
     uid: string,
     operation: "add" | "remove"
   ): Promise<Discussion> {
-    const collection = this.client
-      .db(this._DB_NAME)
-      .collection(this._COLLECTION);
-    let toUpdate: Record<string, unknown>;
-    const users = { users: uid };
-    switch (operation) {
-      case "add":
-        toUpdate = {
-          $push: users,
-        };
-        break;
+    return this.client
+      .connect()
+      .then(() => {
+        const collection = this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION);
+        let toUpdate: Record<string, unknown>;
+        const users = { users: uid };
+        switch (operation) {
+          case "add":
+            toUpdate = {
+              $push: users,
+            };
+            break;
 
-      case "remove":
-        toUpdate = {
-          $pull: users,
-        };
-    }
-    return collection
-      .updateOne(
-        {
-          dId,
-        },
-        toUpdate
-      )
-      .then((result) => {
-        if (result.modifiedCount === 1) {
-          return this.getDiscussionWithId(dId)
-            .then((discussion) => {
-              if (discussion) {
-                return discussion;
-              } else {
-                throw new Error("The discussion was not created before");
-              }
-            })
-            .catch((err) => {
-              throw err;
-            });
-        } else {
-          throw new Error("Unable to update the discussion");
+          case "remove":
+            toUpdate = {
+              $pull: users,
+            };
         }
+        return collection
+          .updateOne(
+            {
+              dId,
+            },
+            toUpdate
+          )
+          .then((result) => {
+            if (result.modifiedCount === 1) {
+              return this.getDiscussionWithId(dId)
+                .then((discussion) => {
+                  if (discussion) {
+                    return discussion;
+                  } else {
+                    throw new Error("The discussion was not created before");
+                  }
+                })
+                .catch((err) => {
+                  throw err;
+                });
+            } else {
+              throw new Error("Unable to update the discussion");
+            }
+          })
+          .catch((err) => {
+            throw err;
+          });
       })
       .catch((err) => {
         throw err;
@@ -246,33 +253,40 @@ export class DiscussionsDB {
    * @returns The added message
    */
   addNewMessage(dId: string, uid: string, content: string): Promise<Message> {
-    const collection = this.client
-      .db(this._DB_NAME)
-      .collection(this._COLLECTION);
-    const currentDate = new Date();
-    const newMessage: Message = {
-      uid,
-      mid: uuidv4(),
-      content,
-      date: currentDate,
-    };
-    return collection
-      .updateOne(
-        {
-          dId,
-        },
-        {
-          $push: {
-            messages: newMessage,
-          },
-        }
-      )
-      .then((result) => {
-        if (result.modifiedCount === 1) {
-          return newMessage;
-        } else {
-          throw new Error("Unable to update the discussion");
-        }
+    return this.client
+      .connect()
+      .then(() => {
+        const collection = this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION);
+        const currentDate = new Date();
+        const newMessage: Message = {
+          uid,
+          mid: uuidv4(),
+          content,
+          date: currentDate,
+        };
+        return collection
+          .updateOne(
+            {
+              dId,
+            },
+            {
+              $push: {
+                messages: newMessage,
+              },
+            }
+          )
+          .then((result) => {
+            if (result.modifiedCount === 1) {
+              return newMessage;
+            } else {
+              throw new Error("Unable to update the discussion");
+            }
+          })
+          .catch((err) => {
+            throw err;
+          });
       })
       .catch((err) => {
         throw err;

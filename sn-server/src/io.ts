@@ -1,15 +1,21 @@
 import { Socket, Server } from "socket.io";
 import http from "http";
+import { JwtPayload } from "jsonwebtoken";
+import { authService } from "./services/auth/auth.service";
+import { discussionsService } from "./services/discussions.service";
+
 import {
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
 } from "./interfaces/socketIO.interface";
-import { authService } from "./services/auth/auth.service";
-import { JwtPayload } from "jsonwebtoken";
 
 export class SocketIO {
-  private io = new Server(this.server, {
+  private io = new Server<
+    ClientToServerEvents,
+    ServerToClientEvents,
+    InterServerEvents
+  >(this.server, {
     cors: this.corsOptions,
   });
 
@@ -20,7 +26,13 @@ export class SocketIO {
     this.io.on("connection", this.onConnection.bind(this));
   }
 
-  private onConnection(socket: Socket) {
+  private onConnection(
+    socket: Socket<
+      ClientToServerEvents,
+      ServerToClientEvents,
+      InterServerEvents
+    >
+  ) {
     console.log("a user connected");
     const token = socket.handshake.query.token;
     const verifiedToken = this.checkAuth(token);
@@ -31,14 +43,35 @@ export class SocketIO {
     }
   }
 
-  private socketCtrl(socket: Socket) {
-    socket.on("newMessage", (data) => this.onNewMessage(data));
+  private socketCtrl(
+    socket: Socket<
+      ClientToServerEvents,
+      ServerToClientEvents,
+      InterServerEvents
+    >
+  ) {
+    socket.on("newMessage", this.onNewMessage.bind(this));
     socket.on("disconnect", () => this.onDeconnection(socket));
   }
 
-  private onNewMessage(data: string) {
-    console.log("message : " + data);
-    this.io.emit("test", "string");
+  private onNewMessage(content: string, dId: string, uid: string) {
+    console.log(content, dId, uid);
+    if (
+      typeof dId === "string" &&
+      typeof uid === "string" &&
+      typeof content === "string"
+    ) {
+      discussionsService
+        .addNewMessage(dId, uid, content)
+        .then((message) => {
+          if (message) {
+            this.io.emit("newMessage", message, uid);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   }
 
   private onDeconnection(socket: Socket) {
