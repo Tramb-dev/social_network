@@ -5,6 +5,7 @@ import { environment } from "src/environments/environment";
 
 import { RandomUser, User, UserCreation } from "../interfaces/user";
 import { Post } from "../interfaces/post";
+import { Discussion } from "../interfaces/discussion";
 
 @Injectable({
   providedIn: "root",
@@ -13,6 +14,7 @@ export class HttpService {
   private readonly _apiUrl = environment.serverUrl + "/";
   private readonly _userUrl = this._apiUrl + "user/";
   private readonly _postsUrl = this._apiUrl + "posts/";
+  private readonly _discussionsUrl = this._apiUrl + "discussions/";
 
   constructor(private httpClient: HttpClient) {}
 
@@ -205,6 +207,17 @@ export class HttpService {
   getUser(uid: string): Observable<RandomUser> {
     return this.httpClient.get<RandomUser>(
       this._userUrl + `get-user?uid=${uid}`
+    );
+  }
+
+  /**
+   * Get all the discussions from a user
+   * @param uid The user id from who to retrieve the discussions
+   * @returns An array of discussions
+   */
+  getAllUserDiscussions(uid: string): Observable<Discussion[]> {
+    return this.httpClient.get<Discussion[]>(
+      `${this._discussionsUrl}all-discussions?uid=${uid}`
     );
   }
 }

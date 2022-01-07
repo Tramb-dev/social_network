@@ -6,11 +6,13 @@ export interface ServerToClientEvents {
   basicEmit: (a: number, b: string, c: Buffer) => void;
   withAck: (d: string, callback: (e: number) => void) => void;
   newMessage: (message: Message, uid: string) => void;
+  roomJoined: (message: string) => void;
 }
 
 export interface ClientToServerEvents {
   hello: () => void;
-  newMessage: (content: string, dId: string, uid: string) => void;
+  messageReceived: (content: string, dId: string, uid: string) => void;
+  joinRoom: (roomId: string) => void;
 }
 
 export interface InterServerEvents {

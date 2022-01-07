@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 
 import { WebsocketsService } from "./websockets.service";
+import { UserService } from "./user.service";
+import { HttpService } from "./http.service";
 
 import { Discussion } from "../interfaces/discussion";
 import { Message } from "../interfaces/message";
@@ -10,14 +12,20 @@ import { Message } from "../interfaces/message";
   providedIn: "root",
 })
 export class MessagingService {
-  constructor(private socket: WebsocketsService) {}
+  constructor(
+    private socket: WebsocketsService,
+    private user: UserService,
+    private httpSvc: HttpService
+  ) {}
 
   /**
    * Get all the messages for a given discussion
    * @param dId the discussion id
    * @returns an array of messages
    */
-  getMessages(dId: string) /* : Observable<Message[]> */ {}
+  getMessages(dId: string) /* : Observable<Message[]> */ {
+    console.log(dId);
+  }
 
   /**
    * Get all the messages for a private discussion.
@@ -32,7 +40,12 @@ export class MessagingService {
    * @param uid Optional: the current user if omitted, the given user otherwise
    * @returns an array of discussions
    */
-  getDiscussions(uid?: string) /* : Observable<Discussion[]> */ {}
+  getDiscussions(uid?: string): Observable<Discussion[]> {
+    if (!uid) {
+      uid = this.user.me.uid;
+    }
+    return this.httpSvc.getAllUserDiscussions(uid);
+  }
 
   /**
    * Send a message for a discussion

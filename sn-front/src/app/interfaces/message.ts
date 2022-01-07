@@ -3,5 +3,4 @@ export interface Message {
   uId: string;
   date: Date;
   content: string;
-  dId: string;
 }

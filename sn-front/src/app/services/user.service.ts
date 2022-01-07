@@ -46,7 +46,10 @@ export class UserService {
    * Display all friends for this user
    * @returns an array of friends in a observable
    */
-  displayFriends(uid: string): Observable<RandomUser[]> {
+  displayFriends(uid?: string): Observable<RandomUser[]> {
+    if (!uid) {
+      uid = this.me.uid;
+    }
     return this.httpSvc.getAllFriends(uid);
   }
 

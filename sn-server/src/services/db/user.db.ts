@@ -6,7 +6,6 @@ import {
   User,
   RightsLevels,
   SigninCredentials,
-  RandomUser,
 } from "../../interfaces/user.interface";
 
 export class UserDB extends Crypt {
