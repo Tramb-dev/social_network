@@ -220,4 +220,27 @@ export class HttpService {
       `${this._discussionsUrl}all-discussions?uid=${uid}`
     );
   }
+
+  /**
+   * Get a discussion between two members
+   * @param uid1
+   * @param uid2
+   * @returns The requested discussion
+   */
+  getPrivateDiscussion(uid1: string, uid2: string): Observable<Discussion> {
+    return this.httpClient.get<Discussion>(
+      `${this._discussionsUrl}private-discussion?uid1=${uid1}&uid2=${uid2}`
+    );
+  }
+
+  /**
+   * Get a discussion with its id
+   * @param dId The discussion id
+   * @returns The discussion
+   */
+  getThisDiscussion(dId: string): Observable<Discussion> {
+    return this.httpClient.get<Discussion>(
+      `${this._discussionsUrl}discussion?dId=${dId}`
+    );
+  }
 }

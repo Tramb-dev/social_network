@@ -1,10 +1,11 @@
 import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { map, zip } from "rxjs";
 
 import { MessagingService } from "src/app/services/messaging.service";
 import { UserService } from "src/app/services/user.service";
 
 import { Discussion } from "src/app/interfaces/discussion";
-import { map, zip } from "rxjs";
 
 @Component({
   selector: "app-discussions-list",
@@ -14,7 +15,11 @@ import { map, zip } from "rxjs";
 export class DiscussionsListComponent implements OnInit {
   discussions: Discussion[] = [];
 
-  constructor(private msgSvc: MessagingService, private user: UserService) {}
+  constructor(
+    private msgSvc: MessagingService,
+    private user: UserService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     const discussions$ = this.msgSvc.getDiscussions();
@@ -45,6 +50,7 @@ export class DiscussionsListComponent implements OnInit {
   }
 
   goToDiscussion(dId: string) {
-    this.msgSvc.getMessages(dId);
+    //this.msgSvc.getMessages(dId);
+    this.router.navigate(["member/discussion", dId]);
   }
 }

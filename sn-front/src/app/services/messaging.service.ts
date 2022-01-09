@@ -23,17 +23,22 @@ export class MessagingService {
    * @param dId the discussion id
    * @returns an array of messages
    */
-  getMessages(dId: string) /* : Observable<Message[]> */ {
-    console.log(dId);
+  getMessages(dId: string): Observable<Discussion> {
+    return this.httpSvc.getThisDiscussion(dId);
   }
 
   /**
    * Get all the messages for a private discussion.
    * Used when this is a discussion with only two users.
    * @param dId the discussion id
-   * @returns an array of messages
+   * @returns the discussion
    */
-  getPrivateMessages(friendUid: string) /* : Observable<Message[]> */ {}
+  getPrivateMessages(friendUid: string, uid?: string): Observable<Discussion> {
+    if (!uid) {
+      uid = this.user.me.uid;
+    }
+    return this.httpSvc.getPrivateDiscussion(uid, friendUid);
+  }
 
   /**
    * Get all the discussions for a user

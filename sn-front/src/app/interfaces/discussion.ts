@@ -6,4 +6,5 @@ export interface Discussion {
   privateMessage: boolean;
   messages: Message[];
   authors?: string[];
+  owner?: string;
 }

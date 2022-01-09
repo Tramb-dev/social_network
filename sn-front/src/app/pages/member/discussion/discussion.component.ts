@@ -1,13 +1,15 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormControl } from "@angular/forms";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, ParamMap } from "@angular/router";
 import { registerLocaleData } from "@angular/common";
 import localeFr from "@angular/common/locales/fr";
+import { Observable, of, Subscription, switchMap } from "rxjs";
 
 import { MessagingService } from "src/app/services/messaging.service";
 import { UserService } from "src/app/services/user.service";
 
 import { Message } from "src/app/interfaces/message";
+import { Discussion } from "src/app/interfaces/discussion";
 
 registerLocaleData(localeFr, "fr");
 
@@ -16,10 +18,12 @@ registerLocaleData(localeFr, "fr");
   templateUrl: "./discussion.component.html",
   styleUrls: ["./discussion.component.scss"],
 })
-export class DiscussionComponent implements OnInit {
+export class DiscussionComponent implements OnInit, OnDestroy {
   messageForm = new FormControl("");
   messages: Message[] = [];
+  private discussion?: Discussion;
   private discussionId: string = "";
+  private discussion$ = Subscription.EMPTY;
 
   constructor(
     private messagingSvc: MessagingService,
@@ -28,13 +32,28 @@ export class DiscussionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe((queryParam) => {
-      const discussionId = queryParam.get("did");
-      if (discussionId) {
-        this.discussionId = discussionId;
-        this.messagingSvc.getPrivateMessages(discussionId);
-      }
-    });
+    this.discussion$ = this.route.paramMap
+      .pipe(
+        switchMap<ParamMap, Observable<Discussion | null>>((params) => {
+          const discussionId = params.get("did");
+          if (discussionId) {
+            this.discussionId = discussionId;
+            return this.messagingSvc.getMessages(discussionId);
+          }
+          return of(null);
+        })
+      )
+      .subscribe((discussion) => {
+        if (discussion) {
+          this.messages = discussion.messages;
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.discussion$) {
+      this.discussion$.unsubscribe();
+    }
   }
 
   publish() {

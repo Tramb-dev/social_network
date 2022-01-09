@@ -11,6 +11,12 @@ router
     discussionsService.getPrivateDiscussion.bind(discussionsService)
   );
 router
+  .route("/discussion")
+  .get(
+    authService.checkIfAuthenticated.bind(authService),
+    discussionsService.getThisDiscussion.bind(discussionsService)
+  );
+router
   .route("/all-discussions")
   .get(
     authService.checkIfAuthenticated.bind(authService),

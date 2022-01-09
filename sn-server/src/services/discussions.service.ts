@@ -30,6 +30,29 @@ class DiscussionsService {
     return res.sendStatus(400);
   }
 
+  getThisDiscussion(req: Request, res: Response, next: NextFunction) {
+    const dId = req.query.dId;
+    const context = res.locals.verifiedToken;
+    if (typeof dId === "string") {
+      return db.discussions
+        .getDiscussionWithId(dId)
+        .then((discussion) => {
+          if (discussion) {
+            if (discussion.users.includes(context.uid)) {
+              return res.json(discussion);
+            }
+            return res.sendStatus(401);
+          }
+          return res.sendStatus(404);
+        })
+        .catch((err) => {
+          res.status(500);
+          return next(err);
+        });
+    }
+    return res.sendStatus(400);
+  }
+
   getAllDiscussions(req: Request, res: Response, next: NextFunction) {
     const uid = req.query.uid;
     const context = res.locals.verifiedToken;

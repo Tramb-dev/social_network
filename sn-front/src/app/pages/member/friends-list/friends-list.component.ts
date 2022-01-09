@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { MatDialog } from "@angular/material/dialog";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, ParamMap } from "@angular/router";
 import { combineLatest, Observable, Subscription, switchMap } from "rxjs";
 
 import { UserService } from "src/app/services/user.service";
@@ -34,13 +34,15 @@ export class FriendsListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.userSubscription$ = this.route.paramMap
       .pipe(
-        switchMap((params) => {
-          const uid = params.get("uid");
-          return combineLatest([
-            this.getFriendsList(uid),
-            this.getFriendName(uid),
-          ]);
-        })
+        switchMap<ParamMap, Observable<[RandomUser[], RandomUser]>>(
+          (params) => {
+            const uid = params.get("uid");
+            return combineLatest<[RandomUser[], RandomUser]>([
+              this.getFriendsList(uid),
+              this.getFriendName(uid),
+            ]);
+          }
+        )
       )
       .subscribe((users) => {
         if (users[0]) {
