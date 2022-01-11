@@ -7,6 +7,7 @@ import { discussionsService } from "./services/discussions.service";
 import {
   ClientToServerEvents,
   InterServerEvents,
+  NewMessageResponseCallback,
   ServerToClientEvents,
 } from "./interfaces/socketIO.interface";
 import { userService } from "./services/user.service";
@@ -64,8 +65,8 @@ export class SocketIO {
       InterServerEvents
     >
   ): SocketIO {
-    socket.on("messageReceived", (content, dId, uid) =>
-      this.onNewMessage(socket, content, dId, uid)
+    socket.on("messageReceived", (content, dId, uid, callback) =>
+      this.onNewMessage(socket, content, dId, uid, callback)
     );
     socket.on("joinRoom", (roomId) => this.joinRoom(uid, socket, roomId));
     socket.on("disconnect", () => this.onDisconnect(socket));
@@ -140,7 +141,8 @@ export class SocketIO {
     >,
     content: string,
     dId: string,
-    uid: string
+    uid: string,
+    callback: (res: NewMessageResponseCallback) => void
   ): SocketIO {
     if (
       typeof dId === "string" &&
@@ -151,7 +153,10 @@ export class SocketIO {
         .addNewMessage(dId, uid, content)
         .then((message) => {
           if (message) {
-            socket.broadcast.to(dId).emit("newMessage", message, uid);
+            socket.to(dId).emit("newMessage", { message, dId, uid });
+            callback({ status: "ok", mid: message.mid });
+          } else {
+            callback({ status: "kok", error: "message not saved" });
           }
         })
         .catch((err) => {

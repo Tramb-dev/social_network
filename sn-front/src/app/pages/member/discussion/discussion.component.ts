@@ -3,12 +3,20 @@ import { FormControl } from "@angular/forms";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { registerLocaleData } from "@angular/common";
 import localeFr from "@angular/common/locales/fr";
-import { Observable, of, Subscription, switchMap } from "rxjs";
+import {
+  concat,
+  map,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  tap,
+} from "rxjs";
 
 import { MessagingService } from "src/app/services/messaging.service";
 import { UserService } from "src/app/services/user.service";
 
-import { Message } from "src/app/interfaces/message";
+import { Message, NewMessage } from "src/app/interfaces/message";
 import { Discussion } from "src/app/interfaces/discussion";
 
 registerLocaleData(localeFr, "fr");
@@ -34,18 +42,35 @@ export class DiscussionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.discussion$ = this.route.paramMap
       .pipe(
-        switchMap<ParamMap, Observable<Discussion | null>>((params) => {
+        switchMap<ParamMap, Observable<Message[] | null>>((params) => {
           const discussionId = params.get("did");
           if (discussionId) {
             this.discussionId = discussionId;
-            return this.messagingSvc.getMessages(discussionId);
+            const discussion$ = this.messagingSvc
+              .getDiscussion(discussionId)
+              .pipe(
+                tap((discussion) => (this.discussion = discussion)),
+                map((discussion) => discussion.messages)
+              );
+            const newMessage$ = this.messagingSvc
+              .getMessages(discussionId)
+              .pipe(
+                map((newMessage) => {
+                  const messages = this.messages;
+                  if (newMessage.dId === discussionId) {
+                    messages.push(newMessage.message);
+                  }
+                  return messages;
+                })
+              );
+            return concat(discussion$, newMessage$);
           }
           return of(null);
         })
       )
-      .subscribe((discussion) => {
-        if (discussion) {
-          this.messages = discussion.messages;
+      .subscribe((messages) => {
+        if (messages) {
+          this.messages = messages;
         }
       });
   }
@@ -57,7 +82,6 @@ export class DiscussionComponent implements OnInit, OnDestroy {
   }
 
   publish() {
-    // TODO: adapt after setting backend response
     const newMessage = {
       uId: this.user.me.uid,
       date: new Date(),
@@ -66,6 +90,13 @@ export class DiscussionComponent implements OnInit, OnDestroy {
       mId: Math.random().toString(),
     };
     this.messages.push(newMessage);
-    this.messagingSvc.sendMessage(this.discussionId, this.messageForm.value);
+    this.messagingSvc
+      .sendMessage(this.discussionId, this.messageForm.value)
+      .then((mid) => {
+        if (mid) {
+          this.messages[this.messages.length - 1].mId = mid;
+        }
+      });
+    this.messageForm.reset();
   }
 }

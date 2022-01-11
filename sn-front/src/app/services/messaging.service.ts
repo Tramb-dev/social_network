@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { filter, Observable, tap } from "rxjs";
 
 import { WebsocketsService } from "./websockets.service";
 import { UserService } from "./user.service";
 import { HttpService } from "./http.service";
 
 import { Discussion } from "../interfaces/discussion";
-import { Message } from "../interfaces/message";
+import { Message, NewMessage } from "../interfaces/message";
 
 @Injectable({
   providedIn: "root",
@@ -23,7 +23,7 @@ export class MessagingService {
    * @param dId the discussion id
    * @returns an array of messages
    */
-  getMessages(dId: string): Observable<Discussion> {
+  getDiscussion(dId: string): Observable<Discussion> {
     return this.httpSvc.getThisDiscussion(dId);
   }
 
@@ -57,7 +57,18 @@ export class MessagingService {
    * @param dId the discussion to send this message
    * @param content the content of the message
    */
-  sendMessage(dId: string, content: string) {
-    this.socket.sendMessage(content);
+  sendMessage(dId: string, content: string): Promise<string | null> {
+    return this.socket.sendMessage(dId, content).then((response) => {
+      if (response.status === "ok" && response.mid) {
+        return response.mid;
+      }
+      return null;
+    });
+  }
+
+  getMessages(dId: string): Observable<NewMessage> {
+    return this.socket
+      .getNewMessages()
+      .pipe(filter<NewMessage>((newMessage) => newMessage.dId === dId));
   }
 }

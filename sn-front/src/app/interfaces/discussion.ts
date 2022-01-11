@@ -8,3 +8,8 @@ export interface Discussion {
   authors?: string[];
   owner?: string;
 }
+
+export interface NewMessageResponseCallback {
+  status: string;
+  mid?: string;
+}

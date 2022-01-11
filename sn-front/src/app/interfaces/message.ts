@@ -4,3 +4,9 @@ export interface Message {
   date: Date;
   content: string;
 }
+
+export interface NewMessage {
+  message: Message;
+  dId: string;
+  uid: string;
+}
