@@ -284,7 +284,12 @@ export class DiscussionsDB {
    * @param content The message content
    * @returns The added message
    */
-  addNewMessage(dId: string, uid: string, content: string): Promise<Message> {
+  addNewMessage(
+    dId: string,
+    uid: string,
+    author: string,
+    content: string
+  ): Promise<Message> {
     return this.client
       .connect()
       .then(() => {
@@ -297,6 +302,7 @@ export class DiscussionsDB {
           mid: uuidv4(),
           content,
           date: currentDate,
+          author,
         };
         return collection
           .updateOne(

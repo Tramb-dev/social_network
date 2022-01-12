@@ -1,8 +1,9 @@
 export interface Message {
-  mId: string;
-  uId: string;
+  mid: string;
+  uid: string;
   date: Date;
   content: string;
+  author: string;
 }
 
 export interface NewMessage {

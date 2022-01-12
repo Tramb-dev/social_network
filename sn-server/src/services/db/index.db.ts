@@ -5,6 +5,8 @@ import { DiscussionsDB } from "./discussions.db";
 
 import { mongoUri } from "../../config";
 import { Post } from "../../interfaces/post.interface";
+import { Message } from "../../interfaces/message.interface";
+import { Discussion } from "../../interfaces/discussion.interface";
 
 class DB {
   private client = new MongoClient(mongoUri);
@@ -54,6 +56,22 @@ class DB {
         return null;
       })
       .catch((err) => {
+        throw err;
+      });
+  }
+
+  addNewMessage(dId: string, uid: string, content: string): Promise<Message> {
+    return this.user
+      .getUser(uid)
+      .then((user) => {
+        if (user) {
+          const name = `${user.firstName} ${user.lastName}`;
+          return this.discussions.addNewMessage(dId, uid, name, content);
+        } else {
+          throw new Error("User not found");
+        }
+      })
+      .catch((err: Error) => {
         throw err;
       });
   }

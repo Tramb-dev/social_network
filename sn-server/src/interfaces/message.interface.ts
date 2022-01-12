@@ -3,4 +3,5 @@ export interface Message {
   uid: string;
   content: string;
   date: Date;
+  author: string;
 }

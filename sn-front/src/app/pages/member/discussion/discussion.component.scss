@@ -1,20 +1,45 @@
 @import "~/src/scss/variables";
 
-.message {
-  margin: 10px 0;
+.wraper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 53vh;
 }
 
-.message-date {
-  color: gray;
-  font-size: 0.75em;
-  padding: 0 10px;
+section {
+  overflow-y: auto;
+
+  .preview {
+    background-color: $white;
+    border-radius: 5px;
+    padding: 10px;
+    font-style: italic;
+    font-size: 0.85em;
+  }
+
+  .message {
+    margin: 10px 0;
+
+    .message-date {
+      color: gray;
+      font-size: 0.75em;
+      padding: 0 10px;
+    }
+  }
+
+  .my-message {
+    text-align: right;
+    margin-left: 40px;
+  }
+
+  .message:not(.my-message) {
+    margin-right: 40px;
+  }
 }
 
 .sending-zone {
-  position: fixed;
-  bottom: calc(5vw + 48px + 170px);
-  left: 0;
-  right: 0;
+  margin-top: 10px;
   background-color: $white;
 
   .send-message-form {
@@ -24,6 +49,18 @@
 }
 
 @media screen and (min-width: $sm) {
+  .wraper {
+    height: 56vh;
+
+    .my-message {
+      margin-left: 20vw;
+    }
+
+    .message:not(.my-message) {
+      margin-right: 20vw;
+    }
+  }
+
   .sending-zone {
     bottom: calc(5vw + 48px + 150px);
   }

@@ -81,7 +81,7 @@ class DiscussionsService {
   }
 
   addNewMessage(dId: string, uid: string, content: string): Promise<Message> {
-    return db.discussions.addNewMessage(dId, uid, content);
+    return db.addNewMessage(dId, uid, content);
   }
 
   /**
