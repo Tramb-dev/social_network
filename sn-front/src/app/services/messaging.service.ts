@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { filter, Observable, tap } from "rxjs";
+import { filter, Observable, ReplaySubject, tap } from "rxjs";
 
 import { WebsocketsService } from "./websockets.service";
 import { UserService } from "./user.service";
@@ -12,6 +12,8 @@ import { Message, NewMessage } from "../interfaces/message";
   providedIn: "root",
 })
 export class MessagingService {
+  private discussions$ = new ReplaySubject<Discussion[]>(1);
+
   constructor(
     private socket: WebsocketsService,
     private user: UserService,
@@ -49,7 +51,10 @@ export class MessagingService {
     if (!uid) {
       uid = this.user.me.uid;
     }
-    return this.httpSvc.getAllUserDiscussions(uid);
+    this.httpSvc
+      .getAllUserDiscussions(uid)
+      .subscribe((discussions) => this.discussions$.next(discussions));
+    return this.discussions$.asObservable();
   }
 
   /**
@@ -66,6 +71,11 @@ export class MessagingService {
     });
   }
 
+  /**
+   * Get new messages from websockets
+   * @param dId The discussion to observe
+   * @returns The new message
+   */
   getMessages(dId: string): Observable<NewMessage> {
     return this.socket
       .getNewMessages()
