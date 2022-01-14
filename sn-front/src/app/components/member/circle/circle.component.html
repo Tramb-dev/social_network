@@ -1,1 +1,9 @@
-<p>circle works!</p>
+
+  <h3 class="label">Cercles</h3>
+  <div class="container">
+    <button mat-button class="circle" *ngFor="let circle of circles">
+      <div class="circle-name">
+          {{ circle.name }}
+      </div>
+    </button>
+  </div>

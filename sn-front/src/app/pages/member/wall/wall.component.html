@@ -8,7 +8,10 @@
       </div>
     </div>
     <aside class="circle">
-      <h5>Cercles</h5>
+      <app-circle></app-circle>
+    </aside>
+    <aside class="messages">
+      <app-aside-messages></app-aside-messages>
     </aside>
     <section>
       <app-reply role="postMessage" [id]="wallId"></app-reply>
@@ -16,7 +19,6 @@
         <app-post [post]="post"></app-post>
       </ng-container>
     </section>
-    <aside class="messages"></aside>
   </main>
 </div>
   

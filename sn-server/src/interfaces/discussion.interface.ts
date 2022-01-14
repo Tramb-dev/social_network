@@ -6,4 +6,5 @@ export interface Discussion {
   users: string[];
   privateDiscussion: boolean;
   owner?: string;
+  lastUpdate: Date;
 }

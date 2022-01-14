@@ -1,5 +1,13 @@
 import { Injectable } from "@angular/core";
-import { filter, Observable, ReplaySubject, tap } from "rxjs";
+import {
+  combineLatest,
+  combineLatestWith,
+  filter,
+  map,
+  Observable,
+  ReplaySubject,
+  tap,
+} from "rxjs";
 
 import { WebsocketsService } from "./websockets.service";
 import { UserService } from "./user.service";
@@ -7,6 +15,7 @@ import { HttpService } from "./http.service";
 
 import { Discussion } from "../interfaces/discussion";
 import { Message, NewMessage } from "../interfaces/message";
+import { RandomUser } from "../interfaces/user";
 
 @Injectable({
   providedIn: "root",
@@ -51,8 +60,31 @@ export class MessagingService {
     if (!uid) {
       uid = this.user.me.uid;
     }
-    this.httpSvc
-      .getAllUserDiscussions(uid)
+    combineLatest<[Discussion[], RandomUser[]]>([
+      this.httpSvc.getAllUserDiscussions(uid),
+      this.user.displayFriends(),
+    ])
+      .pipe(
+        map(([discussions, friends]) => {
+          return discussions.map((discussion) => {
+            discussion.users.forEach((user) => {
+              if (user !== this.user.me.uid) {
+                const currentFriend = friends.find(
+                  (friend) => friend.uid === user
+                );
+                if (currentFriend) {
+                  const name = `${currentFriend.firstName} ${currentFriend.lastName}`;
+                  if (!discussion.authors) {
+                    discussion.authors = [];
+                  }
+                  discussion.authors.push(name);
+                }
+              }
+            });
+            return discussion;
+          });
+        })
+      )
       .subscribe((discussions) => this.discussions$.next(discussions));
     return this.discussions$.asObservable();
   }

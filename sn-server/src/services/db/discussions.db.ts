@@ -156,6 +156,7 @@ export class DiscussionsDB {
           users: users,
           messages: [],
           privateDiscussion,
+          lastUpdate: new Date(),
         };
         if (owner) {
           newDiscussion.owner = owner;
@@ -312,6 +313,9 @@ export class DiscussionsDB {
             {
               $push: {
                 messages: newMessage,
+              },
+              $set: {
+                lastUpdate: new Date(),
               },
             }
           )

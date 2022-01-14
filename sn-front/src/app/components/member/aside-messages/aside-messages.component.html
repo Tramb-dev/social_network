@@ -1,0 +1,12 @@
+
+  <h3 class="label">Messages</h3>
+  <div class="container">
+    <button mat-button class="discussion" *ngFor="let discussion of discussions$ | async" (click)="goToDiscussion(discussion.dId)">
+      <div class="discussion-authors">
+        <div class="discussion-author" *ngFor="let author of discussion.authors; let last = last">
+          {{ author }}
+          <ng-container *ngIf="!last">, </ng-container>
+        </div>
+      </div>
+    </button>
+  </div>

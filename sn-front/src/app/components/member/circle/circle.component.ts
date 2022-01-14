@@ -1,15 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'app-circle',
-  templateUrl: './circle.component.html',
-  styleUrls: ['./circle.component.scss']
+  selector: "app-circle",
+  templateUrl: "./circle.component.html",
+  styleUrls: ["./circle.component.scss"],
 })
-export class CircleComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class CircleComponent {
+  circles = [
+    {
+      name: "Amis",
+    },
+    {
+      name: "Famille",
+    },
+    {
+      name: "Collègues",
+    },
+  ];
 }

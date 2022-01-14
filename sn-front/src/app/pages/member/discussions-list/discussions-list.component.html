@@ -1,15 +1,17 @@
 <section>
-  <mat-card *ngFor="let discussion of discussions">
-    <mat-card-title class="authors">
-      <span *ngFor="let author of discussion.authors; let last = last">
-        {{ author }}<ng-container *ngIf="!last">, </ng-container>
-      </span>
-    </mat-card-title>
-    <mat-card-content class="last-message">{{ discussion.messages[discussion.messages.length - 1].content }}</mat-card-content>
-    <mat-card-actions align="end">
-      <button mat-button (click)="goToDiscussion(discussion.dId)">Rejoindre
-        <mat-icon>arrow_right_alt</mat-icon>
-      </button>
-    </mat-card-actions>
-  </mat-card>
+  <ng-container *ngFor="let discussion of discussions$ | async">
+    <mat-card *ngIf="discussion.messages.length > 0" class="discussion-card">
+      <mat-card-title class="authors">
+        <span *ngFor="let author of discussion.authors; let last = last">
+          {{ author }}<ng-container *ngIf="!last">, </ng-container>
+        </span>
+      </mat-card-title>
+      <mat-card-content class="last-message">{{ discussion.messages[discussion.messages.length - 1].content }}</mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button (click)="goToDiscussion(discussion.dId)">Rejoindre
+          <mat-icon>arrow_right_alt</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </ng-container>
 </section>

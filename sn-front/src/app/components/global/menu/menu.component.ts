@@ -16,14 +16,8 @@ export class MenuComponent {
     },
     {
       anchor: "feed",
-      label: "Amis",
+      label: "Feed",
       number: 5,
-      visible: true,
-    },
-    {
-      anchor: "circles",
-      label: "Cercles",
-      number: 3,
       visible: true,
     },
     {

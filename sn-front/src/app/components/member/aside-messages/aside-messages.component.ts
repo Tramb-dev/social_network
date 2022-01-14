@@ -3,15 +3,12 @@ import { Router } from "@angular/router";
 
 import { MessagingService } from "src/app/services/messaging.service";
 
-import { Discussion } from "src/app/interfaces/discussion";
-
 @Component({
-  selector: "app-discussions-list",
-  templateUrl: "./discussions-list.component.html",
-  styleUrls: ["./discussions-list.component.scss"],
+  selector: "app-aside-messages",
+  templateUrl: "./aside-messages.component.html",
+  styleUrls: ["./aside-messages.component.scss"],
 })
-export class DiscussionsListComponent {
-  discussions: Discussion[] = [];
+export class AsideMessagesComponent {
   discussions$ = this.msgSvc.getDiscussions();
 
   constructor(private msgSvc: MessagingService, private router: Router) {}

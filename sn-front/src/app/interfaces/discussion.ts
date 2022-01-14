@@ -7,6 +7,7 @@ export interface Discussion {
   messages: Message[];
   authors?: string[];
   owner?: string;
+  lastUpdate: Date;
 }
 
 export interface NewMessageResponseCallback {

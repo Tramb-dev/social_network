@@ -10,35 +10,42 @@
   flex-direction: row;
   justify-content: space-evenly;
 
-  .circle {
+  .discussion {
     border: $blue 5px solid;
     border-radius: 50%;
     width: calc(20vw - 5px);
     height: calc(20vw - 5px);
     white-space: normal;
 
-    .circle-name {
+    .discussion-authors {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+    }
+
+    .discussion-author {
+      font-size: 0.8em;
       line-height: initial;
     }
   }
 }
 
 @media screen and (min-width: $sm) {
+  .label {
+    transform: translateX(-35px);
+  }
+
   .container {
     flex-direction: column;
 
-    .circle {
+    .discussion {
       border: $blue 7px solid;
       width: 90px;
       height: 90px;
       filter: $drop-shadow;
       background-color: #fff;
       margin: 10px 0;
-      transform: translateX(-40px);
     }
   }
 }

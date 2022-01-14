@@ -16,6 +16,7 @@ import { WallMenuComponent } from "src/app/components/member/wall-menu/wall-menu
 import { UserFinderComponent } from "../../components/global/user-finder/user-finder.component";
 import { DiscussionsListComponent } from "./discussions-list/discussions-list.component";
 import { DiscussionComponent } from "./discussion/discussion.component";
+import { AsideMessagesComponent } from "src/app/components/member/aside-messages/aside-messages.component";
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { DiscussionComponent } from "./discussion/discussion.component";
     UserFinderComponent,
     DiscussionsListComponent,
     DiscussionComponent,
+    AsideMessagesComponent,
   ],
   imports: [MemberRoutingModule, SharedModule, HeaderModule],
 })
