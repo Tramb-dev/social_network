@@ -26,11 +26,21 @@ section {
       font-size: 0.75em;
       padding: 0 10px;
     }
+
+    .deleted-content {
+      font-style: italic;
+    }
   }
 
   .my-message {
     text-align: right;
     margin-left: 40px;
+
+    .message-menu {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
   }
 
   .message:not(.my-message) {

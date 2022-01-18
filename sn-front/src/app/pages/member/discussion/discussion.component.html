@@ -1,19 +1,56 @@
 <div class="wraper">
-    <section #scroll>
-        <div class="preview" *ngIf="messages.length === 0">
-            Il n'y a encore aucun message, envoyez un message pour démarrer la discussion.
-        </div>
-        <mat-card [id]="message.mid" class="message" *ngFor="let message of messages" [ngClass]="{ 'my-message': me === message.uid }">
-            <mat-card-subtitle>{{ message.author }}</mat-card-subtitle>
-            <mat-card-content>{{ message.content }}</mat-card-content>
-            <mat-card-footer class="message-date">{{ message.date | date:'short':'+0200':'fr' }}</mat-card-footer>
-        </mat-card>
-    </section>
-    <div class="sending-zone">
-        <mat-form-field class="send-message-form">
-            <mat-label>Envoyer un message</mat-label>
-            <textarea type="text" matInput cdkTextareaAutosize="true" [formControl]="messageForm" class="send-message" (keypress)="handleKeyUp($event)"></textarea>
-            <mat-icon matSuffix (click)="publish()">send</mat-icon>
-        </mat-form-field>
+  <section #scroll>
+    <div class="preview" *ngIf="messages.length === 0">
+      Il n'y a encore aucun message, envoyez un message pour démarrer la
+      discussion.
     </div>
+    <mat-card
+      [id]="message.mid"
+      class="message"
+      *ngFor="let message of messages; let i = index"
+      [ngClass]="{ 'my-message': me === message.uid }"
+    >
+      <ng-container *ngIf="me === message.uid">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="i"
+          aria-label="Message Menu"
+          class="message-menu"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #i>
+          <button mat-menu-item (click)="deleteMessage(message.mid)">
+            <span>Supprimer mon message</span>
+          </button>
+        </mat-menu>
+      </ng-container>
+      <mat-card-subtitle>{{ message.author }}</mat-card-subtitle>
+      <mat-card-content *ngIf="!message.deleted; else deletedMessage">{{
+        message.content
+      }}</mat-card-content>
+      <ng-template #deletedMessage>
+        <mat-card-content class="deleted-content"
+          >Le message a été supprimé.</mat-card-content
+        >
+      </ng-template>
+      <mat-card-footer class="message-date">{{
+        message.date | date: "short":"+0200":"fr"
+      }}</mat-card-footer>
+    </mat-card>
+  </section>
+  <div class="sending-zone">
+    <mat-form-field class="send-message-form">
+      <mat-label>Envoyer un message</mat-label>
+      <textarea
+        type="text"
+        matInput
+        cdkTextareaAutosize="true"
+        [formControl]="messageForm"
+        class="send-message"
+        (keypress)="handleKeyUp($event)"
+      ></textarea>
+      <mat-icon matSuffix (click)="publish()">send</mat-icon>
+    </mat-form-field>
+  </div>
 </div>

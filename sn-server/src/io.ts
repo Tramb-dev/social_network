@@ -68,6 +68,9 @@ export class SocketIO {
     socket.on("messageReceived", (content, dId, uid, callback) =>
       this.onNewMessage(socket, content, dId, uid, callback)
     );
+    socket.on("deleteMessage", (mid, dId) =>
+      this.onMessageDelete(socket, mid, dId)
+    );
     socket.on("joinRoom", (roomId) => this.joinRoom(uid, socket, roomId));
     socket.on("disconnect", () => this.onDisconnect(socket));
     return this;
@@ -163,6 +166,28 @@ export class SocketIO {
           console.error(err);
         });
     }
+    return this;
+  }
+
+  private onMessageDelete(
+    socket: Socket<
+      ClientToServerEvents,
+      ServerToClientEvents,
+      InterServerEvents
+    >,
+    mid: string,
+    dId: string
+  ): SocketIO {
+    discussionsService
+      .deleteMessage(mid)
+      .then((isDeleted) => {
+        if (isDeleted) {
+          this.io.to(dId).emit("deletedMessage", { mid, dId });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     return this;
   }
 

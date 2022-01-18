@@ -7,6 +7,7 @@ export interface ServerToClientEvents {
   withAck: (d: string, callback: (e: number) => void) => void;
   newMessage: (data: { message: Message; dId: string; uid: string }) => void;
   roomJoined: (message: string) => void;
+  deletedMessage: (data: { mid: string; dId: string }) => void;
 }
 
 export interface ClientToServerEvents {
@@ -18,6 +19,7 @@ export interface ClientToServerEvents {
     callback: (res: NewMessageResponseCallback) => void
   ) => void;
   joinRoom: (roomId: string) => void;
+  deleteMessage: (mid: string, dId: string) => void;
 }
 
 export interface InterServerEvents {

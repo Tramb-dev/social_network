@@ -14,3 +14,8 @@ export interface NewMessageResponseCallback {
   status: string;
   mid?: string;
 }
+
+export interface DeletedMessage {
+  mid: string;
+  dId: string;
+}

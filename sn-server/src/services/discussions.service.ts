@@ -84,6 +84,10 @@ class DiscussionsService {
     return db.addNewMessage(dId, uid, content);
   }
 
+  deleteMessage(mid: string): Promise<boolean> {
+    return db.discussions.deleteMessage(mid);
+  }
+
   /**
    * Check if the users are friends
    * @param uid1 the first user id

@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import {
   combineLatest,
-  combineLatestWith,
   filter,
   map,
   Observable,
@@ -14,13 +13,14 @@ import { UserService } from "./user.service";
 import { HttpService } from "./http.service";
 
 import { Discussion } from "../interfaces/discussion";
-import { Message, NewMessage } from "../interfaces/message";
+import { NewMessage } from "../interfaces/message";
 import { RandomUser } from "../interfaces/user";
 
 @Injectable({
   providedIn: "root",
 })
 export class MessagingService {
+  private discussions: Discussion[] = [];
   private discussions$ = new ReplaySubject<Discussion[]>(1);
 
   constructor(
@@ -35,7 +35,18 @@ export class MessagingService {
    * @returns an array of messages
    */
   getDiscussion(dId: string): Observable<Discussion> {
-    return this.httpSvc.getThisDiscussion(dId);
+    return this.httpSvc.getThisDiscussion(dId).pipe(
+      tap((discussion) => {
+        const index = this.discussions.findIndex(
+          (element) => element.dId === discussion.dId
+        );
+        if (index > -1) {
+          this.discussions[index] = discussion;
+        } else {
+          this.discussions.push(discussion);
+        }
+      })
+    );
   }
 
   /**
@@ -85,7 +96,10 @@ export class MessagingService {
           });
         })
       )
-      .subscribe((discussions) => this.discussions$.next(discussions));
+      .subscribe((discussions) => {
+        this.discussions = discussions;
+        this.discussions$.next(discussions);
+      });
     return this.discussions$.asObservable();
   }
 
@@ -109,8 +123,48 @@ export class MessagingService {
    * @returns The new message
    */
   getMessages(dId: string): Observable<NewMessage> {
-    return this.socket
-      .getNewMessages()
-      .pipe(filter<NewMessage>((newMessage) => newMessage.dId === dId));
+    const newMessages$ = this.socket.getNewMessages().pipe(
+      filter<NewMessage>((newMessage) => newMessage.dId === dId),
+      tap((newMessage) => {
+        const dId = newMessage.dId;
+        const discussionIndex = this.discussions.findIndex(
+          (element) => element.dId === dId
+        );
+        if (discussionIndex >= 0) {
+          this.discussions[discussionIndex].messages.push(newMessage.message);
+        }
+      })
+    );
+
+    const deletedMessages$ = this.socket.deletedMessage().pipe(
+      tap((result) => {
+        const discussionIndex = this.discussions.findIndex(
+          (element) => element.dId === result.dId
+        );
+        if (discussionIndex >= 0) {
+          const messageIndex = this.discussions[
+            discussionIndex
+          ].messages.findIndex((element) => element.mid === result.mid);
+          if (messageIndex >= 0) {
+            this.discussions[discussionIndex].messages[messageIndex].deleted =
+              true;
+            this.discussions$.next(this.discussions);
+          }
+        }
+      })
+    );
+
+    return combineLatest([newMessages$, deletedMessages$]).pipe(
+      map((combineArray) => combineArray[0])
+    );
+  }
+
+  /**
+   * Delete a message in a discussion
+   * @param mid The message id to delete
+   * @returns True if deleted, false otherwise
+   */
+  deleteMessage(mid: string, dId: string) {
+    this.socket.deleteMessage(mid, dId);
   }
 }

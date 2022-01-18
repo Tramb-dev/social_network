@@ -334,4 +334,43 @@ export class DiscussionsDB {
         throw err;
       });
   }
+
+  /**
+   * Place a deleted marker to a message
+   * @param mid The message to mark as deleted
+   * @returns True if the message is marked, false otherwise
+   */
+  deleteMessage(mid: string): Promise<boolean> {
+    return this.client
+      .connect()
+      .then(() => {
+        const collection = this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION);
+        return collection
+          .updateOne(
+            {
+              "messages.mid": mid,
+            },
+            {
+              $set: {
+                "messages.$.deleted": true,
+              },
+            }
+          )
+          .then((result) => {
+            if (result.modifiedCount === 1) {
+              return true;
+            } else {
+              return false;
+            }
+          })
+          .catch((err: Error) => {
+            throw err;
+          });
+      })
+      .catch((err: Error) => {
+        throw err;
+      });
+  }
 }

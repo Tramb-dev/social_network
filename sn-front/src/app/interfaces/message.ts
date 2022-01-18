@@ -4,6 +4,7 @@ export interface Message {
   date: Date;
   content: string;
   author: string;
+  deleted?: boolean;
 }
 
 export interface NewMessage {

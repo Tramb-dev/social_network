@@ -118,6 +118,10 @@ export class DiscussionComponent
     return this;
   }
 
+  deleteMessage(mid: string) {
+    this.messagingSvc.deleteMessage(mid, this.discussionId);
+  }
+
   private scrollToBottom(el: ElementRef): DiscussionComponent {
     el.nativeElement.scroll({
       top: el.nativeElement.scrollHeight,
