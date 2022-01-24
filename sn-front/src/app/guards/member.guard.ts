@@ -29,7 +29,6 @@ export class MemberGuard implements CanActivate, CanActivateChild, CanLoad {
     state: RouterStateSnapshot
   ): Observable<boolean> {
     let url: string = state.url;
-    console.log("member", url);
     return this.auth.isUserLoggedIn().pipe(
       map((isLoggedIn) => {
         if (isLoggedIn) {

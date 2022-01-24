@@ -157,11 +157,16 @@ export class PostsDB {
    * @returns The post or null if it does not exists
    */
   getPost(pid: string): Promise<Post | null> {
-    return this.client.connect().then(() => {
-      const collection = this.client
-        .db(this._DB_NAME)
-        .collection(this._COLLECTION);
-      return collection.findOne<Post>({ pid });
-    });
+    return this.client
+      .connect()
+      .then(() => {
+        const collection = this.client
+          .db(this._DB_NAME)
+          .collection(this._COLLECTION);
+        return collection.findOne<Post>({ pid });
+      })
+      .catch((err: Error) => {
+        throw err;
+      });
   }
 }

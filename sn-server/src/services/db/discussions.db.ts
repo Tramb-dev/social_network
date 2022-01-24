@@ -150,43 +150,48 @@ export class DiscussionsDB {
     owner?: string
   ): Promise<Discussion> {
     if (users.length > 1) {
-      return this.client.connect().then(() => {
-        const newDiscussion: Discussion = {
-          dId: uuidv4(),
-          users: users,
-          messages: [],
-          privateDiscussion,
-          lastUpdate: new Date(),
-        };
-        if (owner) {
-          newDiscussion.owner = owner;
-        }
+      return this.client
+        .connect()
+        .then(() => {
+          const newDiscussion: Discussion = {
+            dId: uuidv4(),
+            users: users,
+            messages: [],
+            privateDiscussion,
+            lastUpdate: new Date(),
+          };
+          if (owner) {
+            newDiscussion.owner = owner;
+          }
 
-        return this.client
-          .db(this._DB_NAME)
-          .collection(this._COLLECTION)
-          .insertOne(newDiscussion)
-          .then((result) => {
-            if (result.acknowledged) {
-              return this.getDiscussionWithId(newDiscussion.dId)
-                .then((discussion) => {
-                  if (discussion) {
-                    return discussion;
-                  } else {
-                    throw new Error("The discussion was not created before");
-                  }
-                })
-                .catch((err) => {
-                  throw err;
-                });
-            } else {
-              throw new Error("Unable to create a new discussion");
-            }
-          })
-          .catch((err) => {
-            throw err;
-          });
-      });
+          return this.client
+            .db(this._DB_NAME)
+            .collection(this._COLLECTION)
+            .insertOne(newDiscussion)
+            .then((result) => {
+              if (result.acknowledged) {
+                return this.getDiscussionWithId(newDiscussion.dId)
+                  .then((discussion) => {
+                    if (discussion) {
+                      return discussion;
+                    } else {
+                      throw new Error("The discussion was not created before");
+                    }
+                  })
+                  .catch((err) => {
+                    throw err;
+                  });
+              } else {
+                throw new Error("Unable to create a new discussion");
+              }
+            })
+            .catch((err) => {
+              throw err;
+            });
+        })
+        .catch((err: Error) => {
+          throw err;
+        });
     } else {
       throw new Error("Need at least 2 person to create a discussion");
     }

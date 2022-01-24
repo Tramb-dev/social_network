@@ -49,7 +49,6 @@ export class ProfileComponent {
     private userSvc: UserService,
     private title: Title
   ) {
-    console.log(this.user.dateOfBirth);
     title.setTitle("Mon profil - " + siteName);
   }
 

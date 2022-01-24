@@ -6,7 +6,6 @@ import { DiscussionsDB } from "./discussions.db";
 import { mongoUri } from "../../config";
 import { Post } from "../../interfaces/post.interface";
 import { Message } from "../../interfaces/message.interface";
-import { Discussion } from "../../interfaces/discussion.interface";
 
 class DB {
   private client = new MongoClient(mongoUri);
@@ -16,13 +15,17 @@ class DB {
   discussions = new DiscussionsDB(this.client, this._DB_NAME);
 
   async getAllWallPosts(wallId: string): Promise<Post[]> {
-    const promises: Promise<Post>[] = [];
-    const posts = await this.posts.getAllWallPosts(wallId);
-    posts.forEach((post) => {
-      promises.push(this.addPicture(post));
-    });
+    try {
+      const promises: Promise<Post>[] = [];
+      const posts = await this.posts.getAllWallPosts(wallId);
+      posts.forEach((post) => {
+        promises.push(this.addPicture(post));
+      });
 
-    return await Promise.all(promises);
+      return await Promise.all(promises);
+    } catch (err) {
+      throw err;
+    }
   }
 
   getAllFriendsPosts(uid: string): Promise<Post[] | null> {
@@ -85,14 +88,18 @@ class DB {
     uid: string,
     content: string
   ): Promise<Post | null> {
-    const user = await this.user.getUser(uid);
-    if (user) {
-      const post = await this.posts.addPost(wallId, user, content);
-      if (post) {
-        return await this.addPicture(post);
+    try {
+      const user = await this.user.getUser(uid);
+      if (user) {
+        const post = await this.posts.addPost(wallId, user, content);
+        if (post) {
+          return await this.addPicture(post);
+        }
       }
+      return null;
+    } catch (err) {
+      throw err;
     }
-    return null;
   }
 
   async addComent(
@@ -100,23 +107,32 @@ class DB {
     uid: string,
     content: string
   ): Promise<Post | null> {
-    const user = await this.user.getUser(uid);
-    if (user) {
-      const post = await this.posts.addComment(pid, user, content);
-      if (post) {
-        return await this.addPicture(post);
+    try {
+      const user = await this.user.getUser(uid);
+      if (user) {
+        const post = await this.posts.addComment(pid, user, content);
+        if (post) {
+          return await this.addPicture(post);
+        }
       }
+      return null;
+    } catch (err) {
+      throw err;
     }
-    return null;
   }
 
   private addPicture(post: Post): Promise<Post> {
-    return this.user.getUser(post.uid).then((user) => {
-      if (user && user.picture) {
-        post.picture = user.picture;
-      }
-      return post;
-    });
+    return this.user
+      .getUser(post.uid)
+      .then((user) => {
+        if (user && user.picture) {
+          post.picture = user.picture;
+        }
+        return post;
+      })
+      .catch((err: Error) => {
+        throw err;
+      });
   }
 }
 
