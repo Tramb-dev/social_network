@@ -17,14 +17,16 @@ export class SocketIO {
     ClientToServerEvents,
     ServerToClientEvents,
     InterServerEvents
-  >(this.server, {
+  >(
+    this.server /* {
     cors: this.corsOptions,
-  });
+  } */
+  );
 
   constructor(
-    private server: http.Server,
-    private corsOptions: Record<string, unknown>
-  ) {
+    private server: http.Server
+  ) //private corsOptions: Record<string, unknown>
+  {
     this.io.on("connection", this.onConnection.bind(this));
   }
 
@@ -40,13 +42,12 @@ export class SocketIO {
       InterServerEvents
     >
   ): SocketIO {
-    console.log("a user connected");
     const token = socket.handshake.query.token;
     const verifiedToken = this.checkAuth(token);
     if (verifiedToken) {
       this.joinsRooms(verifiedToken, socket);
     } else {
-      console.log("not auth");
+      console.log("user not auth");
     }
     return this;
   }

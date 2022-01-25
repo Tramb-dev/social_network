@@ -11,7 +11,7 @@ import { Discussion } from "../interfaces/discussion";
   providedIn: "root",
 })
 export class HttpService {
-  private readonly _apiUrl = environment.serverUrl + "/";
+  private readonly _apiUrl = ""; //environment.serverUrl + "/";
   private readonly _userUrl = this._apiUrl + "user/";
   private readonly _postsUrl = this._apiUrl + "posts/";
   private readonly _discussionsUrl = this._apiUrl + "discussions/";

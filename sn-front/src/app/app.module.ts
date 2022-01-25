@@ -10,9 +10,6 @@ import { BrowserModule, Title } from "@angular/platform-browser";
 import { AppRoutingModule } from "./app-routing.module";
 import { SharedModule } from "./shared/shared.module";
 import { AppComponent } from "./app.component";
-import { MemberModule } from "./pages/member/member.module";
-import { GlobalModule } from "./pages/global/global.module";
-import { AdminModule } from "./pages/admin/admin.module";
 
 import { httpInterceptorProviders } from "./interceptors/";
 
@@ -36,9 +33,6 @@ const config: SocketIoConfig = {
     SocketIoModule.forRoot(config),
     FormsModule,
     BrowserAnimationsModule,
-    GlobalModule,
-    MemberModule,
-    AdminModule,
     SharedModule,
   ],
   providers: [httpInterceptorProviders, Title],
