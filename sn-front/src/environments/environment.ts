@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   serverUrl: "http://localhost:3005",
+  websocketUrl: "http://localhost:3005",
 };
 
 /*

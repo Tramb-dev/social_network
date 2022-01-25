@@ -17,16 +17,9 @@ export class SocketIO {
     ClientToServerEvents,
     ServerToClientEvents,
     InterServerEvents
-  >(
-    this.server /* {
-    cors: this.corsOptions,
-  } */
-  );
+  >(this.server);
 
-  constructor(
-    private server: http.Server
-  ) //private corsOptions: Record<string, unknown>
-  {
+  constructor(private server: http.Server) {
     this.io.on("connection", this.onConnection.bind(this));
   }
 

@@ -17,7 +17,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RecommendToComponent } from "./components/member/recommend-to/recommend-to.component";
 
 const config: SocketIoConfig = {
-  url: environment.serverUrl,
+  url: environment.websocketUrl,
   options: {
     transports: ["websocket"],
     autoConnect: false,
