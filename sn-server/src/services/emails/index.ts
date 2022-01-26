@@ -10,8 +10,8 @@ class Mailer {
 
     const OAuth2 = google.auth.OAuth2;
     const oauth2Client = new OAuth2(
-      "675797190983-vjp1oq4r3ou6t9ianc7uvmc0196rn4ln.apps.googleusercontent.com",
-      "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",
+      googleCredentials.clientId,
+      googleCredentials.clientSecret,
       "https://developers.google.com/oauthplayground"
     );
     oauth2Client.setCredentials({

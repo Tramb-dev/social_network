@@ -2,7 +2,7 @@
 
 This project was realized when finishing my schoolarship at IFOCOP school. The goal was to make a social network with some functionnalities listed below:
 
-* Connexion and inscription
+* Connexion and registration
 * Members and administrators authorizations
 * Administrator panel
 * Publications on friends and own walls
@@ -31,15 +31,33 @@ This project need a MongoDB database. See an exemple in config.json at the root 
 
 Create a configuration file named `./sn-server/src/config.ts` with this content:
 
-<code>exports.db = { mongoUri: "mongodb+srv://< login >:< password >@< mongDBuri >/social-network" };</code>
+```typescript
+import { Secret } from "jsonwebtoken";
 
-Don't forget to replace `login`, `password` and `mongoDBuri` with your credentials.
+export const PORT = process.env.PORT || 3005;
+export const mongoUri: "mongodb+srv://< login >:< password >@< mongDBuri >/social-network";
 
-Change if needed the server port in `sn-server/src/app.ts` and in `sn-front/src/environments/environment.prod.ts`.
+export const googleCredentials = {
+  clientId: "",
+  clientSecret: "",
+  refresh_token: "",
+  user: "",
+};
+
+export const site = {
+  name: "Social Network",
+};
+
+export const secret: Secret = "";
+```
+
+Don't forget to replace `login`, `password` and `mongoDBuri` with your MongoDb credentials. Same for googleCredentials (or replace with other providers). Enter whatever secret pass you want.
+
+Change if needed the server port here and in `sn-front/src/environments/environment.prod.ts`.
 
 ### Execute server
 
-Enter in server directory with `cd sn-server/dist`. Run `node app.js`. Naviguate to `http://localhost:8095` or the port you provided in this file.
+Enter in server directory with `cd sn-server/dist`. Run `node app.js`. Naviguate to `http://localhost:8095` or the port you provided in the config file.
 
 ### Development
 
@@ -51,8 +69,8 @@ In `sn-server` directory, type `npm run dev`, it will build, serve the applicati
 
 ### Infos
 
-This project was generated with Angular CLI version 12.2.6.
+This project uses Angular version 13.
 
 The servers runs under node.js version 16.10.0, express version 4.17.1 and mongodb version 4.1.3.
 
-All the project is writed in typescript.
+All the project is written in typescript.

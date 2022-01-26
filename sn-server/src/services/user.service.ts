@@ -149,7 +149,10 @@ class UserService {
         .insertForgotLink(emailAddress)
         .then((result) => {
           if (result) {
-            mailer.sendResetLink(emailAddress, result);
+            mailer
+              .sendResetLink(emailAddress, result)
+              .then(() => res.sendStatus(200))
+              .catch((err) => res.sendStatus(500));
           }
           return res.sendStatus(200);
         })
@@ -171,6 +174,7 @@ class UserService {
           if (ridExists) {
             return res.sendStatus(200);
           }
+          return res.sendStatus(404);
         })
         .catch((err) => {
           res.status(400);
